@@ -466,6 +466,27 @@
       status: 'resolved', admin_decision: decision, resolved_at: new Date().toISOString()
     }).eq('id', disputeId)
 
+    // Send notifications to both players
+    const winnerMsg = winnerId === p1id
+      ? `Dispute resolved — you won the match. 3 points awarded.`
+      : `Dispute resolved — ${p2name} won the match.`
+    const loserMsg = winnerId === p1id
+      ? `Dispute resolved — ${p1name} won the match.`
+      : `Dispute resolved — you won the match. 3 points awarded.`
+    const drawMsg = 'Dispute resolved — match ruled a draw. 1 point each.'
+
+    if (winnerId) {
+      await supabase.from('notifications').insert([
+        { player_id: p1id, message: winnerId === p1id ? winnerMsg : loserMsg, type: winnerId === p1id ? 'success' : 'warning' },
+        { player_id: p2id, message: winnerId === p2id ? winnerMsg : loserMsg, type: winnerId === p2id ? 'success' : 'warning' }
+      ])
+    } else {
+      await supabase.from('notifications').insert([
+        { player_id: p1id, message: drawMsg, type: 'info' },
+        { player_id: p2id, message: drawMsg, type: 'info' }
+      ])
+    }
+
     loadDisputes()
     loadOverview()
   }

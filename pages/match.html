@@ -100,6 +100,15 @@
     .empty-wrap h2 { color: #fff; font-size: 1.2rem; margin-bottom: 8px; }
     .empty-wrap p { color: var(--gray); font-size: 0.9rem; }
     .section-label { font-size: 0.72rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .archive-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--slate-light); font-size: 0.85rem; }
+    .archive-item:last-child { border-bottom: none; }
+    .archive-vs { color: #fff; font-weight: 500; }
+    .archive-meta { color: var(--gray); font-size: 0.78rem; margin-top: 2px; }
+    .archive-result { font-size: 0.78rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .result-win { background: rgba(74,222,128,0.12); color: #4ade80; }
+    .result-loss { background: rgba(248,113,113,0.12); color: #f87171; }
+    .result-draw { background: rgba(232,255,71,0.1); color: var(--volt); }
+    .result-disputed { background: rgba(55,138,221,0.1); color: #378ADD; }
   </style>
 </head>
 <body>
@@ -133,7 +142,7 @@
   const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-  let player = null, match = null, mySlots = [], oppSlots = []
+  let player = null, match = null, mySlots = [], oppSlots = [], archivedMatches = []
   let selectedDate = null, calYear = new Date().getFullYear(), calMonth = new Date().getMonth()
   let selectedOutcome = null, counterMode = false, pendingProposal = null
   let pollTimer = null
@@ -760,6 +769,35 @@
     await render()
   }
 
+  function renderArchive() {
+    if (!archivedMatches || archivedMatches.length === 0) return
+    const root = document.getElementById('root')
+    if (!root) return
+    const div = document.createElement('div')
+    div.className = 'state-card'
+    div.style.marginTop = '14px'
+    div.innerHTML = `
+      <div class="state-card-title">Previous matches this season</div>
+      ${archivedMatches.map(m => {
+        const isP1 = m.player_one_id === player.id
+        const opp = isP1 ? m.player_two?.username : m.player_one?.username
+        const won = m.winner_id === player.id
+        const draw = !m.winner_id && m.status === 'completed'
+        const disputed = m.status === 'disputed'
+        let resultClass = disputed ? 'result-disputed' : draw ? 'result-draw' : won ? 'result-win' : 'result-loss'
+        let resultLabel = disputed ? 'Disputed' : draw ? 'Draw' : won ? 'Win' : 'Loss'
+        const date = new Date(m.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+        return `<div class="archive-item">
+          <div>
+            <div class="archive-vs">vs ${opp || '?'}</div>
+            <div class="archive-meta">Week ${m.week} · ${date}</div>
+          </div>
+          <span class="archive-result ${resultClass}">${resultLabel}</span>
+        </div>`
+      }).join('')}`
+    root.appendChild(div)
+  }
+
   async function init() {
     const session = await requireAuth()
     if (!session) return
@@ -776,6 +814,17 @@
 
     match = matches && matches.length ? matches[0] : null
 
+    // Load completed matches for archive
+    const { data: archived } = await supabase
+      .from('matches')
+      .select(`*, player_one:player_one_id(username), player_two:player_two_id(username)`)
+      .or(`player_one_id.eq.${player.id},player_two_id.eq.${player.id}`)
+      .eq('season', SEASON)
+      .in('status', ['completed', 'disputed'])
+      .order('created_at', { ascending: false })
+      .limit(10)
+    archivedMatches = archived || []
+
     // If disputed, fetch evidence paths from disputes table
     if (match && match.status === 'disputed') {
       const { data: dispute } = await supabase.from('disputes')
@@ -786,6 +835,9 @@
       }
     }
     await render()
+
+    // Render archive
+    renderArchive()
 
     pollTimer = setInterval(async () => {
       if (match && !match.agreed_time) await loadChat()

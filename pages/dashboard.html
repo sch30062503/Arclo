@@ -32,6 +32,13 @@
     .dash-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
     .loading { color: var(--gray); font-size: 0.85rem; padding: 20px 0; text-align: center; }
     .empty { color: var(--gray); font-size: 0.85rem; padding: 12px 0; }
+    .notif-banner { background: rgba(55,138,221,0.08); border: 0.5px solid rgba(55,138,221,0.25); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .notif-banner.success { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.25); }
+    .notif-banner.warning { background: rgba(255,79,56,0.08); border-color: rgba(255,79,56,0.25); }
+    .notif-banner.dispute { background: rgba(232,255,71,0.06); border-color: rgba(232,255,71,0.2); }
+    .notif-text { font-size: 0.85rem; color: #fff; flex: 1; }
+    .notif-dismiss { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 1.1rem; padding: 0 4px; flex-shrink: 0; }
+    .notif-dismiss:hover { color: #fff; }
     .avail-banner { display:none; background: rgba(255,79,56,0.08); border: 0.5px solid rgba(255,79,56,0.25); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .avail-banner-text { font-size: 0.85rem; color: #fff; }
     .avail-banner-text span { color: var(--ignite); font-weight: 600; }
@@ -101,6 +108,8 @@
     <div id="dash-content" style="display:none;">
       <div class="dash-greeting" id="greeting">Welcome back!</div>
       <div class="dash-sub" id="dash-sub">--</div>
+
+      <div id="notifications-container"></div>
 
       <div class="avail-banner" id="avail-banner" style="display:none;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -186,6 +195,31 @@
     await logOut()
   }
 
+  async function loadNotifications(playerId) {
+    const { data: notifs } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('player_id', playerId)
+      .eq('read', false)
+      .order('created_at', { ascending: false })
+      .limit(5)
+
+    const container = document.getElementById('notifications-container')
+    if (!notifs || notifs.length === 0) { container.innerHTML = ''; return }
+
+    container.innerHTML = notifs.map(n => `
+      <div class="notif-banner ${n.type}" id="notif-${n.id}">
+        <span class="notif-text">${n.message}</span>
+        <button class="notif-dismiss" onclick="dismissNotif('${n.id}')">×</button>
+      </div>`).join('')
+  }
+
+  window.dismissNotif = async function(id) {
+    await supabase.from('notifications').update({ read: true }).eq('id', id)
+    const el = document.getElementById('notif-' + id)
+    if (el) el.remove()
+  }
+
   async function init() {
     const session = await requireAuth()
     if (!session) return
@@ -219,6 +253,9 @@
 
       document.getElementById('loading').style.display = 'none'
       document.getElementById('dash-content').style.display = 'block'
+
+      // Load notifications
+      await loadNotifications(player.id)
 
       // Check availability
       const { data: avail } = await supabase
