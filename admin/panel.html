@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Arclo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-nav { background: #080810; border-bottom: 0.5px solid var(--slate-light); padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+    .admin-nav-logo { display: flex; align-items: center; gap: 8px; }
+    .admin-nav-logo-text { font-size: 1rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; }
+    .admin-nav-logo-text span { color: var(--volt); }
+    .admin-badge { font-size: 0.65rem; font-weight: 600; color: var(--midnight); background: var(--volt); padding: 2px 8px; border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .admin-layout { display: grid; grid-template-columns: 200px 1fr; min-height: calc(100vh - 52px); }
+    .admin-sidebar { background: #080810; border-right: 0.5px solid var(--slate-light); padding: 16px 10px; }
+    .admin-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius); font-size: 0.85rem; color: var(--gray); cursor: pointer; margin-bottom: 2px; transition: all 0.12s; border: none; background: none; font-family: var(--font); width: 100%; text-align: left; }
+    .admin-nav-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .admin-nav-item.active { background: rgba(232,255,71,0.08); color: var(--volt); }
+    .admin-nav-item svg { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; }
+    .admin-main { padding: 28px; overflow-y: auto; }
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+    .section-title { font-size: 1.2rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; margin-bottom: 20px; }
+    .admin-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 16px; }
+    .admin-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+    .stat-card { background: var(--slate); border-radius: var(--radius); padding: 14px; }
+    .stat-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .stat-val { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: -0.03em; line-height: 1; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
+    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
+    .form-input:focus { border-color: rgba(232,255,71,0.4); }
+    .form-select { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .btn-admin { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+    .btn-admin:hover { background: #d4eb3f; }
+    .btn-admin:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-danger { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
+    .btn-danger:hover { background: rgba(248,113,113,0.1); }
+    .success-toast { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #4ade80; margin-bottom: 14px; display: none; }
+    .error-toast { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #f87171; margin-bottom: 14px; display: none; }
+    .players-table { width: 100%; border-collapse: collapse; }
+    .players-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
+    .players-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.04); font-size: 0.85rem; color: #fff; vertical-align: middle; }
+    .players-table tr:last-child td { border-bottom: none; }
+    .loading { color: var(--gray); font-size: 0.85rem; padding: 20px 0; }
+    .divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 1.5rem 0; }
+  </style>
+</head>
+<body>
+
+<div class="admin-nav">
+  <div class="admin-nav-logo">
+    <svg width="18" height="18" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+    <span class="admin-nav-logo-text">arc<span>lo</span></span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a href="../index.html" style="font-size:0.8rem;color:var(--gray);">View site</a>
+    <button onclick="handleLogout()" class="btn btn-ghost btn-sm">Log out</button>
+  </div>
+</div>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <button class="admin-nav-item active" onclick="showSection('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button class="admin-nav-item" onclick="showSection('players')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Players
+    </button>
+    <button class="admin-nav-item" onclick="showSection('matches')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
+      Matches
+    </button>
+    <button class="admin-nav-item" onclick="showSection('results')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Enter results
+    </button>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- Overview -->
+    <div class="admin-section active" id="section-overview">
+      <div class="section-title">Overview</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total players</div><div class="stat-val" id="stat-total">--</div></div>
+        <div class="stat-card"><div class="stat-label">Oceania</div><div class="stat-val" id="stat-oce">--</div></div>
+        <div class="stat-card"><div class="stat-label">North America</div><div class="stat-val" id="stat-na">--</div></div>
+        <div class="stat-card"><div class="stat-label">Europe</div><div class="stat-val" id="stat-eu">--</div></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Recent signups</div>
+        <div id="recent-signups"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- Players -->
+    <div class="admin-section" id="section-players">
+      <div class="section-title">Players</div>
+      <div class="admin-card">
+        <div class="admin-card-title">All players</div>
+        <div id="players-list"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- Schedule match -->
+    <div class="admin-section" id="section-matches">
+      <div class="section-title">Schedule a match</div>
+      <div class="admin-card">
+        <div class="success-toast" id="match-success"></div>
+        <div class="error-toast" id="match-error"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Region</label>
+            <select class="form-select" id="match-region" onchange="loadPlayersForRegion()">
+              <option value="oce">Oceania</option>
+              <option value="na">North America</option>
+              <option value="eu">Europe</option>
+              <option value="sea">Southeast Asia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Division</label>
+            <select class="form-select" id="match-division">
+              <option value="bronze">Bronze</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Player 1</label>
+            <select class="form-select" id="match-player1"><option value="">Select player</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Player 2</label>
+            <select class="form-select" id="match-player2"><option value="">Select player</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date and time</label>
+            <input class="form-input" type="datetime-local" id="match-time">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Week</label>
+            <select class="form-select" id="match-week">
+              <option value="1">Week 1</option>
+              <option value="2">Week 2</option>
+              <option value="3">Week 3</option>
+              <option value="4">Week 4</option>
+              <option value="5">Week 5</option>
+              <option value="6">Week 6</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-admin" onclick="scheduleMatch()">Schedule match</button>
+      </div>
+    </div>
+
+    <!-- Enter results -->
+    <div class="admin-section" id="section-results">
+      <div class="section-title">Enter match results</div>
+      <div class="admin-card">
+        <div class="success-toast" id="result-success"></div>
+        <div class="error-toast" id="result-error"></div>
+        <div class="form-group">
+          <label class="form-label">Select match</label>
+          <select class="form-select" id="result-match" onchange="loadMatchPlayers()">
+            <option value="">Select a scheduled match</option>
+          </select>
+        </div>
+        <div id="result-players" style="display:none;">
+          <hr class="divider">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" id="result-p1-label">Player 1 score</label>
+              <input class="form-input" type="number" id="result-p1-score" min="0" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" id="result-p2-label">Player 2 score</label>
+              <input class="form-input" type="number" id="result-p2-score" min="0" placeholder="0">
+            </div>
+          </div>
+          <button class="btn-admin" onclick="submitResult()">Submit result</button>
+        </div>
+        <div id="no-matches" style="display:none;color:var(--gray);font-size:0.85rem;padding:8px 0;">No scheduled matches yet. Schedule one first.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script type="module">
+  import { supabase } from '../js/auth.js'
+
+  const regions = { oce: 'Oceania', na: 'North America', eu: 'Europe', sea: 'Southeast Asia' }
+  let scheduledMatches = []
+  let regionPlayers = []
+
+  async function requireAdmin() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { window.location.href = 'index.html'; return false }
+    const { data } = await supabase.from('admins').select('id').eq('id', session.user.id).single()
+    if (!data) { window.location.href = 'index.html'; return false }
+    return true
+  }
+
+  window.handleLogout = async function() {
+    await supabase.auth.signOut()
+    window.location.href = 'index.html'
+  }
+
+  window.showSection = function(name) {
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'))
+    document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'))
+    document.getElementById('section-' + name).classList.add('active')
+    event.currentTarget.classList.add('active')
+    if (name === 'overview') loadOverview()
+    if (name === 'players') loadPlayers()
+    if (name === 'results') loadScheduledMatches()
+  }
+
+  async function loadOverview() {
+    const { data: players } = await supabase.from('players').select('region')
+    if (!players) return
+    document.getElementById('stat-total').textContent = players.length
+    document.getElementById('stat-oce').textContent = players.filter(p => p.region === 'oce').length
+    document.getElementById('stat-na').textContent = players.filter(p => p.region === 'na').length
+    document.getElementById('stat-eu').textContent = players.filter(p => p.region === 'eu').length
+
+    const { data: recent } = await supabase.from('players').select('username, region, division, created_at').order('created_at', { ascending: false }).limit(5)
+    const el = document.getElementById('recent-signups')
+    if (!recent || recent.length === 0) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
+    el.innerHTML = `<table class="players-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>Joined</th></tr></thead><tbody>${
+      recent.map(p => `<tr><td>${p.username}</td><td>${regions[p.region] || p.region}</td><td>${p.division}</td><td>${new Date(p.created_at).toLocaleDateString('en-GB')}</td></tr>`).join('')
+    }</tbody></table>`
+  }
+
+  async function loadPlayers() {
+    const { data: players } = await supabase.from('players').select('*').order('username', { ascending: true })
+    const el = document.getElementById('players-list')
+    if (!players || players.length === 0) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
+    el.innerHTML = `<table class="players-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>W</th><th>L</th><th>Pts</th><th>Actions</th></tr></thead><tbody>${
+      players.map(p => `<tr>
+        <td>${p.username}</td>
+        <td>${regions[p.region] || p.region}</td>
+        <td>
+          <select onchange="updateDivision('${p.id}', this.value)" style="background:var(--midnight);border:0.5px solid var(--slate-light);border-radius:4px;padding:4px 8px;font-size:0.75rem;color:#fff;cursor:pointer;">
+            <option value="bronze" ${p.division==='bronze'?'selected':''}>Bronze</option>
+            <option value="silver" ${p.division==='silver'?'selected':''}>Silver</option>
+            <option value="gold" ${p.division==='gold'?'selected':''}>Gold</option>
+          </select>
+        </td>
+        <td>${p.wins}</td><td>${p.losses}</td><td>${p.points}</td>
+        <td><button class="btn-danger" onclick="removePlayer('${p.id}', '${p.username}')">Remove</button></td>
+      </tr>`).join('')
+    }</tbody></table>`
+  }
+
+  window.updateDivision = async function(id, division) {
+    await supabase.from('players').update({ division }).eq('id', id)
+  }
+
+  window.removePlayer = async function(id, username) {
+    if (!confirm(`Remove ${username} from Arclo? This cannot be undone.`)) return
+    await supabase.from('players').delete().eq('id', id)
+    loadPlayers()
+  }
+
+  window.loadPlayersForRegion = async function() {
+    const region = document.getElementById('match-region').value
+    const { data: players } = await supabase.from('players').select('id, username').eq('region', region).order('username')
+    regionPlayers = players || []
+    const options = '<option value="">Select player</option>' + regionPlayers.map(p => `<option value="${p.id}">${p.username}</option>`).join('')
+    document.getElementById('match-player1').innerHTML = options
+    document.getElementById('match-player2').innerHTML = options
+  }
+
+  window.scheduleMatch = async function() {
+    const p1 = document.getElementById('match-player1').value
+    const p2 = document.getElementById('match-player2').value
+    const time = document.getElementById('match-time').value
+    const region = document.getElementById('match-region').value
+    const division = document.getElementById('match-division').value
+    const week = document.getElementById('match-week').value
+    const successEl = document.getElementById('match-success')
+    const errorEl = document.getElementById('match-error')
+    successEl.style.display = 'none'
+    errorEl.style.display = 'none'
+
+    if (!p1 || !p2 || !time) { errorEl.textContent = 'Please fill in all fields.'; errorEl.style.display = 'block'; return }
+    if (p1 === p2) { errorEl.textContent = 'Players must be different.'; errorEl.style.display = 'block'; return }
+
+    const { error } = await supabase.from('matches').insert({
+      player_one_id: p1, player_two_id: p2,
+      region, division, week: parseInt(week),
+      scheduled_at: new Date(time).toISOString(),
+      season: 1, status: 'scheduled'
+    })
+
+    if (error) { errorEl.textContent = error.message; errorEl.style.display = 'block'; return }
+    successEl.textContent = 'Match scheduled successfully.'
+    successEl.style.display = 'block'
+  }
+
+  async function loadScheduledMatches() {
+    const { data: matches } = await supabase.from('matches').select(`
+      id, scheduled_at, division, region, week,
+      player_one:player_one_id(username),
+      player_two:player_two_id(username)
+    `).eq('status', 'scheduled').order('scheduled_at')
+
+    scheduledMatches = matches || []
+    const select = document.getElementById('result-match')
+    if (!matches || matches.length === 0) {
+      select.innerHTML = '<option value="">No scheduled matches</option>'
+      document.getElementById('no-matches').style.display = 'block'
+      return
+    }
+    document.getElementById('no-matches').style.display = 'none'
+    select.innerHTML = '<option value="">Select a match</option>' + matches.map(m =>
+      `<option value="${m.id}">${m.player_one.username} vs ${m.player_two.username} — ${m.division} · Wk${m.week} · ${new Date(m.scheduled_at).toLocaleDateString('en-GB')}</option>`
+    ).join('')
+  }
+
+  window.loadMatchPlayers = function() {
+    const id = document.getElementById('result-match').value
+    const match = scheduledMatches.find(m => m.id === id)
+    if (!match) { document.getElementById('result-players').style.display = 'none'; return }
+    document.getElementById('result-p1-label').textContent = `${match.player_one.username} score`
+    document.getElementById('result-p2-label').textContent = `${match.player_two.username} score`
+    document.getElementById('result-players').style.display = 'block'
+  }
+
+  window.submitResult = async function() {
+    const matchId = document.getElementById('result-match').value
+    const p1Score = parseInt(document.getElementById('result-p1-score').value)
+    const p2Score = parseInt(document.getElementById('result-p2-score').value)
+    const successEl = document.getElementById('result-success')
+    const errorEl = document.getElementById('result-error')
+    successEl.style.display = 'none'
+    errorEl.style.display = 'none'
+
+    if (!matchId || isNaN(p1Score) || isNaN(p2Score)) { errorEl.textContent = 'Please fill in all fields.'; errorEl.style.display = 'block'; return }
+
+    const match = scheduledMatches.find(m => m.id === matchId)
+    const winnerId = p1Score > p2Score ? match.player_one_id : p2Score > p1Score ? match.player_two_id : null
+
+    const { error } = await supabase.from('matches').update({
+      player_one_score: p1Score, player_two_score: p2Score,
+      winner_id: winnerId, status: 'completed'
+    }).eq('id', matchId)
+
+    if (error) { errorEl.textContent = error.message; errorEl.style.display = 'block'; return }
+
+    // Update player stats
+    const p1Win = p1Score > p2Score
+    await supabase.from('players').update({
+      wins: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 1 : 0 }),
+      losses: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 0 : 1 }),
+      points: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 3 : 0 })
+    }).eq('id', match.player_one_id)
+
+    successEl.textContent = 'Result submitted. Leaderboard updated.'
+    successEl.style.display = 'block'
+    loadScheduledMatches()
+  }
+
+  async function init() {
+    const ok = await requireAdmin()
+    if (!ok) return
+    loadOverview()
+    loadPlayersForRegion()
+  }
+
+  init()
+</script>
+
+</body>
+</html>
