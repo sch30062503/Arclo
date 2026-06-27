@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set password — Arclo Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #080810; }
+    .admin-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 360px; }
+    .admin-logo { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 8px; }
+    .admin-logo-text { font-size: 1.2rem; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
+    .admin-logo-text span { color: var(--volt); }
+    .admin-badge { text-align: center; font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 28px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
+    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.9rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
+    .form-input:focus { border-color: rgba(232,255,71,0.4); }
+    .form-input::placeholder { color: var(--gray-dim); }
+    .btn-submit { width: 100%; background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: var(--font); margin-top: 8px; }
+    .btn-submit:hover { background: #d4eb3f; }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-msg { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #f87171; margin-bottom: 14px; display: none; }
+    .success-msg { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #4ade80; margin-bottom: 14px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="admin-card">
+  <div class="admin-logo">
+    <svg width="20" height="20" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+    <span class="admin-logo-text">arc<span>lo</span></span>
+  </div>
+  <div class="admin-badge">Set your password</div>
+
+  <div class="error-msg" id="error-msg"></div>
+  <div class="success-msg" id="success-msg"></div>
+
+  <div class="form-group">
+    <label class="form-label">New password</label>
+    <input class="form-input" type="password" id="password" placeholder="Min. 8 characters">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Confirm password</label>
+    <input class="form-input" type="password" id="confirm" placeholder="Repeat password">
+  </div>
+
+  <button class="btn-submit" id="submit-btn" onclick="handleReset()">Set password</button>
+</div>
+
+<script type="module">
+  import { supabase } from '../js/auth.js'
+
+  window.handleReset = async function() {
+    const password = document.getElementById('password').value
+    const confirm = document.getElementById('confirm').value
+    const errorEl = document.getElementById('error-msg')
+    const successEl = document.getElementById('success-msg')
+    const btn = document.getElementById('submit-btn')
+
+    errorEl.style.display = 'none'
+    successEl.style.display = 'none'
+
+    if (!password || !confirm) {
+      errorEl.textContent = 'Please fill in both fields.'
+      errorEl.style.display = 'block'
+      return
+    }
+    if (password.length < 8) {
+      errorEl.textContent = 'Password must be at least 8 characters.'
+      errorEl.style.display = 'block'
+      return
+    }
+    if (password !== confirm) {
+      errorEl.textContent = 'Passwords do not match.'
+      errorEl.style.display = 'block'
+      return
+    }
+
+    btn.disabled = true
+    btn.textContent = 'Setting password...'
+
+    const { error } = await supabase.auth.updateUser({ password })
+
+    if (error) {
+      errorEl.textContent = error.message
+      errorEl.style.display = 'block'
+      btn.disabled = false
+      btn.textContent = 'Set password'
+      return
+    }
+
+    successEl.textContent = 'Password set. Redirecting to admin...'
+    successEl.style.display = 'block'
+    setTimeout(() => { window.location.href = 'index.html' }, 1500)
+  }
+</script>
+
+</body>
+</html>
