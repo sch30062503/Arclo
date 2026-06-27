@@ -619,22 +619,63 @@
     }
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting...' }
     const isP1 = match.player_one_id === player.id
-    const { error } = await supabase.from('match_results').insert({ match_id: match.id, submitted_by: player.id, my_score: myScore, opponent_score: oppScore })
-    if (error) { showErr('result-err', 'Could not submit. Try again.'); if (btn) { btn.disabled = false; btn.textContent = 'Submit result' }; return }
-    await supabase.from('matches').update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }).eq('id', match.id)
+
+    // Insert result
+    const { error: resultError } = await supabase.from('match_results').insert({
+      match_id: match.id, submitted_by: player.id, my_score: myScore, opponent_score: oppScore
+    })
+    if (resultError) {
+      showErr('result-err', resultError.code === '23505' ? 'You have already submitted a result.' : 'Could not submit. Try again.')
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit result' }
+      return
+    }
+
+    // Mark as submitted
+    const { error: flagError } = await supabase.from('matches')
+      .update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true })
+      .eq('id', match.id)
+    if (flagError) console.error('Flag error:', flagError)
+
+    // Check if both submitted
     const { data: results } = await supabase.from('match_results').select('*').eq('match_id', match.id)
     if (results && results.length === 2) {
       const r1 = results[0], r2 = results[1]
-      if (r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score) {
-        const winnerId = myScore > oppScore ? player.id : myScore < oppScore ? (isP1 ? match.player_two_id : match.player_one_id) : null
-        await supabase.from('matches').update({ status: 'completed', winner_id: winnerId, draw_reason: winnerId ? null : 'score' }).eq('id', match.id)
+      const scoresMatch = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
+
+      if (scoresMatch) {
+        const winnerId = myScore > oppScore ? player.id
+          : myScore < oppScore ? (isP1 ? match.player_two_id : match.player_one_id)
+          : null
+        const { error: completeError } = await supabase.from('matches').update({
+          status: 'completed', winner_id: winnerId, draw_reason: winnerId ? null : 'score'
+        }).eq('id', match.id)
+        if (completeError) console.error('Complete error:', completeError)
+
+        // Update points
+        if (winnerId) {
+          await supabase.rpc('increment_wins', { pid: winnerId })
+          await supabase.rpc('increment_points', { pid: winnerId, amt: 3 })
+          const loserId = winnerId === match.player_one_id ? match.player_two_id : match.player_one_id
+          await supabase.rpc('increment_losses', { pid: loserId })
+        } else {
+          await supabase.rpc('increment_points', { pid: match.player_one_id, amt: 1 })
+          await supabase.rpc('increment_points', { pid: match.player_two_id, amt: 1 })
+        }
       } else {
-        await supabase.from('matches').update({ status: 'disputed' }).eq('id', match.id)
-        await supabase.from('disputes').insert({ match_id: match.id, player_one_claim: r1, player_two_claim: r2 })
+        const { error: disputeError } = await supabase.from('matches')
+          .update({ status: 'disputed' }).eq('id', match.id)
+        if (disputeError) console.error('Dispute error:', disputeError)
+
+        const { error: disputeInsertError } = await supabase.from('disputes').insert({
+          match_id: match.id, player_one_claim: r1, player_two_claim: r2
+        })
+        if (disputeInsertError) console.error('Dispute insert error:', disputeInsertError)
       }
     }
+
     match.p1_result_submitted = isP1 ? true : match.p1_result_submitted
     match.p2_result_submitted = !isP1 ? true : match.p2_result_submitted
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit result' }
     await render()
   }
 
