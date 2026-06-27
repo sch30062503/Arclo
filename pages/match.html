@@ -809,7 +809,7 @@
       .select(`*, player_one:player_one_id(id,username,wins,losses,points,division), player_two:player_two_id(id,username,wins,losses,points,division)`)
       .or(`player_one_id.eq.${player.id},player_two_id.eq.${player.id}`)
       .eq('season', SEASON).eq('week', WEEK)
-      .not('status', 'in', '("cancelled")')
+      .not('status', 'in', '("cancelled","completed")')
       .limit(1)
 
     match = matches && matches.length ? matches[0] : null
