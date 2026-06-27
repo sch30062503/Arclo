@@ -104,35 +104,46 @@
 
     <div class="match-card">
       <div class="match-card-title">Your availability this week</div>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Pick dates and times you can play. Your opponent sees your slots so you can agree a time.</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Select a date and set a window you are available to play. Your opponent sees these so you can agree a time.</p>
       <div class="toast toast-success" id="avail-success"></div>
       <div class="toast toast-error" id="avail-error"></div>
       <div id="avail-slots"></div>
 
       <div class="cal-picker">
         <div class="cal-header">
-          <button class="cal-nav" onclick="prevMonth()">‹</button>
+          <button class="cal-nav" onclick="prevMonth()">&#8249;</button>
           <span class="cal-month" id="cal-month-label">--</span>
-          <button class="cal-nav" onclick="nextMonth()">›</button>
+          <button class="cal-nav" onclick="nextMonth()">&#8250;</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
         <div class="selected-date-display" id="selected-date-display"></div>
-        <div class="time-row">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <div>
-            <div class="time-label">Hour (24h)</div>
-            <select class="time-select" id="time-hour"></select>
+            <div class="time-label">From</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <select class="time-select" id="time-from-hour"></select>
+              <select class="time-select" id="time-from-min">
+                <option value="00">:00</option>
+                <option value="15">:15</option>
+                <option value="30">:30</option>
+                <option value="45">:45</option>
+              </select>
+            </div>
           </div>
           <div>
-            <div class="time-label">Minute</div>
-            <select class="time-select" id="time-minute">
-              <option value="00">:00</option>
-              <option value="15">:15</option>
-              <option value="30">:30</option>
-              <option value="45">:45</option>
-            </select>
+            <div class="time-label">To</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <select class="time-select" id="time-to-hour"></select>
+              <select class="time-select" id="time-to-min">
+                <option value="00">:00</option>
+                <option value="15">:15</option>
+                <option value="30">:30</option>
+                <option value="45">:45</option>
+              </select>
+            </div>
           </div>
-          <button class="btn-volt" onclick="addSlot()">Add slot</button>
         </div>
+        <button class="btn-volt" onclick="addSlot()" style="width:100%;">Add availability window</button>
       </div>
 
       <div id="opponent-avail" style="margin-top:4px;"></div>
@@ -177,22 +188,33 @@
         </div>
         <div class="cal-grid" id="cal-grid-2"></div>
         <div class="selected-date-display" id="selected-date-display-2"></div>
-        <div class="time-row">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <div>
-            <div class="time-label">Hour (24h)</div>
-            <select class="time-select" id="time-hour-2"></select>
+            <div class="time-label">From</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <select class="time-select" id="time-from-hour-2"></select>
+              <select class="time-select" id="time-from-min-2">
+                <option value="00">:00</option>
+                <option value="15">:15</option>
+                <option value="30">:30</option>
+                <option value="45">:45</option>
+              </select>
+            </div>
           </div>
           <div>
-            <div class="time-label">Minute</div>
-            <select class="time-select" id="time-minute-2">
-              <option value="00">:00</option>
-              <option value="15">:15</option>
-              <option value="30">:30</option>
-              <option value="45">:45</option>
-            </select>
+            <div class="time-label">To</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <select class="time-select" id="time-to-hour-2"></select>
+              <select class="time-select" id="time-to-min-2">
+                <option value="00">:00</option>
+                <option value="15">:15</option>
+                <option value="30">:30</option>
+                <option value="45">:45</option>
+              </select>
+            </div>
           </div>
-          <button class="btn-volt" onclick="addSlot2()">Add slot</button>
         </div>
+        <button class="btn-volt" onclick="addSlot2()" style="width:100%;">Add availability window</button>
       </div>
     </div>
   </div>
@@ -215,7 +237,7 @@
 
   window.handleLogout = async () => { await logOut() }
 
-  function buildHours(selectId) {
+  function buildHours(selectId, defaultVal) {
     const sel = document.getElementById(selectId)
     if (!sel) return
     for (let h = 0; h < 24; h++) {
@@ -224,7 +246,7 @@
       opt.textContent = String(h).padStart(2,'0') + ':00'
       sel.appendChild(opt)
     }
-    sel.value = '18'
+    sel.value = String(defaultVal).padStart(2,'0')
   }
 
   function renderCal(gridId, labelId, displayId) {
@@ -288,8 +310,10 @@
   }
 
   async function init() {
-    buildHours('time-hour')
-    buildHours('time-hour-2')
+    buildHours('time-from-hour', 18)
+    buildHours('time-to-hour', 21)
+    buildHours('time-from-hour-2', 18)
+    buildHours('time-to-hour-2', 21)
     renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
     renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
 
@@ -359,14 +383,17 @@
     const el = document.getElementById(elId)
     if (!el) return
     if (mySlots.length === 0) {
-      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);margin-bottom:10px;">No slots added yet.</p>'
+      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);margin-bottom:10px;">No availability added yet.</p>'
       return
     }
-    el.innerHTML = mySlots.map(s => `
-      <div class="avail-slot">
-        <span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+    el.innerHTML = mySlots.map(s => {
+      const from = new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+      const to = s.slot_end ? new Date(s.slot_end).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) : ''
+      return `<div class="avail-slot">
+        <span>${from}${to ? ' – ' + to : ''}</span>
         <button class="avail-slot-remove" onclick="removeSlot('${s.id}')">×</button>
-      </div>`).join('')
+      </div>`
+    }).join('')
   }
 
   async function loadOpponentAvailability(oppId) {
@@ -380,36 +407,48 @@
       return
     }
     el.innerHTML = `<p style="font-size:0.75rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Opponent availability</p>
-      ${slots.map(s => `<div class="avail-slot"><span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</span></div>`).join('')}`
+      ${slots.map(s => {
+        const from = new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+        const to = s.slot_end ? new Date(s.slot_end).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) : ''
+        return '<div class="avail-slot"><span>' + from + (to ? ' – ' + to : '') + '</span></div>'
+      }).join('')}`
   }
 
-  async function doAddSlot(hourId, minId, successId, errorId) {
+  async function doAddSlot(fromHourId, fromMinId, toHourId, toMinId, successId, errorId) {
     const successEl = document.getElementById(successId)
     const errorEl = document.getElementById(errorId)
     successEl.style.display = 'none'
     errorEl.style.display = 'none'
 
     if (!selectedDate) { errorEl.textContent = 'Please select a date on the calendar first.'; errorEl.style.display = 'block'; return }
-    if (mySlots.length >= 5) { errorEl.textContent = 'Maximum 5 slots per week.'; errorEl.style.display = 'block'; return }
+    if (mySlots.length >= 5) { errorEl.textContent = 'Maximum 5 windows per week.'; errorEl.style.display = 'block'; return }
 
-    const hour = document.getElementById(hourId).value
-    const minute = document.getElementById(minId).value
-    const slotDate = new Date(selectedDate)
-    slotDate.setHours(parseInt(hour), parseInt(minute), 0, 0)
+    const fromHour = parseInt(document.getElementById(fromHourId).value)
+    const fromMin = parseInt(document.getElementById(fromMinId).value)
+    const toHour = parseInt(document.getElementById(toHourId).value)
+    const toMin = parseInt(document.getElementById(toMinId).value)
+
+    const slotFrom = new Date(selectedDate)
+    slotFrom.setHours(fromHour, fromMin, 0, 0)
+    const slotTo = new Date(selectedDate)
+    slotTo.setHours(toHour, toMin, 0, 0)
+
+    if (slotTo <= slotFrom) { errorEl.textContent = 'End time must be after start time.'; errorEl.style.display = 'block'; return }
 
     const { error } = await supabase.from('availability').insert({
       player_id: currentPlayer.id, week: CURRENT_WEEK,
-      season: CURRENT_SEASON, slot_time: slotDate.toISOString()
+      season: CURRENT_SEASON, slot_time: slotFrom.toISOString(), slot_end: slotTo.toISOString()
     })
 
-    if (error) { errorEl.textContent = 'Could not add slot. Try again.'; errorEl.style.display = 'block'; return }
-    successEl.textContent = `Slot added: ${slotDate.toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}`
+    if (error) { errorEl.textContent = 'Could not add window. Try again.'; errorEl.style.display = 'block'; return }
+    const label = slotFrom.toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }) + ' – ' + slotTo.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
+    successEl.textContent = 'Window added: ' + label
     successEl.style.display = 'block'
     await loadMyAvailability()
   }
 
-  window.addSlot = () => doAddSlot('time-hour', 'time-minute', 'avail-success', 'avail-error')
-  window.addSlot2 = () => doAddSlot('time-hour-2', 'time-minute-2', 'avail-success-2', 'avail-error-2')
+  window.addSlot = () => doAddSlot('time-from-hour', 'time-from-min', 'time-to-hour', 'time-to-min', 'avail-success', 'avail-error')
+  window.addSlot2 = () => doAddSlot('time-from-hour-2', 'time-from-min-2', 'time-to-hour-2', 'time-to-min-2', 'avail-success-2', 'avail-error-2')
 
   window.removeSlot = async function(id) {
     await supabase.from('availability').delete().eq('id', id)
