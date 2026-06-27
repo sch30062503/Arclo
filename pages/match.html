@@ -256,6 +256,39 @@
 
   function renderAgreedState(me, opp, alreadySubmitted) {
     const timeStr = new Date(match.agreed_time).toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: false })
+
+    let resultSection = ''
+    if (match.status === 'disputed') {
+      resultSection = `<div class="info-banner warn">Your result is in dispute — admin is reviewing and will make the final decision.</div>`
+    } else if (match.status === 'completed') {
+      const won = match.winner_id === player.id
+      const draw = !match.winner_id
+      resultSection = draw
+        ? `<div class="info-banner info">Match ended in a draw — 1 point each.</div>`
+        : won
+          ? `<div class="info-banner success">You won this match — 3 points awarded.</div>`
+          : `<div class="info-banner warn" style="color:var(--gray);">You lost this match — better luck next week.</div>`
+    } else if (alreadySubmitted) {
+      resultSection = `<div class="info-banner info">Result submitted — waiting for your opponent to confirm.</div>`
+    } else {
+      resultSection = `<div id="result-form">
+        <div class="section-label">Submit your result</div>
+        <div class="outcome-grid">
+          <button class="outcome-btn ob-win" onclick="pickOutcome('win')">Win</button>
+          <button class="outcome-btn ob-loss" onclick="pickOutcome('loss')">Loss</button>
+          <button class="outcome-btn ob-draw" onclick="pickOutcome('draw')">Draw</button>
+        </div>
+        <div id="score-section" style="display:none;">
+          <div class="score-pair">
+            <div class="score-box"><div class="score-lbl" id="my-lbl">${me.username} (you)</div><input class="score-input-inner" type="number" id="my-sc" min="0" placeholder="0"></div>
+            <div class="score-box"><div class="score-lbl" id="opp-lbl">${opp.username}</div><input class="score-input-inner" type="number" id="opp-sc" min="0" placeholder="0"></div>
+          </div>
+        </div>
+        <div class="toast-err" id="result-err"></div>
+        <button class="btn-volt btn-full" id="submit-btn" onclick="submitResult()" style="display:none;">Submit result</button>
+      </div>`
+    }
+
     return `
       <p style="font-size:0.8rem;font-weight:600;color:var(--volt);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;">Your match this week</p>
       <div class="state-card">
@@ -269,25 +302,7 @@
           </span>
         </div>
         <div class="divider"></div>
-        ${alreadySubmitted
-          ? `<div class="info-banner success">Result submitted — waiting for your opponent to confirm.</div>`
-          : `<div id="result-form">
-              <div class="section-label">Submit your result</div>
-              <div class="outcome-grid">
-                <button class="outcome-btn ob-win" onclick="pickOutcome('win')">Win</button>
-                <button class="outcome-btn ob-loss" onclick="pickOutcome('loss')">Loss</button>
-                <button class="outcome-btn ob-draw" onclick="pickOutcome('draw')">Draw</button>
-              </div>
-              <div id="score-section" style="display:none;">
-                <div class="score-pair">
-                  <div class="score-box"><div class="score-lbl" id="my-lbl">${me.username} (you)</div><input class="score-input-inner" type="number" id="my-sc" min="0" placeholder="0"></div>
-                  <div class="score-box"><div class="score-lbl" id="opp-lbl">${opp.username}</div><input class="score-input-inner" type="number" id="opp-sc" min="0" placeholder="0"></div>
-                </div>
-              </div>
-              <div class="toast-err" id="result-err"></div>
-              <button class="btn-volt btn-full" id="submit-btn" onclick="submitResult()" style="display:none;">Submit result</button>
-            </div>`
-        }
+        ${resultSection}
       </div>`
   }
 
@@ -695,7 +710,7 @@
       .select(`*, player_one:player_one_id(id,username,wins,losses,points,division), player_two:player_two_id(id,username,wins,losses,points,division)`)
       .or(`player_one_id.eq.${player.id},player_two_id.eq.${player.id}`)
       .eq('season', SEASON).eq('week', WEEK)
-      .not('status', 'in', '("completed","cancelled")')
+      .not('status', 'in', '("cancelled")')
       .limit(1)
 
     match = matches && matches.length ? matches[0] : null
