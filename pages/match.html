@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .match-wrap { max-width: 680px; margin: 48px auto; padding: 0 24px; }
+    .match-wrap { max-width: 720px; margin: 48px auto; padding: 0 24px; }
     .match-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 16px; }
     .match-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
     .versus { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
@@ -20,6 +20,7 @@
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--gray); }
     .info-val { color: #fff; font-weight: 500; }
+    /* Availability */
     .avail-slot { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--gray); margin-bottom: 6px; }
     .avail-slot-remove { background: none; border: none; color: #f87171; cursor: pointer; font-size: 1.1rem; padding: 0 4px; }
     /* Calendar */
@@ -33,12 +34,47 @@
     .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.8rem; color: var(--gray); cursor: pointer; border: 0.5px solid transparent; transition: all 0.12s; }
     .cal-day:hover { background: var(--slate); color: #fff; }
     .cal-day.today { border-color: rgba(232,255,71,0.4); color: var(--volt); }
-    .cal-day.selected { background: var(--volt); color: var(--midnight); font-weight: 600; border-color: transparent; }
+    .cal-day.selected { background: var(--volt); color: var(--midnight); font-weight: 600; }
     .cal-day.empty, .cal-day.past { opacity: 0.2; cursor: default; pointer-events: none; }
-    .time-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
     .time-label { font-size: 0.75rem; color: var(--gray); margin-bottom: 5px; }
     .time-select { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 10px; font-size: 0.85rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; width: 100%; }
-    .time-select:focus { border-color: rgba(232,255,71,0.4); }
+    .selected-date-display { font-size: 0.85rem; color: var(--volt); font-weight: 500; margin-bottom: 10px; min-height: 20px; }
+    /* Overlap slots */
+    .overlap-section { margin-top: 16px; }
+    .overlap-title { font-size: 0.75rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .overlap-day { margin-bottom: 12px; }
+    .overlap-day-label { font-size: 0.8rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
+    .slot-btn { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px; text-align: center; font-size: 0.8rem; color: var(--gray); cursor: pointer; transition: all 0.12s; font-family: var(--font); }
+    .slot-btn:hover { background: rgba(55,138,221,0.15); border-color: rgba(55,138,221,0.4); color: #fff; }
+    .slot-btn.proposed { background: rgba(55,138,221,0.15); border-color: rgba(55,138,221,0.4); color: #378ADD; }
+    .no-overlap-banner { background: rgba(255,79,56,0.08); border: 0.5px solid rgba(255,79,56,0.25); border-radius: var(--radius); padding: 12px 14px; font-size: 0.85rem; color: #f87171; margin-top: 12px; }
+    /* Proposal card */
+    .proposal-card { background: rgba(55,138,221,0.08); border: 0.5px solid rgba(55,138,221,0.3); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 16px; }
+    .proposal-card-title { font-size: 0.75rem; font-weight: 600; color: #378ADD; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .proposal-time-display { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 14px; }
+    .proposal-from { font-size: 0.8rem; color: var(--gray); margin-bottom: 14px; }
+    .proposal-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-accept { background: #4ade80; color: #0d0d0f; border: none; border-radius: var(--radius); padding: 8px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
+    .btn-accept:hover { background: #22c55e; }
+    .btn-counter { background: transparent; color: #378ADD; border: 0.5px solid rgba(55,138,221,0.4); border-radius: var(--radius); padding: 8px 18px; font-size: 0.875rem; cursor: pointer; font-family: var(--font); }
+    .btn-counter:hover { background: rgba(55,138,221,0.1); }
+    /* Chat */
+    .chat-wrap { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+    .chat-header-bar { padding: 12px 16px; border-bottom: 0.5px solid var(--slate-light); font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
+    .chat-messages { max-height: 280px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-msg-row { display: flex; flex-direction: column; gap: 2px; }
+    .chat-msg-row.mine { align-items: flex-end; }
+    .chat-msg-row.theirs { align-items: flex-start; }
+    .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
+    .chat-bubble.mine { background: rgba(232,255,71,0.12); color: #fff; border-bottom-right-radius: 4px; }
+    .chat-bubble.theirs { background: var(--midnight); color: #fff; border-bottom-left-radius: 4px; }
+    .chat-sender { font-size: 0.7rem; color: var(--gray); padding: 0 4px; }
+    .sys-msg { text-align: center; font-size: 0.78rem; color: var(--gray); padding: 4px 0; font-style: italic; }
+    .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 0.5px solid var(--slate-light); }
+    .chat-input-row input { flex: 1; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; font-size: 0.85rem; color: #fff; outline: none; font-family: var(--font); }
+    .chat-input-row input:focus { border-color: rgba(232,255,71,0.4); }
+    /* Buttons */
     .btn-volt { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); white-space: nowrap; }
     .btn-volt:hover { background: #d4eb3f; }
     .btn-volt:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -48,35 +84,9 @@
     .toast-success { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); color: #4ade80; }
     .toast-error { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); color: #f87171; }
     .empty-state { text-align: center; padding: 60px 24px; color: var(--gray); }
-    .chat-wrap { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
-    .chat-header-bar { padding: 12px 16px; border-bottom: 0.5px solid var(--slate-light); font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
-    .chat-messages { max-height: 320px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-thumb { background: var(--slate-light); border-radius: 2px; }
-    .chat-msg-row { display: flex; flex-direction: column; gap: 2px; }
-    .chat-msg-row.mine { align-items: flex-end; }
-    .chat-msg-row.theirs { align-items: flex-start; }
-    .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
-    .chat-bubble.mine { background: rgba(232,255,71,0.12); color: #fff; border-bottom-right-radius: 4px; }
-    .chat-bubble.theirs { background: var(--midnight); color: #fff; border-bottom-left-radius: 4px; }
-    .chat-sender { font-size: 0.7rem; color: var(--gray); padding: 0 4px; }
-    .proposal-bubble { background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.3); border-radius: 10px; padding: 10px 14px; max-width: 90%; }
-    .proposal-bubble.mine { align-self: flex-end; }
-    .proposal-label { font-size: 0.7rem; font-weight: 600; color: #378ADD; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-    .proposal-time { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
-    .proposal-actions { display: flex; gap: 6px; }
-    .btn-confirm { background: #4ade80; color: #0d0d0f; border: none; border-radius: var(--radius); padding: 5px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
-    .btn-decline { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 5px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
-    .confirmed-bubble { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; color: #4ade80; }
-    .declined-bubble { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; color: #f87171; }
-    .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 0.5px solid var(--slate-light); }
-    .chat-input-row input { flex: 1; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; font-size: 0.85rem; color: #fff; outline: none; font-family: var(--font); }
-    .chat-input-row input:focus { border-color: rgba(232,255,71,0.4); }
-    .opp-slot-propose { background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.2); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: #fff; margin-bottom: 6px; }
-    .btn-propose { background: #378ADD; color: #fff; border: none; border-radius: var(--radius); padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font); white-space: nowrap; }
-    .btn-propose:hover { background: #185FA5; }
     .empty-state h2 { color: #fff; margin-bottom: 8px; }
-    .selected-date-display { font-size: 0.85rem; color: var(--volt); font-weight: 500; margin-bottom: 10px; min-height: 20px; }
+    .agreed-time-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; color: #4ade80; font-weight: 500; }
+    .warning-banner { background: rgba(255,79,56,0.08); border: 0.5px solid rgba(255,79,56,0.25); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; font-size: 0.85rem; color: #f87171; }
   </style>
 </head>
 <body>
@@ -89,11 +99,10 @@
     </a>
   </div>
   <ul class="nav-links">
-    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="dashboard.html" style="color:#fff;font-weight:500;">Dashboard</a></li>
     <li><a href="leaderboard.html">Leaderboard</a></li>
-    <li><a href="live.html">Live</a></li>
   </ul>
-  <div id="nav-actions" class="nav-actions">
+  <div class="nav-actions">
     <button onclick="handleLogout()" class="btn btn-ghost btn-sm">Log out</button>
   </div>
 </nav>
@@ -110,6 +119,22 @@
     <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Your match</p>
     <h1 style="color:#fff;margin-bottom:24px;" id="match-title">--</h1>
 
+    <!-- Pending proposal banner -->
+    <div id="proposal-banner" style="display:none;" class="proposal-card">
+      <div class="proposal-card-title">Proposed match time</div>
+      <div class="proposal-time-display" id="proposal-time-display">--</div>
+      <div class="proposal-from" id="proposal-from">--</div>
+      <div class="proposal-btns">
+        <button class="btn-accept" onclick="acceptProposal()">Accept this time</button>
+        <button class="btn-counter" onclick="showCounterMode()">Counter propose</button>
+      </div>
+    </div>
+
+    <!-- No availability overlap warning -->
+    <div id="no-overlap-warning" style="display:none;" class="warning-banner">
+      No overlapping availability found with your opponent. Please add more time slots or contact admin if you can't resolve this.
+    </div>
+
     <div class="match-card">
       <div class="match-card-title">This week's fixture</div>
       <div class="versus">
@@ -125,17 +150,20 @@
       </div>
       <div class="info-row"><span class="info-label">Division</span><span class="info-val" id="match-division">--</span></div>
       <div class="info-row"><span class="info-label">Week</span><span class="info-val" id="match-week">--</span></div>
-      <div class="info-row"><span class="info-label">Agreed time</span><span class="info-val" id="match-agreed-time">Not yet agreed</span></div>
+      <div class="info-row">
+        <span class="info-label">Agreed time</span>
+        <span class="info-val" id="match-agreed-time">Not yet agreed</span>
+      </div>
       <div class="info-row"><span class="info-label">Result cutoff</span><span class="info-val">Sunday 23:59</span></div>
     </div>
 
+    <!-- Availability -->
     <div class="match-card">
       <div class="match-card-title">Your availability this week</div>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Select a date and set a window you are available to play. Your opponent sees these so you can agree a time.</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Add windows when you can play. The system will find overlap with your opponent and let you propose specific times.</p>
       <div class="toast toast-success" id="avail-success"></div>
       <div class="toast toast-error" id="avail-error"></div>
       <div id="avail-slots"></div>
-
       <div class="cal-picker">
         <div class="cal-header">
           <button class="cal-nav" onclick="prevMonth()">&#8249;</button>
@@ -151,9 +179,7 @@
               <select class="time-select" id="time-from-hour"></select>
               <select class="time-select" id="time-from-min">
                 <option value="00">:00</option>
-                <option value="15">:15</option>
                 <option value="30">:30</option>
-                <option value="45">:45</option>
               </select>
             </div>
           </div>
@@ -163,9 +189,7 @@
               <select class="time-select" id="time-to-hour"></select>
               <select class="time-select" id="time-to-min">
                 <option value="00">:00</option>
-                <option value="15">:15</option>
                 <option value="30">:30</option>
-                <option value="45">:45</option>
               </select>
             </div>
           </div>
@@ -173,13 +197,18 @@
         <button class="btn-volt" onclick="addSlot()" style="width:100%;">Add availability window</button>
       </div>
 
-      <div id="opponent-avail" style="margin-top:16px;"></div>
+      <!-- Overlap slots -->
+      <div class="overlap-section" id="overlap-section" style="display:none;">
+        <div class="overlap-title">Available times to propose — overlap with your opponent</div>
+        <div id="overlap-slots"></div>
+      </div>
     </div>
 
-    <div class="chat-wrap" id="chat-section">
+    <!-- Chat -->
+    <div class="chat-wrap">
       <div class="chat-header-bar">Match chat</div>
       <div class="chat-messages" id="chat-messages">
-        <div style="text-align:center;padding:20px;color:var(--gray);font-size:0.85rem;">Loading messages...</div>
+        <div class="sys-msg">Loading messages...</div>
       </div>
       <div class="chat-input-row">
         <input type="text" id="chat-input" placeholder="Message your opponent..." maxlength="200">
@@ -187,7 +216,8 @@
       </div>
     </div>
 
-    <div class="match-card" id="result-section">
+    <!-- Submit result -->
+    <div class="match-card">
       <div class="match-card-title">Submit your result</div>
       <div class="toast toast-success" id="result-success"></div>
       <div class="toast toast-error" id="result-error"></div>
@@ -211,18 +241,19 @@
     </div>
   </div>
 
+  <!-- No match availability -->
   <div id="avail-no-match" style="display:none;">
     <div class="match-card">
       <div class="match-card-title">Set your availability for this week</div>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Pick the times you can play this week. Fixtures are generated every Monday morning.</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Add the times you can play this week. Fixtures are generated every Monday morning.</p>
       <div class="toast toast-success" id="avail-success-2"></div>
       <div class="toast toast-error" id="avail-error-2"></div>
       <div id="avail-slots-2"></div>
       <div class="cal-picker">
         <div class="cal-header">
-          <button class="cal-nav" onclick="prevMonth()">‹</button>
+          <button class="cal-nav" onclick="prevMonth()">&#8249;</button>
           <span class="cal-month" id="cal-month-label-2">--</span>
-          <button class="cal-nav" onclick="nextMonth()">›</button>
+          <button class="cal-nav" onclick="nextMonth()">&#8250;</button>
         </div>
         <div class="cal-grid" id="cal-grid-2"></div>
         <div class="selected-date-display" id="selected-date-display-2"></div>
@@ -233,9 +264,7 @@
               <select class="time-select" id="time-from-hour-2"></select>
               <select class="time-select" id="time-from-min-2">
                 <option value="00">:00</option>
-                <option value="15">:15</option>
                 <option value="30">:30</option>
-                <option value="45">:45</option>
               </select>
             </div>
           </div>
@@ -245,9 +274,7 @@
               <select class="time-select" id="time-to-hour-2"></select>
               <select class="time-select" id="time-to-min-2">
                 <option value="00">:00</option>
-                <option value="15">:15</option>
                 <option value="30">:30</option>
-                <option value="45">:45</option>
               </select>
             </div>
           </div>
@@ -260,109 +287,187 @@
 
 <script type="module">
   import { supabase, requireAuth, getPlayer, logOut } from '../js/auth.js'
-  import { initNav } from '../js/nav.js'
 
   let currentPlayer = null
   let currentMatch = null
   let mySlots = []
+  let oppSlots = []
   let selectedDate = null
+  let pendingProposal = null
+  let counterMode = false
   const CURRENT_WEEK = 1
   const CURRENT_SEASON = 1
   const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
-
   let calYear = new Date().getFullYear()
   let calMonth = new Date().getMonth()
 
   window.handleLogout = async () => { await logOut() }
 
-  function buildHours(selectId, defaultVal) {
-    const sel = document.getElementById(selectId)
-    if (!sel) return
+  function buildHours(id, def) {
+    const el = document.getElementById(id)
+    if (!el) return
     for (let h = 0; h < 24; h++) {
-      const opt = document.createElement('option')
-      opt.value = String(h).padStart(2,'0')
-      opt.textContent = String(h).padStart(2,'0') + ':00'
-      sel.appendChild(opt)
+      const o = document.createElement('option')
+      o.value = String(h).padStart(2,'0')
+      o.textContent = String(h).padStart(2,'0') + ':00'
+      el.appendChild(o)
     }
-    sel.value = String(defaultVal).padStart(2,'0')
+    el.value = String(def).padStart(2,'0')
   }
 
   function renderCal(gridId, labelId, displayId) {
     const label = document.getElementById(labelId)
     const grid = document.getElementById(gridId)
     if (!label || !grid) return
-
     label.textContent = `${MONTHS[calMonth]} ${calYear}`
     grid.innerHTML = ''
-
-    DAYS.forEach(d => {
-      const el = document.createElement('div')
-      el.className = 'cal-day-label'
-      el.textContent = d
-      grid.appendChild(el)
-    })
-
-    const firstDay = new Date(calYear, calMonth, 1)
-    const startOffset = (firstDay.getDay() + 6) % 7
-    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
-    const today = new Date()
-    today.setHours(0,0,0,0)
-
-    for (let i = 0; i < startOffset; i++) {
-      const el = document.createElement('div')
-      el.className = 'cal-day empty'
-      grid.appendChild(el)
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const el = document.createElement('div')
-      const date = new Date(calYear, calMonth, d)
-      date.setHours(0,0,0,0)
-      el.className = 'cal-day'
-      el.textContent = d
-      if (date < today) el.classList.add('past')
-      if (date.toDateString() === today.toDateString()) el.classList.add('today')
-      if (selectedDate && date.toDateString() === selectedDate.toDateString()) el.classList.add('selected')
-      el.onclick = () => {
+    DAYS.forEach(d => { const e = document.createElement('div'); e.className = 'cal-day-label'; e.textContent = d; grid.appendChild(e) })
+    const first = new Date(calYear, calMonth, 1)
+    const offset = (first.getDay() + 6) % 7
+    const days = new Date(calYear, calMonth + 1, 0).getDate()
+    const today = new Date(); today.setHours(0,0,0,0)
+    for (let i = 0; i < offset; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e) }
+    for (let d = 1; d <= days; d++) {
+      const e = document.createElement('div')
+      const date = new Date(calYear, calMonth, d); date.setHours(0,0,0,0)
+      e.className = 'cal-day'
+      e.textContent = d
+      if (date < today) e.classList.add('past')
+      if (date.toDateString() === today.toDateString()) e.classList.add('today')
+      if (selectedDate && date.toDateString() === selectedDate.toDateString()) e.classList.add('selected')
+      e.onclick = () => {
         selectedDate = new Date(calYear, calMonth, d)
-        const displayEl = document.getElementById(displayId)
-        if (displayEl) displayEl.textContent = `Selected: ${selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`
+        const disp = document.getElementById(displayId)
+        if (disp) disp.textContent = 'Selected: ' + selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
         renderCal(gridId, labelId, displayId)
       }
-      grid.appendChild(el)
+      grid.appendChild(e)
     }
   }
 
-  window.prevMonth = function() {
-    calMonth--
-    if (calMonth < 0) { calMonth = 11; calYear-- }
+  window.prevMonth = () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear-- } refreshCals() }
+  window.nextMonth = () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++ } refreshCals() }
+  function refreshCals() {
     renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
     renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
   }
 
-  window.nextMonth = function() {
-    calMonth++
-    if (calMonth > 11) { calMonth = 0; calYear++ }
-    renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
-    renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
+  // Generate 30-min slots within a window
+  function generateSlots(from, to) {
+    const slots = []
+    const cur = new Date(from)
+    const end = new Date(to)
+    while (cur < end) {
+      slots.push(new Date(cur))
+      cur.setMinutes(cur.getMinutes() + 30)
+    }
+    return slots
   }
 
-  async function init() {
-    buildHours('time-from-hour', 18)
-    buildHours('time-to-hour', 21)
-    buildHours('time-from-hour-2', 18)
-    buildHours('time-to-hour-2', 21)
-    renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
-    renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
+  // Find overlapping slots between my windows and opponent windows
+  function findOverlap(myWindows, oppWindows) {
+    const overlapping = []
+    for (const opp of oppWindows) {
+      const oppFrom = new Date(opp.slot_time)
+      const oppTo = opp.slot_end ? new Date(opp.slot_end) : new Date(oppFrom.getTime() + 3600000)
+      for (const my of myWindows) {
+        const myFrom = new Date(my.slot_time)
+        const myTo = my.slot_end ? new Date(my.slot_end) : new Date(myFrom.getTime() + 3600000)
+        const overlapFrom = new Date(Math.max(oppFrom, myFrom))
+        const overlapTo = new Date(Math.min(oppTo, myTo))
+        if (overlapFrom < overlapTo) {
+          const slots = generateSlots(overlapFrom, overlapTo)
+          overlapping.push(...slots)
+        }
+      }
+    }
+    // Deduplicate
+    const seen = new Set()
+    return overlapping.filter(s => { const k = s.toISOString(); if (seen.has(k)) return false; seen.add(k); return true })
+      .sort((a, b) => a - b)
+  }
 
-    await initNav()
-    const session = await requireAuth()
-    if (!session) return
-    currentPlayer = await getPlayer()
-    if (!currentPlayer) return
-    await loadMatch()
-    await loadMyAvailability()
+  function renderOverlapSlots(slots) {
+    const section = document.getElementById('overlap-section')
+    const container = document.getElementById('overlap-slots')
+    if (!section || !container) return
+
+    if (slots.length === 0) {
+      section.style.display = 'block'
+      container.innerHTML = '<div class="no-overlap-banner">No overlapping times found. Add more availability windows or ask admin for help.</div>'
+      document.getElementById('no-overlap-warning')?.style && (document.getElementById('no-overlap-warning').style.display = 'block')
+      return
+    }
+
+    section.style.display = 'block'
+
+    // Group by day
+    const byDay = {}
+    slots.forEach(s => {
+      const dayKey = s.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
+      if (!byDay[dayKey]) byDay[dayKey] = []
+      byDay[dayKey].push(s)
+    })
+
+    container.innerHTML = Object.entries(byDay).map(([day, daySlots]) => `
+      <div class="overlap-day">
+        <div class="overlap-day-label">${day}</div>
+        <div class="slot-grid">
+          ${daySlots.map(s => {
+            const timeStr = s.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
+            const iso = s.toISOString()
+            return `<button class="slot-btn" onclick="proposeSlot('${iso}', '${day} ${timeStr}')">${timeStr}</button>`
+          }).join('')}
+        </div>
+      </div>
+    `).join('')
+  }
+
+  window.proposeSlot = async function(isoTime, label) {
+    if (!currentMatch) return
+    if (counterMode) {
+      // Counter propose
+      await supabase.from('match_messages').insert({
+        match_id: currentMatch.id, sender_id: currentPlayer.id,
+        message: `Counter proposed: ${label}`, type: 'proposal', proposed_time: isoTime
+      })
+      counterMode = false
+      document.getElementById('proposal-banner').style.display = 'none'
+    } else {
+      await supabase.from('match_messages').insert({
+        match_id: currentMatch.id, sender_id: currentPlayer.id,
+        message: `Proposed match time: ${label}`, type: 'proposal', proposed_time: isoTime
+      })
+    }
+    // Mark slot as proposed
+    document.querySelectorAll('.slot-btn').forEach(b => {
+      if (b.onclick.toString().includes(isoTime)) b.classList.add('proposed')
+    })
+    await loadChat()
+  }
+
+  window.acceptProposal = async function() {
+    if (!pendingProposal || !currentMatch) return
+    await supabase.from('match_messages').insert({
+      match_id: currentMatch.id, sender_id: currentPlayer.id,
+      message: 'Time accepted', type: 'confirmed', proposed_time: pendingProposal.proposed_time
+    })
+    await supabase.from('matches').update({ agreed_time: pendingProposal.proposed_time }).eq('id', currentMatch.id)
+    const timeStr = new Date(pendingProposal.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+    document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
+    document.getElementById('proposal-banner').style.display = 'none'
+    pendingProposal = null
+    await loadChat()
+  }
+
+  window.showCounterMode = function() {
+    counterMode = true
+    document.getElementById('proposal-banner').style.display = 'none'
+    document.getElementById('overlap-section').scrollIntoView({ behavior: 'smooth' })
+    document.getElementById('overlap-slots').querySelectorAll('.slot-btn').forEach(b => {
+      b.style.borderColor = 'rgba(55,138,221,0.4)'
+    })
   }
 
   async function loadMatch() {
@@ -371,7 +476,8 @@
       .select(`*, player_one:player_one_id(id,username,wins,losses,points,division), player_two:player_two_id(id,username,wins,losses,points,division)`)
       .or(`player_one_id.eq.${currentPlayer.id},player_two_id.eq.${currentPlayer.id}`)
       .eq('season', CURRENT_SEASON).eq('week', CURRENT_WEEK)
-      .not('status', 'in', '("completed","cancelled")').limit(1)
+      .not('status', 'in', '("completed","cancelled")')
+      .limit(1)
 
     document.getElementById('loading').style.display = 'none'
 
@@ -398,7 +504,8 @@
     document.getElementById('opp-score-label').textContent = `${opp.username} score`
 
     if (currentMatch.agreed_time) {
-      document.getElementById('match-agreed-time').textContent = new Date(currentMatch.agreed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+      const timeStr = new Date(currentMatch.agreed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+      document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
     }
 
     const alreadySubmitted = isP1 ? currentMatch.p1_result_submitted : currentMatch.p2_result_submitted
@@ -407,143 +514,78 @@
       document.getElementById('already-submitted').style.display = 'block'
     }
 
+    await loadMyAvailability()
     await loadOpponentAvailability(opp.id)
     await loadChat()
+    await checkPendingProposal(opp.username)
   }
 
   async function loadMyAvailability() {
-    const { data: slots } = await supabase.from('availability').select('*')
-      .eq('player_id', currentPlayer.id).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON)
-      .order('slot_time')
-    mySlots = slots || []
-    renderSlots('avail-slots')
-    renderSlots('avail-slots-2')
+    const { data } = await supabase.from('availability').select('*')
+      .eq('player_id', currentPlayer.id).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON).order('slot_time')
+    mySlots = data || []
+    renderMySlots()
+    computeOverlap()
   }
 
-  function renderSlots(elId) {
-    const el = document.getElementById(elId)
-    if (!el) return
-    if (mySlots.length === 0) {
-      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);margin-bottom:10px;">No availability added yet.</p>'
-      return
-    }
-    el.innerHTML = mySlots.map(s => {
-      const from = new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-      const to = s.slot_end ? new Date(s.slot_end).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) : ''
-      return `<div class="avail-slot">
-        <span>${from}${to ? ' – ' + to : ''}</span>
-        <button class="avail-slot-remove" onclick="removeSlot('${s.id}')">×</button>
-      </div>`
-    }).join('')
+  function renderMySlots() {
+    ['avail-slots', 'avail-slots-2'].forEach(id => {
+      const el = document.getElementById(id)
+      if (!el) return
+      if (mySlots.length === 0) { el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);margin-bottom:10px;">No availability added yet.</p>'; return }
+      el.innerHTML = mySlots.map(s => {
+        const from = new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+        const to = s.slot_end ? new Date(s.slot_end).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) : ''
+        return `<div class="avail-slot"><span>${from}${to ? ' – ' + to : ''}</span><button class="avail-slot-remove" onclick="removeSlot('${s.id}')">×</button></div>`
+      }).join('')
+    })
   }
 
   async function loadOpponentAvailability(oppId) {
-    const { data: slots } = await supabase.from('availability').select('*')
-      .eq('player_id', oppId).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON)
-      .order('slot_time')
-    const el = document.getElementById('opponent-avail')
-    if (!el) return
-    if (!slots || slots.length === 0) {
-      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);">Your opponent hasn\'t added availability yet.</p>'
-      return
-    }
-    el.innerHTML = `<p style="font-size:0.75rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Opponent availability</p>
-      ${slots.map(s => {
-        const from = new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-        const to = s.slot_end ? new Date(s.slot_end).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) : ''
-        return '<div class="avail-slot"><span>' + from + (to ? ' – ' + to : '') + '</span></div>'
-      }).join('')}`
+    const { data } = await supabase.from('availability').select('*')
+      .eq('player_id', oppId).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON).order('slot_time')
+    oppSlots = data || []
+    computeOverlap()
   }
 
-  async function doAddSlot(fromHourId, fromMinId, toHourId, toMinId, successId, errorId) {
-    const successEl = document.getElementById(successId)
-    const errorEl = document.getElementById(errorId)
-    successEl.style.display = 'none'
-    errorEl.style.display = 'none'
-
-    if (!selectedDate) { errorEl.textContent = 'Please select a date on the calendar first.'; errorEl.style.display = 'block'; return }
-    if (mySlots.length >= 5) { errorEl.textContent = 'Maximum 5 windows per week.'; errorEl.style.display = 'block'; return }
-
-    const fromHour = parseInt(document.getElementById(fromHourId).value)
-    const fromMin = parseInt(document.getElementById(fromMinId).value)
-    const toHour = parseInt(document.getElementById(toHourId).value)
-    const toMin = parseInt(document.getElementById(toMinId).value)
-
-    const slotFrom = new Date(selectedDate)
-    slotFrom.setHours(fromHour, fromMin, 0, 0)
-    const slotTo = new Date(selectedDate)
-    slotTo.setHours(toHour, toMin, 0, 0)
-
-    if (slotTo <= slotFrom) { errorEl.textContent = 'End time must be after start time.'; errorEl.style.display = 'block'; return }
-
-    const { error } = await supabase.from('availability').insert({
-      player_id: currentPlayer.id, week: CURRENT_WEEK,
-      season: CURRENT_SEASON, slot_time: slotFrom.toISOString(), slot_end: slotTo.toISOString()
-    })
-
-    if (error) { errorEl.textContent = 'Could not add window. Try again.'; errorEl.style.display = 'block'; return }
-    const label = slotFrom.toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }) + ' – ' + slotTo.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
-    successEl.textContent = 'Window added: ' + label
-    successEl.style.display = 'block'
-    await loadMyAvailability()
+  function computeOverlap() {
+    if (!currentMatch) return
+    if (mySlots.length === 0 || oppSlots.length === 0) return
+    const overlapping = findOverlap(mySlots, oppSlots)
+    renderOverlapSlots(overlapping)
   }
 
-  window.addSlot = () => doAddSlot('time-from-hour', 'time-from-min', 'time-to-hour', 'time-to-min', 'avail-success', 'avail-error')
-  window.addSlot2 = () => doAddSlot('time-from-hour-2', 'time-from-min-2', 'time-to-hour-2', 'time-to-min-2', 'avail-success-2', 'avail-error-2')
+  async function checkPendingProposal(oppName) {
+    const { data: messages } = await supabase
+      .from('match_messages')
+      .select('*')
+      .eq('match_id', currentMatch.id)
+      .eq('type', 'proposal')
+      .neq('sender_id', currentPlayer.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
 
-  window.removeSlot = async function(id) {
-    await supabase.from('availability').delete().eq('id', id)
-    await loadMyAvailability()
+    if (!messages || messages.length === 0) return
+
+    const latest = messages[0]
+    // Check if already responded
+    const { data: responses } = await supabase
+      .from('match_messages')
+      .select('type')
+      .eq('match_id', currentMatch.id)
+      .in('type', ['confirmed', 'declined'])
+      .gt('created_at', latest.created_at)
+      .limit(1)
+
+    if (responses && responses.length > 0) return
+
+    pendingProposal = latest
+    const timeStr = new Date(latest.proposed_time).toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: false })
+    document.getElementById('proposal-time-display').textContent = timeStr
+    document.getElementById('proposal-from').textContent = `Proposed by ${oppName}`
+    document.getElementById('proposal-banner').style.display = 'block'
   }
 
-  window.submitResult = async function() {
-    const myScore = parseInt(document.getElementById('my-score').value)
-    const oppScore = parseInt(document.getElementById('opp-score').value)
-    const successEl = document.getElementById('result-success')
-    const errorEl = document.getElementById('result-error')
-    const btn = document.getElementById('submit-result-btn')
-    successEl.style.display = 'none'
-    errorEl.style.display = 'none'
-
-    if (isNaN(myScore) || isNaN(oppScore)) { errorEl.textContent = 'Please enter both scores.'; errorEl.style.display = 'block'; return }
-
-    btn.disabled = true
-    btn.textContent = 'Submitting...'
-
-    const isP1 = currentMatch.player_one_id === currentPlayer.id
-
-    const { error } = await supabase.from('match_results').insert({
-      match_id: currentMatch.id, submitted_by: currentPlayer.id,
-      my_score: myScore, opponent_score: oppScore
-    })
-
-    if (error) { errorEl.textContent = 'Could not submit. Try again.'; errorEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit result'; return }
-
-    await supabase.from('matches').update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }).eq('id', currentMatch.id)
-
-    const { data: results } = await supabase.from('match_results').select('*').eq('match_id', currentMatch.id)
-
-    if (results && results.length === 2) {
-      const r1 = results[0], r2 = results[1]
-      const scoresMatch = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
-      if (scoresMatch) {
-        const winnerId = myScore > oppScore ? currentPlayer.id : myScore < oppScore ? (isP1 ? currentMatch.player_two_id : currentMatch.player_one_id) : null
-        await supabase.from('matches').update({ status: 'completed', winner_id: winnerId }).eq('id', currentMatch.id)
-      } else {
-        await supabase.from('matches').update({ status: 'disputed' }).eq('id', currentMatch.id)
-        await supabase.from('disputes').insert({ match_id: currentMatch.id, player_one_claim: r1, player_two_claim: r2 })
-      }
-    }
-
-    successEl.textContent = 'Result submitted. Waiting for opponent confirmation.'
-    successEl.style.display = 'block'
-    document.getElementById('result-form').style.display = 'none'
-    document.getElementById('already-submitted').style.display = 'block'
-    btn.disabled = false
-    btn.textContent = 'Submit result'
-  }
-
-  // Chat functions
   async function loadChat() {
     if (!currentMatch) return
     const { data: messages } = await supabase
@@ -556,49 +598,36 @@
     if (!el) return
 
     if (!messages || messages.length === 0) {
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray);font-size:0.85rem;">No messages yet. Say hello to your opponent.</div>'
+      el.innerHTML = '<div class="sys-msg">No messages yet. Use the chat to communicate with your opponent.</div>'
       return
     }
 
     el.innerHTML = messages.map(m => {
       const mine = m.sender_id === currentPlayer.id
-      const senderName = m.sender?.username || 'Unknown'
+      const sender = m.sender?.username || '?'
       const time = new Date(m.created_at).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, day: 'numeric', month: 'short' })
 
       if (m.type === 'proposal') {
-        const proposedTime = new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-        const canRespond = !mine
+        const pTime = new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
         return `<div class="chat-msg-row ${mine ? 'mine' : 'theirs'}">
-          <span class="chat-sender">${senderName} · ${time}</span>
-          <div class="proposal-bubble ${mine ? 'mine' : ''}">
-            <div class="proposal-label">Proposed time</div>
-            <div class="proposal-time">${proposedTime}</div>
-            ${canRespond ? `<div class="proposal-actions">
-              <button class="btn-confirm" onclick="confirmTime('${m.id}', '${m.proposed_time}')">Confirm</button>
-              <button class="btn-decline" onclick="declineTime('${m.id}')">Decline</button>
-            </div>` : '<div style="font-size:0.75rem;color:var(--gray);">Waiting for opponent response</div>'}
+          <span class="chat-sender">${sender} · ${time}</span>
+          <div class="chat-bubble ${mine ? 'mine' : 'theirs'}" style="background:rgba(55,138,221,0.1);border:0.5px solid rgba(55,138,221,0.3);">
+            <div style="font-size:0.7rem;color:#378ADD;font-weight:600;margin-bottom:3px;">PROPOSED TIME</div>
+            ${pTime}
           </div>
         </div>`
       }
-
       if (m.type === 'confirmed') {
-        return `<div class="chat-msg-row" style="align-items:center;">
-          <div class="confirmed-bubble">Match time confirmed — ${new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</div>
-        </div>`
+        const pTime = m.proposed_time ? new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }) : ''
+        return `<div class="sys-msg">Match time confirmed — ${pTime}</div>`
       }
-
-      if (m.type === 'declined') {
-        return `<div class="chat-msg-row" style="align-items:center;">
-          <div class="declined-bubble">Time declined — please propose another slot</div>
-        </div>`
-      }
+      if (m.type === 'declined') return `<div class="sys-msg">Time declined — please propose another slot</div>`
 
       return `<div class="chat-msg-row ${mine ? 'mine' : 'theirs'}">
-        <span class="chat-sender">${senderName} · ${time}</span>
+        <span class="chat-sender">${sender} · ${time}</span>
         <div class="chat-bubble ${mine ? 'mine' : 'theirs'}">${m.message.replace(/</g,'&lt;')}</div>
       </div>`
     }).join('')
-
     el.scrollTop = el.scrollHeight
   }
 
@@ -607,45 +636,80 @@
     const msg = input.value.trim()
     if (!msg || !currentMatch) return
     input.value = ''
-    await supabase.from('match_messages').insert({
-      match_id: currentMatch.id,
-      sender_id: currentPlayer.id,
-      message: msg,
-      type: 'message'
-    })
+    await supabase.from('match_messages').insert({ match_id: currentMatch.id, sender_id: currentPlayer.id, message: msg, type: 'message' })
     await loadChat()
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const input = document.getElementById('chat-input')
-    if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage() })
-  })
-
-  window.confirmTime = async function(msgId, proposedTime) {
-    await supabase.from('match_messages').insert({
-      match_id: currentMatch.id,
-      sender_id: currentPlayer.id,
-      message: 'Time confirmed',
-      type: 'confirmed',
-      proposed_time: proposedTime
-    })
-    await supabase.from('matches').update({ agreed_time: proposedTime }).eq('id', currentMatch.id)
-    document.getElementById('match-agreed-time').textContent = new Date(proposedTime).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-    await loadChat()
+  window.removeSlot = async function(id) {
+    await supabase.from('availability').delete().eq('id', id)
+    await loadMyAvailability()
   }
 
-  window.declineTime = async function(msgId) {
-    await supabase.from('match_messages').insert({
-      match_id: currentMatch.id,
-      sender_id: currentPlayer.id,
-      message: 'Time declined',
-      type: 'declined'
-    })
-    await loadChat()
+  async function doAddSlot(fromHourId, fromMinId, toHourId, toMinId, successId, errorId) {
+    const sEl = document.getElementById(successId), eEl = document.getElementById(errorId)
+    sEl.style.display = 'none'; eEl.style.display = 'none'
+    if (!selectedDate) { eEl.textContent = 'Please select a date first.'; eEl.style.display = 'block'; return }
+    if (mySlots.length >= 5) { eEl.textContent = 'Maximum 5 windows per week.'; eEl.style.display = 'block'; return }
+    const fh = parseInt(document.getElementById(fromHourId).value)
+    const fm = parseInt(document.getElementById(fromMinId).value)
+    const th = parseInt(document.getElementById(toHourId).value)
+    const tm = parseInt(document.getElementById(toMinId).value)
+    const from = new Date(selectedDate); from.setHours(fh, fm, 0, 0)
+    const to = new Date(selectedDate); to.setHours(th, tm, 0, 0)
+    if (to <= from) { eEl.textContent = 'End time must be after start time.'; eEl.style.display = 'block'; return }
+    const { error } = await supabase.from('availability').insert({ player_id: currentPlayer.id, week: CURRENT_WEEK, season: CURRENT_SEASON, slot_time: from.toISOString(), slot_end: to.toISOString() })
+    if (error) { eEl.textContent = 'Could not add window. Try again.'; eEl.style.display = 'block'; return }
+    sEl.textContent = 'Window added.'
+    sEl.style.display = 'block'
+    await loadMyAvailability()
   }
 
-  // Poll for new messages every 10 seconds
-  setInterval(() => { if (currentMatch) loadChat() }, 10000)
+  window.addSlot = () => doAddSlot('time-from-hour','time-from-min','time-to-hour','time-to-min','avail-success','avail-error')
+  window.addSlot2 = () => doAddSlot('time-from-hour-2','time-from-min-2','time-to-hour-2','time-to-min-2','avail-success-2','avail-error-2')
+
+  window.submitResult = async function() {
+    const myScore = parseInt(document.getElementById('my-score').value)
+    const oppScore = parseInt(document.getElementById('opp-score').value)
+    const sEl = document.getElementById('result-success'), eEl = document.getElementById('result-error')
+    const btn = document.getElementById('submit-result-btn')
+    sEl.style.display = 'none'; eEl.style.display = 'none'
+    if (isNaN(myScore) || isNaN(oppScore)) { eEl.textContent = 'Please enter both scores.'; eEl.style.display = 'block'; return }
+    btn.disabled = true; btn.textContent = 'Submitting...'
+    const isP1 = currentMatch.player_one_id === currentPlayer.id
+    const { error } = await supabase.from('match_results').insert({ match_id: currentMatch.id, submitted_by: currentPlayer.id, my_score: myScore, opponent_score: oppScore })
+    if (error) { eEl.textContent = 'Could not submit. Try again.'; eEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit result'; return }
+    await supabase.from('matches').update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }).eq('id', currentMatch.id)
+    const { data: results } = await supabase.from('match_results').select('*').eq('match_id', currentMatch.id)
+    if (results && results.length === 2) {
+      const r1 = results[0], r2 = results[1]
+      const match = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
+      if (match) {
+        const winnerId = myScore > oppScore ? currentPlayer.id : myScore < oppScore ? (isP1 ? currentMatch.player_two_id : currentMatch.player_one_id) : null
+        await supabase.from('matches').update({ status: 'completed', winner_id: winnerId, draw_reason: winnerId ? null : 'score' }).eq('id', currentMatch.id)
+      } else {
+        await supabase.from('matches').update({ status: 'disputed' }).eq('id', currentMatch.id)
+        await supabase.from('disputes').insert({ match_id: currentMatch.id, player_one_claim: r1, player_two_claim: r2 })
+      }
+    }
+    sEl.textContent = 'Result submitted. Waiting for opponent.'
+    sEl.style.display = 'block'
+    document.getElementById('result-form').style.display = 'none'
+    document.getElementById('already-submitted').style.display = 'block'
+    btn.disabled = false; btn.textContent = 'Submit result'
+  }
+
+  async function init() {
+    buildHours('time-from-hour', 18); buildHours('time-to-hour', 21)
+    buildHours('time-from-hour-2', 18); buildHours('time-to-hour-2', 21)
+    refreshCals()
+    const session = await requireAuth()
+    if (!session) return
+    currentPlayer = await getPlayer()
+    if (!currentPlayer) return
+    await loadMatch()
+    setInterval(() => { if (currentMatch) { loadChat(); checkPendingProposal('') } }, 15000)
+    document.getElementById('chat-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage() })
+  }
 
   init()
 </script>
