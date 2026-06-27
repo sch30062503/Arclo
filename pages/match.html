@@ -48,6 +48,33 @@
     .toast-success { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); color: #4ade80; }
     .toast-error { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); color: #f87171; }
     .empty-state { text-align: center; padding: 60px 24px; color: var(--gray); }
+    .chat-wrap { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+    .chat-header-bar { padding: 12px 16px; border-bottom: 0.5px solid var(--slate-light); font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
+    .chat-messages { max-height: 320px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--slate-light); border-radius: 2px; }
+    .chat-msg-row { display: flex; flex-direction: column; gap: 2px; }
+    .chat-msg-row.mine { align-items: flex-end; }
+    .chat-msg-row.theirs { align-items: flex-start; }
+    .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
+    .chat-bubble.mine { background: rgba(232,255,71,0.12); color: #fff; border-bottom-right-radius: 4px; }
+    .chat-bubble.theirs { background: var(--midnight); color: #fff; border-bottom-left-radius: 4px; }
+    .chat-sender { font-size: 0.7rem; color: var(--gray); padding: 0 4px; }
+    .proposal-bubble { background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.3); border-radius: 10px; padding: 10px 14px; max-width: 90%; }
+    .proposal-bubble.mine { align-self: flex-end; }
+    .proposal-label { font-size: 0.7rem; font-weight: 600; color: #378ADD; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .proposal-time { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .proposal-actions { display: flex; gap: 6px; }
+    .btn-confirm { background: #4ade80; color: #0d0d0f; border: none; border-radius: var(--radius); padding: 5px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
+    .btn-decline { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 5px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
+    .confirmed-bubble { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; color: #4ade80; }
+    .declined-bubble { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; color: #f87171; }
+    .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 0.5px solid var(--slate-light); }
+    .chat-input-row input { flex: 1; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; font-size: 0.85rem; color: #fff; outline: none; font-family: var(--font); }
+    .chat-input-row input:focus { border-color: rgba(232,255,71,0.4); }
+    .opp-slot-propose { background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.2); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: #fff; margin-bottom: 6px; }
+    .btn-propose { background: #378ADD; color: #fff; border: none; border-radius: var(--radius); padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font); white-space: nowrap; }
+    .btn-propose:hover { background: #185FA5; }
     .empty-state h2 { color: #fff; margin-bottom: 8px; }
     .selected-date-display { font-size: 0.85rem; color: var(--volt); font-weight: 500; margin-bottom: 10px; min-height: 20px; }
   </style>
@@ -146,7 +173,18 @@
         <button class="btn-volt" onclick="addSlot()" style="width:100%;">Add availability window</button>
       </div>
 
-      <div id="opponent-avail" style="margin-top:4px;"></div>
+      <div id="opponent-avail" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="chat-wrap" id="chat-section">
+      <div class="chat-header-bar">Match chat</div>
+      <div class="chat-messages" id="chat-messages">
+        <div style="text-align:center;padding:20px;color:var(--gray);font-size:0.85rem;">Loading messages...</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Message your opponent..." maxlength="200">
+        <button class="btn-volt" onclick="sendMessage()">Send</button>
+      </div>
     </div>
 
     <div class="match-card" id="result-section">
@@ -370,6 +408,7 @@
     }
 
     await loadOpponentAvailability(opp.id)
+    await loadChat()
   }
 
   async function loadMyAvailability() {
@@ -503,6 +542,110 @@
     btn.disabled = false
     btn.textContent = 'Submit result'
   }
+
+  // Chat functions
+  async function loadChat() {
+    if (!currentMatch) return
+    const { data: messages } = await supabase
+      .from('match_messages')
+      .select('*, sender:sender_id(username)')
+      .eq('match_id', currentMatch.id)
+      .order('created_at')
+
+    const el = document.getElementById('chat-messages')
+    if (!el) return
+
+    if (!messages || messages.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray);font-size:0.85rem;">No messages yet. Say hello to your opponent.</div>'
+      return
+    }
+
+    el.innerHTML = messages.map(m => {
+      const mine = m.sender_id === currentPlayer.id
+      const senderName = m.sender?.username || 'Unknown'
+      const time = new Date(m.created_at).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, day: 'numeric', month: 'short' })
+
+      if (m.type === 'proposal') {
+        const proposedTime = new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+        const canRespond = !mine
+        return `<div class="chat-msg-row ${mine ? 'mine' : 'theirs'}">
+          <span class="chat-sender">${senderName} · ${time}</span>
+          <div class="proposal-bubble ${mine ? 'mine' : ''}">
+            <div class="proposal-label">Proposed time</div>
+            <div class="proposal-time">${proposedTime}</div>
+            ${canRespond ? `<div class="proposal-actions">
+              <button class="btn-confirm" onclick="confirmTime('${m.id}', '${m.proposed_time}')">Confirm</button>
+              <button class="btn-decline" onclick="declineTime('${m.id}')">Decline</button>
+            </div>` : '<div style="font-size:0.75rem;color:var(--gray);">Waiting for opponent response</div>'}
+          </div>
+        </div>`
+      }
+
+      if (m.type === 'confirmed') {
+        return `<div class="chat-msg-row" style="align-items:center;">
+          <div class="confirmed-bubble">Match time confirmed — ${new Date(m.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</div>
+        </div>`
+      }
+
+      if (m.type === 'declined') {
+        return `<div class="chat-msg-row" style="align-items:center;">
+          <div class="declined-bubble">Time declined — please propose another slot</div>
+        </div>`
+      }
+
+      return `<div class="chat-msg-row ${mine ? 'mine' : 'theirs'}">
+        <span class="chat-sender">${senderName} · ${time}</span>
+        <div class="chat-bubble ${mine ? 'mine' : 'theirs'}">${m.message.replace(/</g,'&lt;')}</div>
+      </div>`
+    }).join('')
+
+    el.scrollTop = el.scrollHeight
+  }
+
+  window.sendMessage = async function() {
+    const input = document.getElementById('chat-input')
+    const msg = input.value.trim()
+    if (!msg || !currentMatch) return
+    input.value = ''
+    await supabase.from('match_messages').insert({
+      match_id: currentMatch.id,
+      sender_id: currentPlayer.id,
+      message: msg,
+      type: 'message'
+    })
+    await loadChat()
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('chat-input')
+    if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage() })
+  })
+
+  window.confirmTime = async function(msgId, proposedTime) {
+    await supabase.from('match_messages').insert({
+      match_id: currentMatch.id,
+      sender_id: currentPlayer.id,
+      message: 'Time confirmed',
+      type: 'confirmed',
+      proposed_time: proposedTime
+    })
+    await supabase.from('matches').update({ agreed_time: proposedTime }).eq('id', currentMatch.id)
+    document.getElementById('match-agreed-time').textContent = new Date(proposedTime).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+    await loadChat()
+  }
+
+  window.declineTime = async function(msgId) {
+    await supabase.from('match_messages').insert({
+      match_id: currentMatch.id,
+      sender_id: currentPlayer.id,
+      message: 'Time declined',
+      type: 'declined'
+    })
+    await loadChat()
+  }
+
+  // Poll for new messages every 10 seconds
+  setInterval(() => { if (currentMatch) loadChat() }, 10000)
 
   init()
 </script>
