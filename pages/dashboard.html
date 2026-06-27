@@ -32,6 +32,9 @@
     .dash-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
     .loading { color: var(--gray); font-size: 0.85rem; padding: 20px 0; text-align: center; }
     .empty { color: var(--gray); font-size: 0.85rem; padding: 12px 0; }
+    .avail-banner { display:none; background: rgba(255,79,56,0.08); border: 0.5px solid rgba(255,79,56,0.25); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .avail-banner-text { font-size: 0.85rem; color: #fff; }
+    .avail-banner-text span { color: var(--ignite); font-weight: 600; }
     @media (max-width: 768px) {
       .dash-layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -100,6 +103,14 @@
       <div class="dash-greeting" id="greeting">Welcome back!</div>
       <div class="dash-sub" id="dash-sub">--</div>
 
+      <div class="avail-banner" id="avail-banner" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff4f38" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="avail-banner-text"><span>Action needed</span> — you haven't set your availability for this week. Fixtures are generated on Monday.</div>
+        </div>
+        <a href="match.html" class="btn btn-sm" style="background:var(--ignite);color:#fff;border:none;white-space:nowrap;flex-shrink:0;">Set availability</a>
+      </div>
+
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-label">Season record</div>
@@ -167,7 +178,7 @@
 </div>
 
 <script type="module">
-  import { requireAuth, getPlayer, logOut } from '../js/auth.js'
+  import { requireAuth, getPlayer, logOut, supabase } from '../js/auth.js'
 
   const regions = { oce: 'Oceania', na: 'North America', eu: 'Europe', sea: 'Southeast Asia', latam: 'Latin America', mea: 'Middle East and Africa' }
   const games = { rocket_league: 'Rocket League' }
@@ -209,6 +220,18 @@
 
       document.getElementById('loading').style.display = 'none'
       document.getElementById('dash-content').style.display = 'block'
+
+      // Check availability
+      const { data: avail } = await supabase
+        .from('availability')
+        .select('id')
+        .eq('player_id', player.id)
+        .eq('week', 1)
+        .eq('season', 1)
+        .limit(1)
+      if (!avail || avail.length === 0) {
+        document.getElementById('avail-banner').style.display = 'flex'
+      }
 
     } catch (err) {
       document.getElementById('loading').textContent = 'Error loading profile: ' + err.message
