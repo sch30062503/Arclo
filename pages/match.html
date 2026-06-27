@@ -78,9 +78,13 @@
     .ob-win.active { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
     .ob-loss.active { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }
     .ob-draw.active { background: rgba(232,255,71,0.1); border-color: var(--volt); color: var(--volt); }
-    .score-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .score-pair input { text-align: center; font-size: 1.3rem; font-weight: 700; }
-    .score-lbl { font-size: 0.72rem; color: var(--gray); margin-bottom: 5px; }
+    .score-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .score-box { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 16px 12px; text-align: center; }
+    .score-lbl { font-size: 0.72rem; color: var(--gray); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+    .score-input-inner { width: 100%; background: transparent; border: none; outline: none; text-align: center; font-size: 2.2rem; font-weight: 700; color: #fff; font-family: var(--font); letter-spacing: -0.03em; }
+    .score-input-inner::placeholder { color: var(--slate-light); }
+    .score-input-inner::-webkit-outer-spin-button,
+    .score-input-inner::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     /* Misc */
     .btn-volt { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
     .btn-volt:hover { background: #d4eb3f; }
@@ -276,8 +280,8 @@
               </div>
               <div id="score-section" style="display:none;">
                 <div class="score-pair">
-                  <div><div class="score-lbl" id="my-lbl">${me.username} (you)</div><input class="form-input" type="number" id="my-sc" min="0" placeholder="0"></div>
-                  <div><div class="score-lbl" id="opp-lbl">${opp.username}</div><input class="form-input" type="number" id="opp-sc" min="0" placeholder="0"></div>
+                  <div class="score-box"><div class="score-lbl" id="my-lbl">${me.username} (you)</div><input class="score-input-inner" type="number" id="my-sc" min="0" placeholder="0"></div>
+                  <div class="score-box"><div class="score-lbl" id="opp-lbl">${opp.username}</div><input class="score-input-inner" type="number" id="opp-sc" min="0" placeholder="0"></div>
                 </div>
               </div>
               <div class="toast-err" id="result-err"></div>
