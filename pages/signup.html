@@ -60,11 +60,11 @@
     <div class="auth-title">Join the Circuit</div>
     <div class="auth-sub">Create your account and compete</div>
 
-    <div class="season-free">Season 1 is free to enter — no payment needed</div>
+    <div class="season-free">Bronze league is free — sign up and compete immediately</div>
 
     <div class="auth-perks">
       <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Weekly league matches in your division</div>
-      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Stream your matches live on Arclo</div>
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Compete weekly against players in your region</div>
       <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Real prizes for top players every season</div>
     </div>
 
@@ -111,7 +111,7 @@
 </div>
 
 <script type="module">
-  import { signUp, redirectIfLoggedIn } from '../js/auth.js'
+  import { signUp, redirectIfLoggedIn, supabase } from '../js/auth.js'
   import { initNav } from '../js/nav.js'
 
   initNav()
@@ -150,8 +150,54 @@
     btn.textContent = 'Creating account...'
 
     try {
-      await signUp({ email, password, username, region, game })
-      successEl.textContent = 'Account created! Check your email to confirm, then log in.'
+      const authData = await signUp({ email, password, username, region, game })
+      const userId = authData?.user?.id
+
+      // Auto-assign to active Bronze tournament for their region
+      if (userId) {
+        // Find active Bronze tournament with space
+        const { data: tournaments } = await supabase
+          .from('tournaments')
+          .select('id, max_players')
+          .eq('region', region)
+          .eq('division', 'bronze')
+          .eq('status', 'active')
+          .order('created_at', { ascending: true })
+
+        let assignedTournament = null
+
+        if (tournaments && tournaments.length > 0) {
+          for (const t of tournaments) {
+            const { count } = await supabase
+              .from('players')
+              .select('id', { count: 'exact', head: true })
+              .eq('tournament_id', t.id)
+            if ((count || 0) < t.max_players) {
+              assignedTournament = t
+              break
+            }
+          }
+        }
+
+        // If no tournament with space, create one
+        if (!assignedTournament) {
+          const { data: newT } = await supabase
+            .from('tournaments')
+            .insert({
+              name: `Bronze ${region.toUpperCase()} #${(tournaments?.length || 0) + 1}`,
+              region, division: 'bronze', weeks: 8,
+              status: 'active', current_week: 1, max_players: 16
+            })
+            .select().single()
+          assignedTournament = newT
+        }
+
+        if (assignedTournament) {
+          await supabase.from('players').update({ tournament_id: assignedTournament.id }).eq('id', userId)
+        }
+      }
+
+      successEl.textContent = "Account created! You've been placed in a Bronze tournament. Log in to get started."
       successEl.style.display = 'block'
       btn.textContent = 'Account created'
     } catch (err) {

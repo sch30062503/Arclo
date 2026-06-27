@@ -110,6 +110,14 @@
       <div class="dash-sub" id="dash-sub">--</div>
 
       <div id="notifications-container"></div>
+      <div id="promotion-banner" style="display:none;background:rgba(232,255,71,0.08);border:0.5px solid rgba(232,255,71,0.25);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;display:none;">
+        <div style="font-size:0.9rem;font-weight:600;color:#fff;margin-bottom:4px;">You've earned promotion to Silver!</div>
+        <div style="font-size:0.82rem;color:var(--gray);margin-bottom:12px;">You finished in the top 3 of your Bronze tournament. Your first Silver entry is free.</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="acceptPromotion()" class="btn btn-primary btn-sm">Accept promotion</button>
+          <button onclick="declinePromotion()" class="btn btn-secondary btn-sm">Stay in Bronze</button>
+        </div>
+      </div>
 
       <div class="avail-banner" id="avail-banner" style="display:none;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -195,6 +203,61 @@
     await logOut()
   }
 
+  window.acceptPromotion = async function() {
+    const player = await getPlayer()
+    if (!player) return
+    // Move to silver, find or create silver tournament
+    const { data: silverT } = await supabase.from('tournaments')
+      .select('id, max_players').eq('region', player.region)
+      .eq('division', 'silver').eq('status', 'active')
+      .order('created_at', { ascending: true }).limit(1).single()
+
+    let tournamentId = silverT?.id
+    if (!tournamentId) {
+      const { data: newT } = await supabase.from('tournaments').insert({
+        name: `Silver ${player.region.toUpperCase()} #1`,
+        region: player.region, division: 'silver',
+        weeks: 8, status: 'active', current_week: 1, max_players: 16
+      }).select().single()
+      tournamentId = newT?.id
+    }
+
+    await supabase.from('players').update({
+      division: 'silver', tournament_id: tournamentId,
+      promotion_offered: false, promotion_tournament_id: null,
+      points: 0, wins: 0, losses: 0
+    }).eq('id', player.id)
+
+    await supabase.from('notifications').insert({
+      player_id: player.id,
+      message: 'Welcome to Silver division! Your free entry has been applied. Good luck.',
+      type: 'success'
+    })
+
+    document.getElementById('promotion-banner').style.display = 'none'
+    window.location.reload()
+  }
+
+  window.declinePromotion = async function() {
+    const player = await getPlayer()
+    if (!player) return
+    const newCount = (player.promotion_declined_count || 0) + 1
+    const forcedPromotion = newCount >= 2
+
+    if (forcedPromotion) {
+      alert("You've declined promotion twice — you'll be automatically promoted to Silver for the next tournament.")
+    }
+
+    await supabase.from('players').update({
+      promotion_offered: false,
+      promotion_declined_count: newCount,
+      promotion_tournament_id: null
+    }).eq('id', player.id)
+
+    document.getElementById('promotion-banner').style.display = 'none'
+    if (forcedPromotion) window.location.reload()
+  }
+
   async function loadNotifications(playerId) {
     const { data: notifs } = await supabase
       .from('notifications')
@@ -256,6 +319,11 @@
 
       // Load notifications
       await loadNotifications(player.id)
+
+      // Check if promotion offered
+      if (player.promotion_offered) {
+        document.getElementById('promotion-banner').style.display = 'block'
+      }
 
       // Check availability
       const { data: avail } = await supabase

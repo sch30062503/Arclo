@@ -138,7 +138,7 @@
 <script type="module">
   import { supabase, requireAuth, getPlayer, logOut } from '../js/auth.js'
 
-  const WEEK = 1, SEASON = 1
+  let WEEK = 1, SEASON = 1
   const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
@@ -810,7 +810,18 @@
       .or(`player_one_id.eq.${player.id},player_two_id.eq.${player.id}`)
       .eq('season', SEASON).eq('week', WEEK)
       .not('status', 'in', '("cancelled","completed")')
+      .eq('tournament_id', player.tournament_id)
       .limit(1)
+
+    // Get current week from player's tournament
+    if (player.tournament_id) {
+      const { data: tournament } = await supabase
+        .from('tournaments')
+        .select('current_week')
+        .eq('id', player.tournament_id)
+        .single()
+      if (tournament) WEEK = tournament.current_week
+    }
 
     match = matches && matches.length ? matches[0] : null
 

@@ -68,6 +68,7 @@
   function generateFixtures(id){window._generateFixtures&&window._generateFixtures(id)}
   function advanceWeek(id){window._advanceWeek&&window._advanceWeek(id)}
   function endTournament(id){window._endTournament&&window._endTournament(id)}
+  function runPromotion(id){window.runPromotion&&window.runPromotion(id)}
   function resolveDispute(a,b,c,d,e,f,g){window._resolveDispute&&window._resolveDispute(a,b,c,d,e,f,g)}
   function removePlayer(a,b){window._removePlayer&&window._removePlayer(a,b)}
   function cancelMatch(a){window._cancelMatch&&window._cancelMatch(a)}
@@ -303,7 +304,7 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn-admin" onclick="generateFixtures('${t.id}')">Generate week ${t.current_week} fixtures</button>
           <button class="btn-outline" onclick="advanceWeek('${t.id}')">Advance to week ${t.current_week+1}</button>
-          ${t.status==='active'?`<button class="btn-danger" onclick="endTournament('${t.id}')">End tournament</button>`:'<span style="font-size:0.8rem;color:var(--gray);padding:6px 0;">Completed</span>'}
+          ${t.status==='active'?`<button class="btn-danger" onclick="endTournament('${t.id}')">End tournament</button>`:`<button class="btn-admin" onclick="runPromotion('${t.id}')">Run promotion</button>`}
         </div>
       </div>`
     }).join('')
@@ -513,6 +514,60 @@
     ]
     await supabase.from('notifications').insert(msgs)
     loadDisputes(); loadOverview()
+  }
+
+  window._endTournament = async function(id) {
+    if (!confirm('End this tournament? This will lock results and trigger the promotion flow.')) return
+    await supabase.from('tournaments').update({ status:'completed' }).eq('id', id)
+    // Auto-run promotion
+    await runPromotionFlow(id)
+    loadTournaments()
+  }
+
+  window.runPromotion = async function(id) {
+    await runPromotionFlow(id)
+  }
+
+  async function runPromotionFlow(tournamentId) {
+    const { data: t } = await supabase.from('tournaments').select('*').eq('id', tournamentId).single()
+    if (!t || t.division !== 'bronze') { 
+      if (t?.division !== 'bronze') alert('Promotion flow currently supports Bronze → Silver only.')
+      return 
+    }
+
+    // Get all players in this tournament sorted by points
+    const { data: players } = await supabase.from('players')
+      .select('id, username, points, wins, losses, promotion_offered, promotion_declined_count')
+      .eq('tournament_id', tournamentId)
+      .order('points', { ascending: false })
+      .order('wins', { ascending: false })
+
+    if (!players?.length) { alert('No players found in this tournament.'); return }
+
+    // Find top 3 eligible for promotion (skip those who declined twice)
+    const eligible = players.filter(p => (p.promotion_declined_count || 0) < 2)
+    const top3 = eligible.slice(0, 3)
+
+    if (!top3.length) { alert('No eligible players for promotion.'); return }
+
+    // Send promotion notifications to top 3
+    const notifications = top3.map(p => ({
+      player_id: p.id,
+      message: `Congratulations! You finished in the top 3 of your Bronze tournament. You've earned a FREE Silver league entry. Log in to accept your promotion.`,
+      type: 'success'
+    }))
+    await supabase.from('notifications').insert(notifications)
+
+    // Mark players as offered promotion
+    for (const p of top3) {
+      await supabase.from('players').update({ 
+        promotion_offered: true,
+        promotion_tournament_id: tournamentId
+      }).eq('id', p.id)
+    }
+
+    alert(`Promotion offered to: ${top3.map(p => p.username).join(', ')}`)
+    loadTournaments()
   }
 
   async function init() {
