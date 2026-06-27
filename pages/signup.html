@@ -8,14 +8,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: var(--midnight); min-height: 100vh; display: flex; flex-direction: column; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
     .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
-    .auth-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 2rem 2rem; width: 100%; max-width: 420px; }
+    .auth-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 420px; }
     .auth-logo { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 24px; }
     .auth-logo-text { font-size: 1.3rem; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
     .auth-logo-text span { color: var(--volt); }
     .auth-title { font-size: 1.2rem; font-weight: 600; color: #fff; text-align: center; margin-bottom: 6px; }
-    .auth-sub { font-size: 0.85rem; color: var(--gray); text-align: center; margin-bottom: 28px; }
+    .auth-sub { font-size: 0.85rem; color: var(--gray); text-align: center; margin-bottom: 24px; }
     .form-group { margin-bottom: 14px; }
     .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
     .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.9rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
@@ -26,12 +26,15 @@
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-submit { width: 100%; background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; margin-top: 8px; }
     .btn-submit:hover { background: #d4eb3f; }
-    .auth-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; padding: 14px; background: rgba(232,255,71,0.05); border: 0.5px solid rgba(232,255,71,0.12); border-radius: var(--radius); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .auth-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 14px; background: rgba(232,255,71,0.05); border: 0.5px solid rgba(232,255,71,0.12); border-radius: var(--radius); }
     .perk { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--gray); }
     .perk-check { width: 16px; height: 16px; border-radius: 50%; background: rgba(232,255,71,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .auth-footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--gray); }
     .auth-footer a { color: var(--volt); }
     .season-free { background: rgba(74,222,128,0.08); border: 0.5px solid rgba(74,222,128,0.2); border-radius: var(--radius); padding: 8px 12px; text-align: center; font-size: 0.8rem; color: #4ade80; margin-bottom: 20px; }
+    .error-msg { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #f87171; margin-bottom: 14px; display: none; }
+    .success-msg { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #4ade80; margin-bottom: 14px; display: none; }
   </style>
 </head>
 <body>
@@ -43,11 +46,6 @@
       <span class="nav-logo-text">arc<span>lo</span></span>
     </a>
   </div>
-  <ul class="nav-links">
-    <li><a href="circuit.html">The Circuit</a></li>
-    <li><a href="live.html">Live</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-  </ul>
   <div class="nav-actions">
     <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
   </div>
@@ -70,22 +68,25 @@
       <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Real prizes for top players every season</div>
     </div>
 
+    <div class="error-msg" id="error-msg"></div>
+    <div class="success-msg" id="success-msg"></div>
+
     <div class="form-group">
       <label class="form-label">Username</label>
-      <input class="form-input" type="text" placeholder="YourGamerTag" maxlength="24">
+      <input class="form-input" type="text" id="username" placeholder="YourGamerTag" maxlength="24">
     </div>
     <div class="form-group">
       <label class="form-label">Email</label>
-      <input class="form-input" type="email" placeholder="you@email.com">
+      <input class="form-input" type="email" id="email" placeholder="you@email.com">
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
-      <input class="form-input" type="password" placeholder="Min. 8 characters">
+      <input class="form-input" type="password" id="password" placeholder="Min. 8 characters">
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Region</label>
-        <select class="form-select">
+        <select class="form-select" id="region">
           <option value="">Select region</option>
           <option value="oce">Oceania</option>
           <option value="na">North America</option>
@@ -95,15 +96,13 @@
       </div>
       <div class="form-group">
         <label class="form-label">Game</label>
-        <select class="form-select">
-          <option value="">Select game</option>
-          <option value="rl">Rocket League</option>
-          <option value="more">More coming soon</option>
+        <select class="form-select" id="game">
+          <option value="rocket_league">Rocket League</option>
         </select>
       </div>
     </div>
 
-    <button class="btn-submit" onclick="handleSignup()">Create account and join</button>
+    <button class="btn-submit" id="submit-btn" onclick="handleSignup()">Create account and join</button>
 
     <div class="auth-footer">
       Already have an account? <a href="login.html">Log in</a>
@@ -111,9 +110,54 @@
   </div>
 </div>
 
-<script>
-  function handleSignup() {
-    window.location.href = 'dashboard.html';
+<script type="module">
+  import { signUp, redirectIfLoggedIn } from '../js/auth.js'
+
+  redirectIfLoggedIn()
+
+  window.handleSignup = async function() {
+    const username = document.getElementById('username').value.trim()
+    const email = document.getElementById('email').value.trim()
+    const password = document.getElementById('password').value
+    const region = document.getElementById('region').value
+    const game = document.getElementById('game').value
+    const errorEl = document.getElementById('error-msg')
+    const successEl = document.getElementById('success-msg')
+    const btn = document.getElementById('submit-btn')
+
+    errorEl.style.display = 'none'
+    successEl.style.display = 'none'
+
+    if (!username || !email || !password || !region) {
+      errorEl.textContent = 'Please fill in all fields.'
+      errorEl.style.display = 'block'
+      return
+    }
+    if (password.length < 8) {
+      errorEl.textContent = 'Password must be at least 8 characters.'
+      errorEl.style.display = 'block'
+      return
+    }
+    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+      errorEl.textContent = 'Username can only contain letters, numbers, and underscores (3–24 characters).'
+      errorEl.style.display = 'block'
+      return
+    }
+
+    btn.disabled = true
+    btn.textContent = 'Creating account...'
+
+    try {
+      await signUp({ email, password, username, region, game })
+      successEl.textContent = 'Account created! Check your email to confirm, then log in.'
+      successEl.style.display = 'block'
+      btn.textContent = 'Account created'
+    } catch (err) {
+      errorEl.textContent = err.message || 'Something went wrong. Try again.'
+      errorEl.style.display = 'block'
+      btn.disabled = false
+      btn.textContent = 'Create account and join'
+    }
   }
 </script>
 
