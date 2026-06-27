@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arclo — Compete. Rise. Get rewarded.</title>
+  <meta name="description" content="Amateur esports leagues with real prizes. Compete weekly, stream live, climb the ranks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Hero */
+    .hero {
+      min-height: 88vh; display: flex; flex-direction: column;
+      justify-content: center; padding: 80px 24px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      top: -200px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,255,71,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--slate); border: 0.5px solid var(--slate-light);
+      border-radius: 999px; padding: 5px 14px; margin-bottom: 28px;
+      font-size: 0.8rem; color: var(--gray);
+    }
+    .hero h1 { color: #fff; margin-bottom: 20px; max-width: 700px; }
+    .hero h1 .volt { color: var(--volt); }
+    .hero-sub { font-size: 1.1rem; max-width: 480px; margin-bottom: 36px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 60px; }
+    .hero-stats { display: flex; gap: 48px; flex-wrap: wrap; }
+    .hero-stat-val { font-size: 1.8rem; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
+    .hero-stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 2px; }
+
+    /* Live matches strip */
+    .matches-strip { background: var(--slate); border-top: 0.5px solid var(--slate-light); border-bottom: 0.5px solid var(--slate-light); padding: 0; overflow: hidden; }
+    .matches-strip-inner { display: flex; align-items: stretch; }
+    .strip-label { background: var(--ignite); color: #fff; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 18px; display: flex; align-items: center; white-space: nowrap; flex-shrink: 0; }
+    .matches-list { display: flex; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    .matches-list::-webkit-scrollbar { display: none; }
+    .match-strip-item { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-left: 0.5px solid var(--slate-light); white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: background 0.15s; }
+    .match-strip-item:hover { background: rgba(255,255,255,0.03); }
+    .match-players { font-size: 0.85rem; font-weight: 500; color: #fff; }
+    .match-vs { color: var(--gray-dim); font-size: 0.75rem; }
+    .match-time { font-size: 0.75rem; color: var(--gray); }
+
+    /* How it works */
+    .how-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 2px; background: var(--slate-light); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
+    .how-item { background: var(--midnight); padding: 2rem; }
+    .how-num { font-size: 0.7rem; font-weight: 600; color: var(--volt); letter-spacing: 0.1em; margin-bottom: 16px; }
+    .how-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .how-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+
+    /* Matches section */
+    .match-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .match-card:hover { border-color: rgba(232,255,71,0.2); background: rgba(232,255,71,0.02); }
+    .match-card-players { display: flex; align-items: center; gap: 8px; }
+    .match-card-name { font-size: 0.95rem; font-weight: 600; color: #fff; }
+    .match-card-vs { font-size: 0.75rem; color: var(--gray-dim); }
+    .match-card-meta { font-size: 0.8rem; color: var(--gray); }
+    .match-card-right { display: flex; align-items: center; gap: 12px; }
+
+    /* CTA band */
+    .cta-band { background: var(--volt); border-radius: var(--radius-lg); padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .cta-band h2 { color: var(--midnight); }
+    .cta-band p { color: rgba(13,13,15,0.6); }
+    .btn-dark { background: var(--midnight); color: var(--volt); }
+    .btn-dark:hover { background: #111; }
+
+    @media (max-width: 768px) {
+      .hero { min-height: auto; padding: 60px 24px; }
+      .hero-stats { gap: 24px; }
+      .how-grid { grid-template-columns: 1fr; }
+      .cta-band { padding: 32px 24px; }
+      .match-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg width="22" height="22" viewBox="0 0 42 42" fill="none">
+        <polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="21" cy="21" r="4" fill="#e8ff47"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">arc<span>lo</span></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="pages/circuit.html">The Circuit</a></li>
+    <li><a href="pages/live.html">Live</a></li>
+    <li><a href="pages/leaderboard.html">Leaderboard</a></li>
+    <li><a href="#how">How it works</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="pages/login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="pages/signup.html" class="btn btn-primary btn-sm">Join now</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="live-dot"></div>
+      Season 1 now live — 3 matches today
+    </div>
+    <h1>Compete. Rise.<br><span class="volt">Get rewarded.</span></h1>
+    <p class="hero-sub">Amateur esports leagues with real prizes. Play weekly, stream live, climb the ranks.</p>
+    <div class="hero-btns">
+      <a href="pages/signup.html" class="btn btn-primary btn-lg">Join the Circuit</a>
+      <a href="pages/live.html" class="btn btn-secondary btn-lg">Watch live</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-val">248</div>
+        <div class="hero-stat-label">Active players</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">$1,200</div>
+        <div class="hero-stat-label">Prizes paid out</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">34</div>
+        <div class="hero-stat-label">Matches this season</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">3</div>
+        <div class="hero-stat-label">Regions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="matches-strip">
+  <div class="matches-strip-inner">
+    <div class="strip-label">Live now</div>
+    <div class="matches-list">
+      <a href="pages/live.html" class="match-strip-item">
+        <span class="live-badge"><span class="live-dot"></span>Live</span>
+        <span class="match-players">NightOwl_GG <span class="match-vs">vs</span> Slipstream</span>
+        <span class="match-time">Rocket League · Div 1</span>
+      </a>
+      <div class="match-strip-item">
+        <span class="match-players">VoltEdge <span class="match-vs">vs</span> ChaosTheory</span>
+        <span class="match-time">Today 7:00 PM · Div 2</span>
+      </div>
+      <div class="match-strip-item">
+        <span class="match-players">Phantom_X <span class="match-vs">vs</span> GridLock</span>
+        <span class="match-time">Today 9:00 PM · Div 1</span>
+      </div>
+      <div class="match-strip-item">
+        <span class="match-players">StormRider <span class="match-vs">vs</span> NeonPulse</span>
+        <span class="match-time">Tomorrow 6:00 PM · Div 2</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="how">
+  <div class="container">
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">How it works</p>
+    <h2 style="color:#fff;" class="mb-3">From sign-up to prize pool<br>in three steps</h2>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="how-num">01</div>
+        <div class="how-title">Sign up and get placed</div>
+        <p class="how-desc">Create your profile, pick your game, and get placed in a division. Bronze is open to everyone — no experience needed.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">02</div>
+        <div class="how-title">Compete every week</div>
+        <p class="how-desc">Play your weekly fixture, stream it live on Arclo, and earn points. Win games, climb the table, and chase promotion.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">03</div>
+        <div class="how-title">Rise and get rewarded</div>
+        <p class="how-desc">Top players promote to higher divisions. Season winners take a share of the prize pool — paid out directly to you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">The Circuit</p>
+        <h2 style="color:#fff;">Upcoming matches</h2>
+      </div>
+      <a href="pages/circuit.html" class="btn btn-secondary btn-sm">View all fixtures</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <a href="pages/live.html" class="match-card">
+        <div class="match-card-players">
+          <span class="match-card-name">NightOwl_GG</span>
+          <span class="match-card-vs">vs</span>
+          <span class="match-card-name">Slipstream</span>
+        </div>
+        <div class="match-card-right">
+          <span class="match-card-meta">Rocket League · OCE</span>
+          <span class="div-badge div-gold">Gold</span>
+          <span class="live-badge"><span class="live-dot"></span>Live</span>
+        </div>
+      </a>
+      <div class="match-card">
+        <div class="match-card-players">
+          <span class="match-card-name">VoltEdge</span>
+          <span class="match-card-vs">vs</span>
+          <span class="match-card-name">ChaosTheory</span>
+        </div>
+        <div class="match-card-right">
+          <span class="match-card-meta">Rocket League · OCE · Today 7:00 PM</span>
+          <span class="div-badge div-silver">Silver</span>
+        </div>
+      </div>
+      <div class="match-card">
+        <div class="match-card-players">
+          <span class="match-card-name">Phantom_X</span>
+          <span class="match-card-vs">vs</span>
+          <span class="match-card-name">GridLock</span>
+        </div>
+        <div class="match-card-right">
+          <span class="match-card-meta">Rocket League · OCE · Today 9:00 PM</span>
+          <span class="div-badge div-gold">Gold</span>
+        </div>
+      </div>
+      <div class="match-card">
+        <div class="match-card-players">
+          <span class="match-card-name">StormRider</span>
+          <span class="match-card-vs">vs</span>
+          <span class="match-card-name">NeonPulse</span>
+        </div>
+        <div class="match-card-right">
+          <span class="match-card-meta">Rocket League · NA · Tomorrow 6:00 PM</span>
+          <span class="div-badge div-silver">Silver</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="cta-band">
+      <div>
+        <h2>Ready to compete?</h2>
+        <p class="mt-1">Season 1 is free to enter. Sign up, get placed, and play your first match this week.</p>
+      </div>
+      <a href="pages/signup.html" class="btn btn-dark btn-lg">Join the Circuit</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <svg width="18" height="18" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+        <span class="footer-logo-text">arc<span>lo</span></span>
+      </div>
+      <p class="footer-copy">Amateur esports, serious competition.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="pages/circuit.html">The Circuit</a></li>
+      <li><a href="pages/live.html">Live</a></li>
+      <li><a href="pages/leaderboard.html">Leaderboard</a></li>
+      <li><a href="#">Discord</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Arclo. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

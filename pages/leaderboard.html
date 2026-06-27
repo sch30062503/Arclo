@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — Arclo Circuit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .lb-header { padding: 48px 0 32px; }
+    .lb-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+    .filter-btn { padding: 7px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 500; border: 0.5px solid var(--slate-light); background: transparent; color: var(--gray); cursor: pointer; transition: all 0.15s; font-family: var(--font); }
+    .filter-btn.active, .filter-btn:hover { background: var(--volt); color: var(--midnight); border-color: var(--volt); }
+    .lb-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+    .lb-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
+    .lb-table td { padding: 12px 14px; border-bottom: 0.5px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .lb-table tr.you td { background: rgba(232,255,71,0.04); }
+    .rank-num { font-size: 0.85rem; font-weight: 700; color: var(--gray-dim); min-width: 28px; display: inline-block; }
+    .rank-1 { color: var(--volt); }
+    .rank-2 { color: #ccc; }
+    .rank-3 { color: #cd7f32; }
+    .player-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .player-you { color: var(--volt); }
+    .pts { font-size: 0.9rem; font-weight: 700; color: #fff; }
+    .record { font-size: 0.8rem; color: var(--gray); }
+    .trend-up { color: #4ade80; font-size: 0.75rem; }
+    .trend-down { color: #f87171; font-size: 0.75rem; }
+    .trend-flat { color: var(--gray-dim); font-size: 0.75rem; }
+    .promote-zone td:first-child { border-left: 2px solid var(--volt); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
+      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+      <span class="nav-logo-text">arc<span>lo</span></span>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="circuit.html">The Circuit</a></li>
+    <li><a href="live.html">Live</a></li>
+    <li><a href="leaderboard.html" style="color:#fff;">Leaderboard</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="signup.html" class="btn btn-primary btn-sm">Join now</a>
+  </div>
+</nav>
+
+<section class="lb-header">
+  <div class="container">
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Season 1 · Week 4</p>
+    <h1 style="color:#fff;">Leaderboard</h1>
+    <div class="lb-filters">
+      <button class="filter-btn active" onclick="setFilter(this,'gold')">Gold</button>
+      <button class="filter-btn" onclick="setFilter(this,'silver')">Silver</button>
+      <button class="filter-btn" onclick="setFilter(this,'bronze')">Bronze</button>
+      <div style="width:0.5px;background:var(--slate-light);margin:0 4px;"></div>
+      <button class="filter-btn active" onclick="setFilter(this,'oce')">Oceania</button>
+      <button class="filter-btn" onclick="setFilter(this,'na')">North America</button>
+      <button class="filter-btn" onclick="setFilter(this,'eu')">Europe</button>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:80px;">
+  <div class="container">
+    <div style="background:var(--slate);border:0.5px solid var(--slate-light);border-radius:var(--radius-lg);overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--slate-light);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="div-badge div-gold">Gold</span>
+          <span style="font-size:0.8rem;color:var(--gray);">Oceania · Rocket League · Season 1</span>
+        </div>
+        <span style="font-size:0.75rem;color:var(--gray-dim);">Top 2 promote to finals</span>
+      </div>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>Player</th>
+            <th>Record</th>
+            <th>Points</th>
+            <th>Streak</th>
+            <th>Change</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="promote-zone">
+            <td><span class="rank-num rank-1">1</span></td>
+            <td><span class="player-name">Slipstream</span></td>
+            <td><span class="record">8–1</span></td>
+            <td><span class="pts">80</span></td>
+            <td><span class="result-win">W4</span></td>
+            <td><span class="trend-up">+3</span></td>
+            <td><a href="live.html" class="btn btn-secondary btn-sm">Watch</a></td>
+          </tr>
+          <tr class="promote-zone">
+            <td><span class="rank-num rank-2">2</span></td>
+            <td><span class="player-name">Phantom_X</span></td>
+            <td><span class="record">7–2</span></td>
+            <td><span class="pts">74</span></td>
+            <td><span class="result-win">W2</span></td>
+            <td><span class="trend-up">+3</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+          <tr class="you">
+            <td><span class="rank-num rank-3">3</span></td>
+            <td><span class="player-name player-you">NightOwl_GG <span style="font-size:0.7rem;font-weight:500;">(you)</span></span></td>
+            <td><span class="record">7–2</span></td>
+            <td><span class="pts" style="color:var(--volt);">68</span></td>
+            <td><span class="result-win">W3</span></td>
+            <td><span class="trend-up">+3</span></td>
+            <td><a href="dashboard.html" class="btn btn-primary btn-sm">Dashboard</a></td>
+          </tr>
+          <tr>
+            <td><span class="rank-num">4</span></td>
+            <td><span class="player-name">VoltEdge</span></td>
+            <td><span class="record">5–4</span></td>
+            <td><span class="pts">55</span></td>
+            <td><span class="result-loss">L1</span></td>
+            <td><span class="trend-down">–0</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+          <tr>
+            <td><span class="rank-num">5</span></td>
+            <td><span class="player-name">GridLock</span></td>
+            <td><span class="record">4–5</span></td>
+            <td><span class="pts">44</span></td>
+            <td><span class="result-loss">L2</span></td>
+            <td><span class="trend-down">–0</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+          <tr>
+            <td><span class="rank-num">6</span></td>
+            <td><span class="player-name">ChaosTheory</span></td>
+            <td><span class="record">3–6</span></td>
+            <td><span class="pts">33</span></td>
+            <td><span class="result-loss">L3</span></td>
+            <td><span class="trend-down">–0</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+          <tr>
+            <td><span class="rank-num">7</span></td>
+            <td><span class="player-name">NeonPulse</span></td>
+            <td><span class="record">2–7</span></td>
+            <td><span class="pts">22</span></td>
+            <td><span class="result-loss">L4</span></td>
+            <td><span class="trend-down">–0</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+          <tr>
+            <td><span class="rank-num">8</span></td>
+            <td><span class="player-name">StormRider</span></td>
+            <td><span class="record">1–8</span></td>
+            <td><span class="pts">11</span></td>
+            <td><span class="result-loss">L5</span></td>
+            <td><span class="trend-down">–1</span></td>
+            <td><button class="btn btn-secondary btn-sm">Profile</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="padding:12px 16px;border-top:0.5px solid var(--slate-light);display:flex;align-items:center;gap:10px;">
+        <div style="width:3px;height:16px;background:var(--volt);border-radius:2px;"></div>
+        <span style="font-size:0.75rem;color:var(--gray);">Promotion zone — top 2 advance to the Circuit Finals</span>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;text-align:center;">
+      <p style="font-size:0.8rem;color:var(--gray-dim);">Season 1 ends in 3 weeks · Prize pool: $300 Gold · $75 Silver · $25 Bronze</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <svg width="18" height="18" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+        <span class="footer-logo-text">arc<span>lo</span></span>
+      </div>
+      <p class="footer-copy">Amateur esports, serious competition.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="circuit.html">The Circuit</a></li>
+      <li><a href="live.html">Live</a></li>
+      <li><a href="leaderboard.html">Leaderboard</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Arclo. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  function setFilter(btn, val) {
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => {
+      if (b.dataset.group === btn.dataset.group) b.classList.remove('active');
+    });
+    btn.classList.toggle('active');
+  }
+</script>
+
+</body>
+</html>

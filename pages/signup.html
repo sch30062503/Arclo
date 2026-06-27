@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Arclo — Sign up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--midnight); min-height: 100vh; display: flex; flex-direction: column; }
+    .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+    .auth-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 2rem 2rem; width: 100%; max-width: 420px; }
+    .auth-logo { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 24px; }
+    .auth-logo-text { font-size: 1.3rem; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
+    .auth-logo-text span { color: var(--volt); }
+    .auth-title { font-size: 1.2rem; font-weight: 600; color: #fff; text-align: center; margin-bottom: 6px; }
+    .auth-sub { font-size: 0.85rem; color: var(--gray); text-align: center; margin-bottom: 28px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
+    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.9rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
+    .form-input:focus { border-color: rgba(232,255,71,0.4); }
+    .form-input::placeholder { color: var(--gray-dim); }
+    .form-select { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.9rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; appearance: none; }
+    .form-select:focus { border-color: rgba(232,255,71,0.4); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-submit { width: 100%; background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; margin-top: 8px; }
+    .btn-submit:hover { background: #d4eb3f; }
+    .auth-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; padding: 14px; background: rgba(232,255,71,0.05); border: 0.5px solid rgba(232,255,71,0.12); border-radius: var(--radius); }
+    .perk { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--gray); }
+    .perk-check { width: 16px; height: 16px; border-radius: 50%; background: rgba(232,255,71,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--gray); }
+    .auth-footer a { color: var(--volt); }
+    .season-free { background: rgba(74,222,128,0.08); border: 0.5px solid rgba(74,222,128,0.2); border-radius: var(--radius); padding: 8px 12px; text-align: center; font-size: 0.8rem; color: #4ade80; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
+      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+      <span class="nav-logo-text">arc<span>lo</span></span>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="circuit.html">The Circuit</a></li>
+    <li><a href="live.html">Live</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="24" height="24" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+      <span class="auth-logo-text">arc<span>lo</span></span>
+    </div>
+    <div class="auth-title">Join the Circuit</div>
+    <div class="auth-sub">Create your account and compete</div>
+
+    <div class="season-free">Season 1 is free to enter — no payment needed</div>
+
+    <div class="auth-perks">
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Weekly league matches in your division</div>
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Stream your matches live on Arclo</div>
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Real prizes for top players every season</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" placeholder="YourGamerTag" maxlength="24">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" placeholder="you@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="Min. 8 characters">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Region</label>
+        <select class="form-select">
+          <option value="">Select region</option>
+          <option value="oce">Oceania</option>
+          <option value="na">North America</option>
+          <option value="eu">Europe</option>
+          <option value="sea">Southeast Asia</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Game</label>
+        <select class="form-select">
+          <option value="">Select game</option>
+          <option value="rl">Rocket League</option>
+          <option value="more">More coming soon</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="handleSignup()">Create account and join</button>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function handleSignup() {
+    window.location.href = 'dashboard.html';
+  }
+</script>
+
+</body>
+</html>
