@@ -259,7 +259,21 @@
 
     let resultSection = ''
     if (match.status === 'disputed') {
-      resultSection = `<div class="info-banner warn">Your result is in dispute — admin is reviewing and will make the final decision.</div>`
+      const isP1 = match.player_one_id === player.id
+      const myEvidence = isP1 ? match.p1_evidence : match.p2_evidence
+      resultSection = `
+        <div class="info-banner warn" style="margin-bottom:12px;">Your result is in dispute. Upload your evidence below — a screenshot or replay file of the match. If neither player uploads evidence by Monday, it will be ruled a draw. If only one player uploads, that player wins.</div>
+        ${myEvidence
+          ? `<div class="info-banner success">Evidence uploaded — admin will review.</div>`
+          : `<div>
+              <div class="section-label" style="margin-bottom:8px;">Upload evidence</div>
+              <p style="font-size:0.8rem;color:var(--gray);margin-bottom:10px;">Screenshot the end screen or attach your Rocket League replay file.</p>
+              <input type="file" id="evidence-file" accept="image/*,.replay" style="display:none;" onchange="handleEvidenceUpload()">
+              <button class="btn-volt" onclick="document.getElementById('evidence-file').click()">Choose file</button>
+              <div class="toast-err" id="evidence-err" style="margin-top:10px;"></div>
+              <div id="evidence-progress" style="display:none;font-size:0.8rem;color:var(--gray);margin-top:8px;">Uploading...</div>
+            </div>`
+        }`
     } else if (match.status === 'completed') {
       const won = match.winner_id === player.id
       const draw = !match.winner_id
@@ -699,6 +713,53 @@
   function showErr(id, msg) { const el = document.getElementById(id); if (el) { el.textContent = msg; el.style.display = 'block' } }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
+  window.handleEvidenceUpload = async function() {
+    const fileInput = document.getElementById('evidence-file')
+    const file = fileInput?.files[0]
+    if (!file) return
+
+    const errEl = document.getElementById('evidence-err')
+    const progress = document.getElementById('evidence-progress')
+    if (errEl) errEl.style.display = 'none'
+    if (progress) progress.style.display = 'block'
+
+    // Max 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      if (errEl) { errEl.textContent = 'File too large — maximum 10MB.'; errEl.style.display = 'block' }
+      if (progress) progress.style.display = 'none'
+      return
+    }
+
+    const isP1 = match.player_one_id === player.id
+    const path = `${match.id}/${player.id}/${file.name}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('evidence')
+      .upload(path, file, { upsert: true })
+
+    if (uploadError) {
+      if (errEl) { errEl.textContent = 'Upload failed: ' + uploadError.message; errEl.style.display = 'block' }
+      if (progress) progress.style.display = 'none'
+      return
+    }
+
+    // Save path to dispute
+    const { data: dispute } = await supabase.from('disputes')
+      .select('id').eq('match_id', match.id).single()
+
+    if (dispute) {
+      await supabase.from('disputes')
+        .update(isP1 ? { p1_evidence: path } : { p2_evidence: path })
+        .eq('id', dispute.id)
+    }
+
+    // Also update match object and re-render
+    if (isP1) match.p1_evidence = path
+    else match.p2_evidence = path
+    if (progress) progress.style.display = 'none'
+    await render()
+  }
+
   async function init() {
     const session = await requireAuth()
     if (!session) return
@@ -714,6 +775,16 @@
       .limit(1)
 
     match = matches && matches.length ? matches[0] : null
+
+    // If disputed, fetch evidence paths from disputes table
+    if (match && match.status === 'disputed') {
+      const { data: dispute } = await supabase.from('disputes')
+        .select('p1_evidence, p2_evidence').eq('match_id', match.id).single()
+      if (dispute) {
+        match.p1_evidence = dispute.p1_evidence
+        match.p2_evidence = dispute.p2_evidence
+      }
+    }
     await render()
 
     pollTimer = setInterval(async () => {

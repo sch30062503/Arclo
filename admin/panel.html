@@ -374,11 +374,29 @@
     noEl.style.display = 'none'
     document.getElementById('dispute-dot').style.display = 'block'
 
+    // Pre-fetch signed URLs for all disputes
+    const evidenceUrls = {}
+    for (const d of disputes) {
+      const p1path = d.p1_evidence
+      const p2path = d.p2_evidence
+      if (p1path) {
+        const { data } = await supabase.storage.from('evidence').createSignedUrl(p1path, 3600)
+        evidenceUrls[d.id + '_p1'] = data?.signedUrl || null
+      }
+      if (p2path) {
+        const { data } = await supabase.storage.from('evidence').createSignedUrl(p2path, 3600)
+        evidenceUrls[d.id + '_p2'] = data?.signedUrl || null
+      }
+    }
+
     el.innerHTML = disputes.map(d => {
       const p1name = d.match?.player_one?.username || 'Player 1'
       const p2name = d.match?.player_two?.username || 'Player 2'
       const c1 = d.player_one_claim
       const c2 = d.player_two_claim
+      const p1url = evidenceUrls[d.id + '_p1'] || null
+      const p2url = evidenceUrls[d.id + '_p2'] || null
+
       return `
         <div class="dispute-card">
           <div class="dispute-players">${p1name} vs ${p2name} — ${d.match?.division} · Wk${d.match?.week} · ${regions[d.match?.region] || ''}</div>
@@ -386,10 +404,12 @@
             <div class="dispute-claim">
               <div class="dispute-claim-name">${p1name} says</div>
               <div class="dispute-claim-score">${c1?.my_score ?? '?'} – ${c1?.opponent_score ?? '?'}</div>
+              ${p1url ? `<a href="${p1url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>` : `<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
             </div>
             <div class="dispute-claim">
               <div class="dispute-claim-name">${p2name} says</div>
               <div class="dispute-claim-score">${c2?.my_score ?? '?'} – ${c2?.opponent_score ?? '?'}</div>
+              ${p2url ? `<a href="${p2url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>` : `<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
