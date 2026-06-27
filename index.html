@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arclo — Compete. Rise. Get rewarded.</title>
-  <meta name="description" content="Amateur esports leagues with real prizes. Compete weekly, stream live, climb the ranks.">
+  <title>Arclo — Amateur esports. Real prizes.</title>
+  <meta name="description" content="Start free in Bronze. Win your way to Gold. Compete weekly in structured leagues with real prize money on the line.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Hero */
     .hero {
       min-height: 88vh; display: flex; flex-direction: column;
       justify-content: center; padding: 80px 24px;
@@ -31,53 +30,47 @@
     }
     .hero h1 { color: #fff; margin-bottom: 20px; max-width: 700px; }
     .hero h1 .volt { color: var(--volt); }
-    .hero-sub { font-size: 1.1rem; max-width: 480px; margin-bottom: 36px; }
+    .hero-sub { font-size: 1.1rem; max-width: 500px; margin-bottom: 36px; }
     .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 60px; }
-    .hero-stats { display: flex; gap: 48px; flex-wrap: wrap; }
-    .hero-stat-val { font-size: 1.8rem; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
-    .hero-stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 2px; }
-
-    /* Live matches strip */
-    .matches-strip { background: var(--slate); border-top: 0.5px solid var(--slate-light); border-bottom: 0.5px solid var(--slate-light); padding: 0; overflow: hidden; }
-    .matches-strip-inner { display: flex; align-items: stretch; }
-    .strip-label { background: var(--ignite); color: #fff; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 18px; display: flex; align-items: center; white-space: nowrap; flex-shrink: 0; }
-    .matches-list { display: flex; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
-    .matches-list::-webkit-scrollbar { display: none; }
-    .match-strip-item { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-left: 0.5px solid var(--slate-light); white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: background 0.15s; }
-    .match-strip-item:hover { background: rgba(255,255,255,0.03); }
-    .match-players { font-size: 0.85rem; font-weight: 500; color: #fff; }
-    .match-vs { color: var(--gray-dim); font-size: 0.75rem; }
-    .match-time { font-size: 0.75rem; color: var(--gray); }
-
-    /* How it works */
+    .hero-pillars { display: flex; gap: 0; flex-wrap: wrap; border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
+    .hero-pillar { flex: 1; min-width: 160px; padding: 20px 24px; border-right: 0.5px solid var(--slate-light); }
+    .hero-pillar:last-child { border-right: none; }
+    .hero-pillar-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .hero-pillar-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
+    .hero-pillar-badge { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
+    .badge-free { background: rgba(74,222,128,0.12); color: #4ade80; border: 0.5px solid rgba(74,222,128,0.2); }
+    .badge-paid { background: rgba(232,255,71,0.12); color: var(--volt); border: 0.5px solid rgba(232,255,71,0.2); }
+    .badge-prize { background: rgba(255,79,56,0.12); color: var(--ignite); border: 0.5px solid rgba(255,79,56,0.2); }
     .how-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 2px; background: var(--slate-light); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
     .how-item { background: var(--midnight); padding: 2rem; }
     .how-num { font-size: 0.7rem; font-weight: 600; color: var(--volt); letter-spacing: 0.1em; margin-bottom: 16px; }
     .how-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
     .how-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
-
-    /* Matches section */
-    .match-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-    .match-card:hover { border-color: rgba(232,255,71,0.2); background: rgba(232,255,71,0.02); }
-    .match-card-players { display: flex; align-items: center; gap: 8px; }
-    .match-card-name { font-size: 0.95rem; font-weight: 600; color: #fff; }
-    .match-card-vs { font-size: 0.75rem; color: var(--gray-dim); }
-    .match-card-meta { font-size: 0.8rem; color: var(--gray); }
-    .match-card-right { display: flex; align-items: center; gap: 12px; }
-
-    /* CTA band */
+    .division-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .division-card { border-radius: var(--radius-lg); padding: 1.5rem; border: 0.5px solid var(--slate-light); }
+    .division-card.bronze { background: rgba(205,127,50,0.06); border-color: rgba(205,127,50,0.2); }
+    .division-card.silver { background: rgba(200,200,200,0.06); border-color: rgba(200,200,200,0.2); }
+    .division-card.gold { background: rgba(232,255,71,0.06); border-color: rgba(232,255,71,0.2); }
+    .division-name { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .division-name.bronze { color: #cd7f32; }
+    .division-name.silver { color: #ccc; }
+    .division-name.gold { color: var(--volt); }
+    .division-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.6; margin-bottom: 12px; }
+    .division-entry { font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; display: inline-block; }
+    .entry-free { background: rgba(74,222,128,0.1); color: #4ade80; }
+    .entry-paid { background: rgba(232,255,71,0.1); color: var(--volt); }
     .cta-band { background: var(--volt); border-radius: var(--radius-lg); padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
     .cta-band h2 { color: var(--midnight); }
     .cta-band p { color: rgba(13,13,15,0.6); }
     .btn-dark { background: var(--midnight); color: var(--volt); }
     .btn-dark:hover { background: #111; }
-
     @media (max-width: 768px) {
       .hero { min-height: auto; padding: 60px 24px; }
-      .hero-stats { gap: 24px; }
-      .how-grid { grid-template-columns: 1fr; }
+      .hero-pillars { flex-direction: column; }
+      .hero-pillar { border-right: none; border-bottom: 0.5px solid var(--slate-light); }
+      .hero-pillar:last-child { border-bottom: none; }
+      .how-grid, .division-grid { grid-template-columns: 1fr; }
       .cta-band { padding: 32px 24px; }
-      .match-card { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
   </style>
 </head>
@@ -94,14 +87,13 @@
     <span class="nav-logo-text">arc<span>lo</span></span>
   </div>
   <ul class="nav-links">
-    <li><a href="pages/circuit.html">The Circuit</a></li>
-    <li><a href="pages/live.html">Live</a></li>
-    <li><a href="pages/leaderboard.html">Leaderboard</a></li>
     <li><a href="#how">How it works</a></li>
+    <li><a href="#divisions">Divisions</a></li>
+    <li><a href="pages/leaderboard.html">Leaderboard</a></li>
   </ul>
   <div class="nav-actions">
     <a href="pages/login.html" class="btn btn-ghost btn-sm">Log in</a>
-    <a href="pages/signup.html" class="btn btn-primary btn-sm">Join now</a>
+    <a href="pages/signup.html" class="btn btn-primary btn-sm">Join free</a>
   </div>
 </nav>
 
@@ -109,32 +101,33 @@
   <div class="hero-inner">
     <div class="hero-eyebrow">
       <div class="live-dot"></div>
-      Season 1 now open — free to enter
+      Amateur esports · Weekly leagues · Real prizes
     </div>
-    <h1>Compete. Rise.<br><span class="volt">Get rewarded.</span></h1>
-    <p class="hero-sub">Amateur esports leagues with real prizes. Play weekly, stream live, climb the ranks.</p>
+    <h1>Start free.<br>Compete weekly.<br><span class="volt">Win real money.</span></h1>
+    <p class="hero-sub">Arclo is where amateur players compete in structured leagues. Start in Bronze for free, earn your way up, and compete for real prize money at the top.</p>
     <div class="hero-btns">
-      <a href="pages/signup.html" class="btn btn-primary btn-lg">Join the Circuit</a>
-      <a href="pages/live.html" class="btn btn-secondary btn-lg">Watch live</a>
+      <a href="pages/signup.html" class="btn btn-primary btn-lg">Join for free</a>
+      <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
     </div>
-    <div class="hero-stats">
-      <div>
-        <div class="hero-stat-val">Free</div>
-        <div class="hero-stat-label">Season 1 entry</div>
+    <div class="hero-pillars">
+      <div class="hero-pillar">
+        <span class="hero-pillar-badge badge-free">Free to start</span>
+        <div class="hero-pillar-title">Bronze league</div>
+        <div class="hero-pillar-desc">Sign up and compete at no cost. No experience needed.</div>
       </div>
-      <div>
-        <div class="hero-stat-val">Weekly</div>
-        <div class="hero-stat-label">League matches</div>
+      <div class="hero-pillar">
+        <span class="hero-pillar-badge badge-paid">Small entry fee</span>
+        <div class="hero-pillar-title">Silver and Gold</div>
+        <div class="hero-pillar-desc">Earn promotion and compete for a share of the prize pool.</div>
       </div>
-      <div>
-        <div class="hero-stat-val">Real</div>
-        <div class="hero-stat-label">Prize money</div>
+      <div class="hero-pillar">
+        <span class="hero-pillar-badge badge-prize">Real prizes</span>
+        <div class="hero-pillar-title">Win every season</div>
+        <div class="hero-pillar-desc">Prize money paid directly to winners at the end of each season.</div>
       </div>
     </div>
   </div>
 </section>
-
-
 
 <section class="section" id="how">
   <div class="container">
@@ -144,36 +137,41 @@
       <div class="how-item">
         <div class="how-num">01</div>
         <div class="how-title">Sign up and get placed</div>
-        <p class="how-desc">Create your profile, pick your game, and get placed in a division. Bronze is open to everyone — no experience needed.</p>
+        <p class="how-desc">Create your profile, pick your game, and join Bronze league for free. Everyone starts here — no experience needed.</p>
       </div>
       <div class="how-item">
         <div class="how-num">02</div>
         <div class="how-title">Compete every week</div>
-        <p class="how-desc">Play your weekly fixture against your opponent, earn points for wins, and climb the table. Chase promotion to higher divisions.</p>
+        <p class="how-desc">Get a weekly fixture against a player in your division. Set your availability, agree a time, play your match, and submit the result.</p>
       </div>
       <div class="how-item">
         <div class="how-num">03</div>
         <div class="how-title">Rise and get rewarded</div>
-        <p class="how-desc">Top players promote to higher divisions. Season winners take a share of the prize pool — paid out directly to you.</p>
+        <p class="how-desc">Win matches, earn points, and climb the table. Top players promote to Silver and Gold — where the prize money is.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section" style="padding-top:0;">
+<section class="section" id="divisions" style="padding-top:0;">
   <div class="container">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">The Circuit</p>
-        <h2 style="color:#fff;">Season 1 — now open</h2>
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Divisions</p>
+    <h2 style="color:#fff;" class="mb-3">Everyone starts somewhere</h2>
+    <div class="division-grid">
+      <div class="division-card bronze">
+        <div class="division-name bronze">Bronze</div>
+        <p class="division-desc">The entry point. Open to all players, no entry fee, no pressure. Win your way out and earn promotion to Silver.</p>
+        <span class="division-entry entry-free">Free to enter</span>
       </div>
-      <a href="pages/leaderboard.html" class="btn btn-secondary btn-sm">View leaderboard</a>
-    </div>
-    <div style="background:var(--slate);border:0.5px solid var(--slate-light);border-radius:var(--radius-lg);padding:2rem;text-align:center;">
-      <p style="color:var(--gray);font-size:0.9rem;margin-bottom:16px;">Season 1 is underway. Sign up to compete or check the leaderboard to follow the standings.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <a href="pages/signup.html" class="btn btn-primary">Join the Circuit</a>
-        <a href="pages/leaderboard.html" class="btn btn-secondary">View leaderboard</a>
+      <div class="division-card silver">
+        <div class="division-name silver">Silver</div>
+        <p class="division-desc">You've proved yourself in Bronze. Small entry fee, bigger competition, and a prize pool shared between top finishers.</p>
+        <span class="division-entry entry-paid">Entry fee applies</span>
+      </div>
+      <div class="division-card gold">
+        <div class="division-name gold">Gold</div>
+        <p class="division-desc">The top tier. The best players, the biggest prize pool, and a shot at The Circuit Finals. This is where it gets serious.</p>
+        <span class="division-entry entry-paid">Entry fee applies</span>
       </div>
     </div>
   </div>
@@ -184,9 +182,9 @@
     <div class="cta-band">
       <div>
         <h2>Ready to compete?</h2>
-        <p class="mt-1">Season 1 is free to enter. Sign up, get placed, and play your first match this week.</p>
+        <p class="mt-1">Bronze league is free. Sign up, get placed, and play your first match this week.</p>
       </div>
-      <a href="pages/signup.html" class="btn btn-dark btn-lg">Join the Circuit</a>
+      <a href="pages/signup.html" class="btn btn-dark btn-lg">Join for free</a>
     </div>
   </div>
 </section>
@@ -201,10 +199,10 @@
       <p class="footer-copy">Amateur esports, serious competition.</p>
     </div>
     <ul class="footer-links">
-      <li><a href="pages/circuit.html">The Circuit</a></li>
-      <li><a href="pages/live.html">Live</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#divisions">Divisions</a></li>
       <li><a href="pages/leaderboard.html">Leaderboard</a></li>
-      <li><a href="#">Discord</a></li>
+      <li><a href="pages/signup.html">Join free</a></li>
     </ul>
     <p class="footer-copy">© 2026 Arclo. All rights reserved. <a href="admin/index.html" style="color:var(--gray-dim);font-size:0.7rem;margin-left:8px;">Admin</a></p>
   </div>
