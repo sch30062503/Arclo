@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .match-wrap { max-width: 680px; margin: 48px auto; padding: 0 24px; }
-    .match-header { margin-bottom: 28px; }
     .match-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 16px; }
     .match-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
     .versus { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
@@ -21,12 +20,26 @@
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--gray); }
     .info-val { color: #fff; font-weight: 500; }
-    .avail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
-    .avail-slot { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--gray); }
-    .avail-slot button { background: none; border: none; color: #f87171; cursor: pointer; font-size: 1rem; padding: 0; }
-    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
-    .form-input:focus { border-color: rgba(232,255,71,0.4); }
-    .btn-volt { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
+    .avail-slot { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--gray); margin-bottom: 6px; }
+    .avail-slot-remove { background: none; border: none; color: #f87171; cursor: pointer; font-size: 1.1rem; padding: 0 4px; }
+    /* Calendar */
+    .cal-picker { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 14px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-month { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .cal-nav { background: none; border: 0.5px solid var(--slate-light); border-radius: var(--radius); color: var(--gray); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 1rem; line-height: 1; }
+    .cal-nav:hover { color: #fff; border-color: var(--gray); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 12px; }
+    .cal-day-label { font-size: 0.65rem; color: var(--gray); text-align: center; padding: 4px 0; font-weight: 600; }
+    .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.8rem; color: var(--gray); cursor: pointer; border: 0.5px solid transparent; transition: all 0.12s; }
+    .cal-day:hover { background: var(--slate); color: #fff; }
+    .cal-day.today { border-color: rgba(232,255,71,0.4); color: var(--volt); }
+    .cal-day.selected { background: var(--volt); color: var(--midnight); font-weight: 600; border-color: transparent; }
+    .cal-day.empty, .cal-day.past { opacity: 0.2; cursor: default; pointer-events: none; }
+    .time-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
+    .time-label { font-size: 0.75rem; color: var(--gray); margin-bottom: 5px; }
+    .time-select { background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 8px 10px; font-size: 0.85rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; width: 100%; }
+    .time-select:focus { border-color: rgba(232,255,71,0.4); }
+    .btn-volt { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); white-space: nowrap; }
     .btn-volt:hover { background: #d4eb3f; }
     .btn-volt:disabled { opacity: 0.6; cursor: not-allowed; }
     .score-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
@@ -34,12 +47,9 @@
     .toast { border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; margin-bottom: 14px; display: none; }
     .toast-success { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); color: #4ade80; }
     .toast-error { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); color: #f87171; }
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-    .status-scheduled { background: rgba(55,138,221,0.1); color: #378ADD; border: 0.5px solid rgba(55,138,221,0.2); }
-    .status-completed { background: rgba(74,222,128,0.1); color: #4ade80; border: 0.5px solid rgba(74,222,128,0.2); }
-    .status-disputed { background: rgba(248,113,113,0.1); color: #f87171; border: 0.5px solid rgba(248,113,113,0.2); }
     .empty-state { text-align: center; padding: 60px 24px; color: var(--gray); }
     .empty-state h2 { color: #fff; margin-bottom: 8px; }
+    .selected-date-display { font-size: 0.85rem; color: var(--volt); font-weight: 500; margin-bottom: 10px; min-height: 20px; }
   </style>
 </head>
 <body>
@@ -63,19 +73,15 @@
 
 <div class="match-wrap">
   <div id="loading" style="text-align:center;padding:60px 0;color:var(--gray);">Loading your match...</div>
+
   <div id="no-match" class="empty-state" style="display:none;">
     <h2>No match this week</h2>
-    <p>Set your availability below so you get paired when fixtures are generated.</p>
+    <p>Set your availability below so you get paired when fixtures are generated on Monday.</p>
   </div>
-  <div id="match-content" style="display:none;">
 
-    <div class="match-header">
-      <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Your match</p>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <h1 style="color:#fff;" id="match-title">--</h1>
-        <span class="status-badge status-scheduled" id="match-status-badge">Scheduled</span>
-      </div>
-    </div>
+  <div id="match-content" style="display:none;">
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Your match</p>
+    <h1 style="color:#fff;margin-bottom:24px;" id="match-title">--</h1>
 
     <div class="match-card">
       <div class="match-card-title">This week's fixture</div>
@@ -93,24 +99,45 @@
       <div class="info-row"><span class="info-label">Division</span><span class="info-val" id="match-division">--</span></div>
       <div class="info-row"><span class="info-label">Week</span><span class="info-val" id="match-week">--</span></div>
       <div class="info-row"><span class="info-label">Agreed time</span><span class="info-val" id="match-agreed-time">Not yet agreed</span></div>
-      <div class="info-row"><span class="info-label">Result cutoff</span><span class="info-val" id="match-cutoff">Sunday 11:59 PM</span></div>
+      <div class="info-row"><span class="info-label">Result cutoff</span><span class="info-val">Sunday 23:59</span></div>
     </div>
 
-    <!-- Availability -->
-    <div class="match-card" id="availability-section">
+    <div class="match-card">
       <div class="match-card-title">Your availability this week</div>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Add up to 5 time slots when you can play. Your opponent will see these and you'll agree on a time.</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Pick dates and times you can play. Your opponent sees your slots so you can agree a time.</p>
       <div class="toast toast-success" id="avail-success"></div>
       <div class="toast toast-error" id="avail-error"></div>
       <div id="avail-slots"></div>
-      <div style="display:flex;gap:8px;align-items:center;" id="avail-add-row">
-        <input class="form-input" type="datetime-local" id="avail-input" style="flex:1;">
-        <button class="btn-volt" onclick="addSlot()">Add</button>
+
+      <div class="cal-picker">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="prevMonth()">‹</button>
+          <span class="cal-month" id="cal-month-label">--</span>
+          <button class="cal-nav" onclick="nextMonth()">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="selected-date-display" id="selected-date-display"></div>
+        <div class="time-row">
+          <div>
+            <div class="time-label">Hour (24h)</div>
+            <select class="time-select" id="time-hour"></select>
+          </div>
+          <div>
+            <div class="time-label">Minute</div>
+            <select class="time-select" id="time-minute">
+              <option value="00">:00</option>
+              <option value="15">:15</option>
+              <option value="30">:30</option>
+              <option value="45">:45</option>
+            </select>
+          </div>
+          <button class="btn-volt" onclick="addSlot()">Add slot</button>
+        </div>
       </div>
-      <div id="opponent-avail" style="margin-top:16px;"></div>
+
+      <div id="opponent-avail" style="margin-top:4px;"></div>
     </div>
 
-    <!-- Submit result -->
     <div class="match-card" id="result-section">
       <div class="match-card-title">Submit your result</div>
       <div class="toast toast-success" id="result-success"></div>
@@ -119,7 +146,7 @@
         <p style="font-size:0.85rem;color:#4ade80;">You've submitted your result. Waiting for your opponent.</p>
       </div>
       <div id="result-form">
-        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Enter the final score from your match. Both players must submit — if scores match, the result is confirmed automatically.</p>
+        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Enter the final score. Both players submit independently — if scores match it's confirmed automatically, if not a dispute is raised.</p>
         <div class="score-row">
           <div>
             <div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;" id="my-score-label">Your score</div>
@@ -133,20 +160,39 @@
         <button class="btn-volt" id="submit-result-btn" onclick="submitResult()">Submit result</button>
       </div>
     </div>
-
   </div>
 
-  <!-- Availability when no match -->
   <div id="avail-no-match" style="display:none;">
     <div class="match-card">
       <div class="match-card-title">Set your availability for this week</div>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Add the times you're available to play this week. Fixtures are generated every Monday.</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Pick the times you can play this week. Fixtures are generated every Monday morning.</p>
       <div class="toast toast-success" id="avail-success-2"></div>
       <div class="toast toast-error" id="avail-error-2"></div>
       <div id="avail-slots-2"></div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input class="form-input" type="datetime-local" id="avail-input-2" style="flex:1;">
-        <button class="btn-volt" onclick="addSlot2()">Add</button>
+      <div class="cal-picker">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="prevMonth()">‹</button>
+          <span class="cal-month" id="cal-month-label-2">--</span>
+          <button class="cal-nav" onclick="nextMonth()">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid-2"></div>
+        <div class="selected-date-display" id="selected-date-display-2"></div>
+        <div class="time-row">
+          <div>
+            <div class="time-label">Hour (24h)</div>
+            <select class="time-select" id="time-hour-2"></select>
+          </div>
+          <div>
+            <div class="time-label">Minute</div>
+            <select class="time-select" id="time-minute-2">
+              <option value="00">:00</option>
+              <option value="15">:15</option>
+              <option value="30">:30</option>
+              <option value="45">:45</option>
+            </select>
+          </div>
+          <button class="btn-volt" onclick="addSlot2()">Add slot</button>
+        </div>
       </div>
     </div>
   </div>
@@ -158,17 +204,99 @@
   let currentPlayer = null
   let currentMatch = null
   let mySlots = []
+  let selectedDate = null
   const CURRENT_WEEK = 1
   const CURRENT_SEASON = 1
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+  let calYear = new Date().getFullYear()
+  let calMonth = new Date().getMonth()
 
   window.handleLogout = async () => { await logOut() }
 
+  function buildHours(selectId) {
+    const sel = document.getElementById(selectId)
+    if (!sel) return
+    for (let h = 0; h < 24; h++) {
+      const opt = document.createElement('option')
+      opt.value = String(h).padStart(2,'0')
+      opt.textContent = String(h).padStart(2,'0') + ':00'
+      sel.appendChild(opt)
+    }
+    sel.value = '18'
+  }
+
+  function renderCal(gridId, labelId, displayId) {
+    const label = document.getElementById(labelId)
+    const grid = document.getElementById(gridId)
+    if (!label || !grid) return
+
+    label.textContent = `${MONTHS[calMonth]} ${calYear}`
+    grid.innerHTML = ''
+
+    DAYS.forEach(d => {
+      const el = document.createElement('div')
+      el.className = 'cal-day-label'
+      el.textContent = d
+      grid.appendChild(el)
+    })
+
+    const firstDay = new Date(calYear, calMonth, 1)
+    const startOffset = (firstDay.getDay() + 6) % 7
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
+    const today = new Date()
+    today.setHours(0,0,0,0)
+
+    for (let i = 0; i < startOffset; i++) {
+      const el = document.createElement('div')
+      el.className = 'cal-day empty'
+      grid.appendChild(el)
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const el = document.createElement('div')
+      const date = new Date(calYear, calMonth, d)
+      date.setHours(0,0,0,0)
+      el.className = 'cal-day'
+      el.textContent = d
+      if (date < today) el.classList.add('past')
+      if (date.toDateString() === today.toDateString()) el.classList.add('today')
+      if (selectedDate && date.toDateString() === selectedDate.toDateString()) el.classList.add('selected')
+      el.onclick = () => {
+        selectedDate = new Date(calYear, calMonth, d)
+        const displayEl = document.getElementById(displayId)
+        if (displayEl) displayEl.textContent = `Selected: ${selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`
+        renderCal(gridId, labelId, displayId)
+      }
+      grid.appendChild(el)
+    }
+  }
+
+  window.prevMonth = function() {
+    calMonth--
+    if (calMonth < 0) { calMonth = 11; calYear-- }
+    renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
+    renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
+  }
+
+  window.nextMonth = function() {
+    calMonth++
+    if (calMonth > 11) { calMonth = 0; calYear++ }
+    renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
+    renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
+  }
+
   async function init() {
+    buildHours('time-hour')
+    buildHours('time-hour-2')
+    renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
+    renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
+
     const session = await requireAuth()
     if (!session) return
     currentPlayer = await getPlayer()
     if (!currentPlayer) return
-
     await loadMatch()
     await loadMyAvailability()
   }
@@ -176,16 +304,10 @@
   async function loadMatch() {
     const { data: matches } = await supabase
       .from('matches')
-      .select(`
-        *,
-        player_one:player_one_id(id, username, wins, losses, points, division),
-        player_two:player_two_id(id, username, wins, losses, points, division)
-      `)
+      .select(`*, player_one:player_one_id(id,username,wins,losses,points,division), player_two:player_two_id(id,username,wins,losses,points,division)`)
       .or(`player_one_id.eq.${currentPlayer.id},player_two_id.eq.${currentPlayer.id}`)
-      .eq('season', CURRENT_SEASON)
-      .eq('week', CURRENT_WEEK)
-      .neq('status', 'completed')
-      .limit(1)
+      .eq('season', CURRENT_SEASON).eq('week', CURRENT_WEEK)
+      .neq('status', 'completed').limit(1)
 
     document.getElementById('loading').style.display = 'none'
 
@@ -212,7 +334,7 @@
     document.getElementById('opp-score-label').textContent = `${opp.username} score`
 
     if (currentMatch.agreed_time) {
-      document.getElementById('match-agreed-time').textContent = new Date(currentMatch.agreed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+      document.getElementById('match-agreed-time').textContent = new Date(currentMatch.agreed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
     }
 
     const alreadySubmitted = isP1 ? currentMatch.p1_result_submitted : currentMatch.p2_result_submitted
@@ -225,20 +347,16 @@
   }
 
   async function loadMyAvailability() {
-    const { data: slots } = await supabase
-      .from('availability')
-      .select('*')
-      .eq('player_id', currentPlayer.id)
-      .eq('week', CURRENT_WEEK)
-      .eq('season', CURRENT_SEASON)
+    const { data: slots } = await supabase.from('availability').select('*')
+      .eq('player_id', currentPlayer.id).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON)
       .order('slot_time')
-
     mySlots = slots || []
-    renderSlots()
+    renderSlots('avail-slots')
+    renderSlots('avail-slots-2')
   }
 
-  function renderSlots() {
-    const el = document.getElementById('avail-slots') || document.getElementById('avail-slots-2')
+  function renderSlots(elId) {
+    const el = document.getElementById(elId)
     if (!el) return
     if (mySlots.length === 0) {
       el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);margin-bottom:10px;">No slots added yet.</p>'
@@ -246,64 +364,52 @@
     }
     el.innerHTML = mySlots.map(s => `
       <div class="avail-slot">
-        <span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
-        <button onclick="removeSlot('${s.id}')" title="Remove">×</button>
-      </div>
-    `).join('')
+        <span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+        <button class="avail-slot-remove" onclick="removeSlot('${s.id}')">×</button>
+      </div>`).join('')
   }
 
   async function loadOpponentAvailability(oppId) {
-    const { data: slots } = await supabase
-      .from('availability')
-      .select('*')
-      .eq('player_id', oppId)
-      .eq('week', CURRENT_WEEK)
-      .eq('season', CURRENT_SEASON)
+    const { data: slots } = await supabase.from('availability').select('*')
+      .eq('player_id', oppId).eq('week', CURRENT_WEEK).eq('season', CURRENT_SEASON)
       .order('slot_time')
-
     const el = document.getElementById('opponent-avail')
     if (!el) return
     if (!slots || slots.length === 0) {
-      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);">Your opponent hasn\'t set availability yet.</p>'
+      el.innerHTML = '<p style="font-size:0.8rem;color:var(--gray-dim);">Your opponent hasn\'t added availability yet.</p>'
       return
     }
-    el.innerHTML = `
-      <p style="font-size:0.75rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Opponent availability</p>
-      ${slots.map(s => `<div class="avail-slot" style="margin-bottom:6px;"><span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>`).join('')}
-    `
+    el.innerHTML = `<p style="font-size:0.75rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Opponent availability</p>
+      ${slots.map(s => `<div class="avail-slot"><span>${new Date(s.slot_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}</span></div>`).join('')}`
   }
 
-  window.addSlot = async function() {
-    const input = document.getElementById('avail-input')
-    await doAddSlot(input, 'avail-success', 'avail-error')
-  }
-
-  window.addSlot2 = async function() {
-    const input = document.getElementById('avail-input-2')
-    await doAddSlot(input, 'avail-success-2', 'avail-error-2')
-  }
-
-  async function doAddSlot(input, successId, errorId) {
+  async function doAddSlot(hourId, minId, successId, errorId) {
     const successEl = document.getElementById(successId)
     const errorEl = document.getElementById(errorId)
     successEl.style.display = 'none'
     errorEl.style.display = 'none'
 
-    if (!input.value) { errorEl.textContent = 'Please select a time.'; errorEl.style.display = 'block'; return }
+    if (!selectedDate) { errorEl.textContent = 'Please select a date on the calendar first.'; errorEl.style.display = 'block'; return }
     if (mySlots.length >= 5) { errorEl.textContent = 'Maximum 5 slots per week.'; errorEl.style.display = 'block'; return }
 
-    const slotTime = new Date(input.value).toISOString()
+    const hour = document.getElementById(hourId).value
+    const minute = document.getElementById(minId).value
+    const slotDate = new Date(selectedDate)
+    slotDate.setHours(parseInt(hour), parseInt(minute), 0, 0)
+
     const { error } = await supabase.from('availability').insert({
       player_id: currentPlayer.id, week: CURRENT_WEEK,
-      season: CURRENT_SEASON, slot_time: slotTime
+      season: CURRENT_SEASON, slot_time: slotDate.toISOString()
     })
 
     if (error) { errorEl.textContent = 'Could not add slot. Try again.'; errorEl.style.display = 'block'; return }
-    input.value = ''
-    successEl.textContent = 'Slot added.'
+    successEl.textContent = `Slot added: ${slotDate.toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })}`
     successEl.style.display = 'block'
     await loadMyAvailability()
   }
+
+  window.addSlot = () => doAddSlot('time-hour', 'time-minute', 'avail-success', 'avail-error')
+  window.addSlot2 = () => doAddSlot('time-hour-2', 'time-minute-2', 'avail-success-2', 'avail-error-2')
 
   window.removeSlot = async function(id) {
     await supabase.from('availability').delete().eq('id', id)
@@ -325,25 +431,29 @@
     btn.textContent = 'Submitting...'
 
     const isP1 = currentMatch.player_one_id === currentPlayer.id
-    const myId = currentPlayer.id
-    const oppId = isP1 ? currentMatch.player_two_id : currentMatch.player_one_id
-    const myActualScore = myScore
-    const oppActualScore = oppScore
 
     const { error } = await supabase.from('match_results').insert({
-      match_id: currentMatch.id,
-      submitted_by: myId,
-      my_score: myActualScore,
-      opponent_score: oppActualScore
+      match_id: currentMatch.id, submitted_by: currentPlayer.id,
+      my_score: myScore, opponent_score: oppScore
     })
 
-    if (error) { errorEl.textContent = 'Could not submit result. Try again.'; errorEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit result'; return }
+    if (error) { errorEl.textContent = 'Could not submit. Try again.'; errorEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit result'; return }
 
-    await supabase.from('matches').update(
-      isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }
-    ).eq('id', currentMatch.id)
+    await supabase.from('matches').update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }).eq('id', currentMatch.id)
 
-    await checkAndResolve()
+    const { data: results } = await supabase.from('match_results').select('*').eq('match_id', currentMatch.id)
+
+    if (results && results.length === 2) {
+      const r1 = results[0], r2 = results[1]
+      const scoresMatch = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
+      if (scoresMatch) {
+        const winnerId = myScore > oppScore ? currentPlayer.id : myScore < oppScore ? (isP1 ? currentMatch.player_two_id : currentMatch.player_one_id) : null
+        await supabase.from('matches').update({ status: 'completed', winner_id: winnerId }).eq('id', currentMatch.id)
+      } else {
+        await supabase.from('matches').update({ status: 'disputed' }).eq('id', currentMatch.id)
+        await supabase.from('disputes').insert({ match_id: currentMatch.id, player_one_claim: r1, player_two_claim: r2 })
+      }
+    }
 
     successEl.textContent = 'Result submitted. Waiting for opponent confirmation.'
     successEl.style.display = 'block'
@@ -351,38 +461,6 @@
     document.getElementById('already-submitted').style.display = 'block'
     btn.disabled = false
     btn.textContent = 'Submit result'
-  }
-
-  async function checkAndResolve() {
-    const { data: results } = await supabase
-      .from('match_results')
-      .select('*')
-      .eq('match_id', currentMatch.id)
-
-    if (!results || results.length < 2) return
-
-    const r1 = results[0]
-    const r2 = results[1]
-    const scoresMatch = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
-
-    if (scoresMatch) {
-      const p1Wins = r1.my_score > r1.opponent_score
-      const winnerId = p1Wins ? currentMatch.player_one_id : r1.my_score < r1.opponent_score ? currentMatch.player_two_id : null
-      await supabase.from('matches').update({ status: 'completed', winner_id: winnerId, player_one_score: r1.my_score, player_two_score: r1.opponent_score }).eq('id', currentMatch.id)
-      if (winnerId) {
-        await supabase.from('players').update({ wins: currentPlayer.wins + 1, points: currentPlayer.points + 3 }).eq('id', winnerId)
-      } else {
-        await supabase.from('players').update({ points: currentPlayer.points + 1 }).eq('id', currentMatch.player_one_id)
-        await supabase.from('players').update({ points: currentPlayer.points + 1 }).eq('id', currentMatch.player_two_id)
-      }
-    } else {
-      await supabase.from('matches').update({ status: 'disputed' }).eq('id', currentMatch.id)
-      await supabase.from('disputes').insert({
-        match_id: currentMatch.id,
-        player_one_claim: r1,
-        player_two_claim: r2
-      })
-    }
   }
 
   init()
