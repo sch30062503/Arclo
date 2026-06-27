@@ -15,10 +15,11 @@
     .admin-badge { font-size: 0.65rem; font-weight: 600; color: var(--midnight); background: var(--volt); padding: 2px 8px; border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase; }
     .admin-layout { display: grid; grid-template-columns: 200px 1fr; min-height: calc(100vh - 52px); }
     .admin-sidebar { background: #080810; border-right: 0.5px solid var(--slate-light); padding: 16px 10px; }
-    .admin-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius); font-size: 0.85rem; color: var(--gray); cursor: pointer; margin-bottom: 2px; transition: all 0.12s; border: none; background: none; font-family: var(--font); width: 100%; text-align: left; }
+    .admin-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius); font-size: 0.85rem; color: var(--gray); cursor: pointer; margin-bottom: 2px; transition: all 0.12s; border: none; background: none; font-family: var(--font); width: 100%; text-align: left; position: relative; }
     .admin-nav-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
     .admin-nav-item.active { background: rgba(232,255,71,0.08); color: var(--volt); }
     .admin-nav-item svg { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; }
+    .dispute-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ignite); position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none; }
     .admin-main { padding: 28px; overflow-y: auto; }
     .admin-section { display: none; }
     .admin-section.active { display: block; }
@@ -35,20 +36,31 @@
     .form-input:focus { border-color: rgba(232,255,71,0.4); }
     .form-select { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .btn-admin { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; }
     .btn-admin:hover { background: #d4eb3f; }
     .btn-admin:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-danger { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
     .btn-danger:hover { background: rgba(248,113,113,0.1); }
-    .success-toast { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #4ade80; margin-bottom: 14px; display: none; }
-    .error-toast { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; color: #f87171; margin-bottom: 14px; display: none; }
-    .players-table { width: 100%; border-collapse: collapse; }
-    .players-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
-    .players-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.04); font-size: 0.85rem; color: #fff; vertical-align: middle; }
-    .players-table tr:last-child td { border-bottom: none; }
-    .loading { color: var(--gray); font-size: 0.85rem; padding: 20px 0; }
-    .divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 1.5rem 0; }
+    .btn-sm-outline { background: transparent; color: var(--gray); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 5px 10px; font-size: 0.75rem; cursor: pointer; font-family: var(--font); }
+    .btn-sm-outline:hover { color: #fff; border-color: var(--gray); }
+    .toast { border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; margin-bottom: 14px; display: none; }
+    .toast-success { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); color: #4ade80; }
+    .toast-error { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); color: #f87171; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
+    .data-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.04); font-size: 0.85rem; color: #fff; vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .dispute-card { background: rgba(255,79,56,0.05); border: 0.5px solid rgba(255,79,56,0.2); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 12px; }
+    .dispute-players { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
+    .dispute-claims { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .dispute-claim { background: var(--midnight); border-radius: var(--radius); padding: 10px 14px; }
+    .dispute-claim-name { font-size: 0.75rem; color: var(--gray); margin-bottom: 4px; }
+    .dispute-claim-score { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 1rem 0; }
+    .loading { color: var(--gray); font-size: 0.85rem; padding: 12px 0; }
+    .generate-box { background: rgba(232,255,71,0.05); border: 0.5px solid rgba(232,255,71,0.15); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 16px; }
+    .generate-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .generate-desc { font-size: 0.85rem; color: var(--gray); margin-bottom: 16px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -67,21 +79,22 @@
 
 <div class="admin-layout">
   <aside class="admin-sidebar">
-    <button class="admin-nav-item active" onclick="showSection('overview')">
+    <button class="admin-nav-item active" onclick="showSection('overview', this)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Overview
     </button>
-    <button class="admin-nav-item" onclick="showSection('players')">
+    <button class="admin-nav-item" onclick="showSection('players', this)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Players
     </button>
-    <button class="admin-nav-item" onclick="showSection('matches')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
-      Matches
+    <button class="admin-nav-item" onclick="showSection('fixtures', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Fixtures
     </button>
-    <button class="admin-nav-item" onclick="showSection('results')">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Enter results
+    <button class="admin-nav-item" onclick="showSection('disputes', this)" id="nav-disputes">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Disputes
+      <span class="dispute-dot" id="dispute-dot"></span>
     </button>
   </aside>
 
@@ -92,9 +105,9 @@
       <div class="section-title">Overview</div>
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-label">Total players</div><div class="stat-val" id="stat-total">--</div></div>
-        <div class="stat-card"><div class="stat-label">Oceania</div><div class="stat-val" id="stat-oce">--</div></div>
-        <div class="stat-card"><div class="stat-label">North America</div><div class="stat-val" id="stat-na">--</div></div>
-        <div class="stat-card"><div class="stat-label">Europe</div><div class="stat-val" id="stat-eu">--</div></div>
+        <div class="stat-card"><div class="stat-label">Active matches</div><div class="stat-val" id="stat-matches">--</div></div>
+        <div class="stat-card"><div class="stat-label">Open disputes</div><div class="stat-val" id="stat-disputes" style="color:var(--ignite);">--</div></div>
+        <div class="stat-card"><div class="stat-label">Season</div><div class="stat-val">1</div></div>
       </div>
       <div class="admin-card">
         <div class="admin-card-title">Recent signups</div>
@@ -111,16 +124,19 @@
       </div>
     </div>
 
-    <!-- Schedule match -->
-    <div class="admin-section" id="section-matches">
-      <div class="section-title">Schedule a match</div>
-      <div class="admin-card">
-        <div class="success-toast" id="match-success"></div>
-        <div class="error-toast" id="match-error"></div>
-        <div class="form-row">
+    <!-- Fixtures -->
+    <div class="admin-section" id="section-fixtures">
+      <div class="section-title">Fixtures</div>
+
+      <div class="generate-box">
+        <div class="generate-title">Generate weekly fixtures</div>
+        <div class="generate-desc">Click the button below to automatically pair all registered players in a region and create this week's matches. Players will be paired round-robin within their division. Run this every Monday morning.</div>
+        <div class="toast toast-success" id="gen-success"></div>
+        <div class="toast toast-error" id="gen-error"></div>
+        <div class="form-row" style="margin-bottom:14px;">
           <div class="form-group">
             <label class="form-label">Region</label>
-            <select class="form-select" id="match-region" onchange="loadPlayersForRegion()">
+            <select class="form-select" id="gen-region">
               <option value="oce">Oceania</option>
               <option value="na">North America</option>
               <option value="eu">Europe</option>
@@ -128,32 +144,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Division</label>
-            <select class="form-select" id="match-division">
-              <option value="bronze">Bronze</option>
-              <option value="silver">Silver</option>
-              <option value="gold">Gold</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Player 1</label>
-            <select class="form-select" id="match-player1"><option value="">Select player</option></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Player 2</label>
-            <select class="form-select" id="match-player2"><option value="">Select player</option></select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Date and time</label>
-            <input class="form-input" type="datetime-local" id="match-time">
-          </div>
-          <div class="form-group">
             <label class="form-label">Week</label>
-            <select class="form-select" id="match-week">
+            <select class="form-select" id="gen-week">
               <option value="1">Week 1</option>
               <option value="2">Week 2</option>
               <option value="3">Week 3</option>
@@ -163,38 +155,20 @@
             </select>
           </div>
         </div>
-        <button class="btn-admin" onclick="scheduleMatch()">Schedule match</button>
+        <button class="btn-admin" id="gen-btn" onclick="generateFixtures()">Generate fixtures</button>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-title">Current matches</div>
+        <div id="matches-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
-    <!-- Enter results -->
-    <div class="admin-section" id="section-results">
-      <div class="section-title">Enter match results</div>
-      <div class="admin-card">
-        <div class="success-toast" id="result-success"></div>
-        <div class="error-toast" id="result-error"></div>
-        <div class="form-group">
-          <label class="form-label">Select match</label>
-          <select class="form-select" id="result-match" onchange="loadMatchPlayers()">
-            <option value="">Select a scheduled match</option>
-          </select>
-        </div>
-        <div id="result-players" style="display:none;">
-          <hr class="divider">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" id="result-p1-label">Player 1 score</label>
-              <input class="form-input" type="number" id="result-p1-score" min="0" placeholder="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label" id="result-p2-label">Player 2 score</label>
-              <input class="form-input" type="number" id="result-p2-score" min="0" placeholder="0">
-            </div>
-          </div>
-          <button class="btn-admin" onclick="submitResult()">Submit result</button>
-        </div>
-        <div id="no-matches" style="display:none;color:var(--gray);font-size:0.85rem;padding:8px 0;">No scheduled matches yet. Schedule one first.</div>
-      </div>
+    <!-- Disputes -->
+    <div class="admin-section" id="section-disputes">
+      <div class="section-title">Disputes</div>
+      <div id="disputes-list"><div class="loading">Loading...</div></div>
+      <div id="no-disputes" style="display:none;text-align:center;padding:40px;color:var(--gray);">No open disputes.</div>
     </div>
 
   </main>
@@ -204,8 +178,6 @@
   import { supabase } from '../js/auth.js'
 
   const regions = { oce: 'Oceania', na: 'North America', eu: 'Europe', sea: 'Southeast Asia' }
-  let scheduledMatches = []
-  let regionPlayers = []
 
   async function requireAdmin() {
     const { data: { session } } = await supabase.auth.getSession()
@@ -220,49 +192,53 @@
     window.location.href = 'index.html'
   }
 
-  window.showSection = function(name) {
+  window.showSection = function(name, btn) {
     document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'))
     document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'))
     document.getElementById('section-' + name).classList.add('active')
-    event.currentTarget.classList.add('active')
+    btn.classList.add('active')
     if (name === 'overview') loadOverview()
     if (name === 'players') loadPlayers()
-    if (name === 'results') loadScheduledMatches()
+    if (name === 'fixtures') loadMatches()
+    if (name === 'disputes') loadDisputes()
   }
 
   async function loadOverview() {
-    const { data: players } = await supabase.from('players').select('region')
-    if (!players) return
-    document.getElementById('stat-total').textContent = players.length
-    document.getElementById('stat-oce').textContent = players.filter(p => p.region === 'oce').length
-    document.getElementById('stat-na').textContent = players.filter(p => p.region === 'na').length
-    document.getElementById('stat-eu').textContent = players.filter(p => p.region === 'eu').length
+    const { data: players } = await supabase.from('players').select('id, username, region, division, created_at').order('created_at', { ascending: false })
+    const { data: matches } = await supabase.from('matches').select('id').eq('status', 'scheduled')
+    const { data: disputes } = await supabase.from('disputes').select('id').eq('status', 'open')
 
-    const { data: recent } = await supabase.from('players').select('username, region, division, created_at').order('created_at', { ascending: false }).limit(5)
+    document.getElementById('stat-total').textContent = players?.length || 0
+    document.getElementById('stat-matches').textContent = matches?.length || 0
+    document.getElementById('stat-disputes').textContent = disputes?.length || 0
+
+    if (disputes?.length > 0) {
+      document.getElementById('dispute-dot').style.display = 'block'
+    }
+
+    const recent = (players || []).slice(0, 5)
     const el = document.getElementById('recent-signups')
-    if (!recent || recent.length === 0) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
-    el.innerHTML = `<table class="players-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>Joined</th></tr></thead><tbody>${
+    if (!recent.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>Joined</th></tr></thead><tbody>${
       recent.map(p => `<tr><td>${p.username}</td><td>${regions[p.region] || p.region}</td><td>${p.division}</td><td>${new Date(p.created_at).toLocaleDateString('en-GB')}</td></tr>`).join('')
     }</tbody></table>`
   }
 
   async function loadPlayers() {
-    const { data: players } = await supabase.from('players').select('*').order('username', { ascending: true })
+    const { data: players } = await supabase.from('players').select('*').order('username')
     const el = document.getElementById('players-list')
-    if (!players || players.length === 0) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
-    el.innerHTML = `<table class="players-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>W</th><th>L</th><th>Pts</th><th>Actions</th></tr></thead><tbody>${
+    if (!players?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>W</th><th>L</th><th>Pts</th><th>Actions</th></tr></thead><tbody>${
       players.map(p => `<tr>
         <td>${p.username}</td>
         <td>${regions[p.region] || p.region}</td>
-        <td>
-          <select onchange="updateDivision('${p.id}', this.value)" style="background:var(--midnight);border:0.5px solid var(--slate-light);border-radius:4px;padding:4px 8px;font-size:0.75rem;color:#fff;cursor:pointer;">
-            <option value="bronze" ${p.division==='bronze'?'selected':''}>Bronze</option>
-            <option value="silver" ${p.division==='silver'?'selected':''}>Silver</option>
-            <option value="gold" ${p.division==='gold'?'selected':''}>Gold</option>
-          </select>
-        </td>
+        <td><select onchange="updateDivision('${p.id}', this.value)" style="background:var(--midnight);border:0.5px solid var(--slate-light);border-radius:4px;padding:4px 8px;font-size:0.75rem;color:#fff;cursor:pointer;">
+          <option value="bronze" ${p.division==='bronze'?'selected':''}>Bronze</option>
+          <option value="silver" ${p.division==='silver'?'selected':''}>Silver</option>
+          <option value="gold" ${p.division==='gold'?'selected':''}>Gold</option>
+        </select></td>
         <td>${p.wins}</td><td>${p.losses}</td><td>${p.points}</td>
-        <td><button class="btn-danger" onclick="removePlayer('${p.id}', '${p.username}')">Remove</button></td>
+        <td><button class="btn-danger" onclick="removePlayer('${p.id}','${p.username}')">Remove</button></td>
       </tr>`).join('')
     }</tbody></table>`
   }
@@ -272,115 +248,195 @@
   }
 
   window.removePlayer = async function(id, username) {
-    if (!confirm(`Remove ${username} from Arclo? This cannot be undone.`)) return
+    if (!confirm(`Remove ${username}? This cannot be undone.`)) return
     await supabase.from('players').delete().eq('id', id)
     loadPlayers()
   }
 
-  window.loadPlayersForRegion = async function() {
-    const region = document.getElementById('match-region').value
-    const { data: players } = await supabase.from('players').select('id, username').eq('region', region).order('username')
-    regionPlayers = players || []
-    const options = '<option value="">Select player</option>' + regionPlayers.map(p => `<option value="${p.id}">${p.username}</option>`).join('')
-    document.getElementById('match-player1').innerHTML = options
-    document.getElementById('match-player2').innerHTML = options
-  }
-
-  window.scheduleMatch = async function() {
-    const p1 = document.getElementById('match-player1').value
-    const p2 = document.getElementById('match-player2').value
-    const time = document.getElementById('match-time').value
-    const region = document.getElementById('match-region').value
-    const division = document.getElementById('match-division').value
-    const week = document.getElementById('match-week').value
-    const successEl = document.getElementById('match-success')
-    const errorEl = document.getElementById('match-error')
-    successEl.style.display = 'none'
-    errorEl.style.display = 'none'
-
-    if (!p1 || !p2 || !time) { errorEl.textContent = 'Please fill in all fields.'; errorEl.style.display = 'block'; return }
-    if (p1 === p2) { errorEl.textContent = 'Players must be different.'; errorEl.style.display = 'block'; return }
-
-    const { error } = await supabase.from('matches').insert({
-      player_one_id: p1, player_two_id: p2,
-      region, division, week: parseInt(week),
-      scheduled_at: new Date(time).toISOString(),
-      season: 1, status: 'scheduled'
-    })
-
-    if (error) { errorEl.textContent = error.message; errorEl.style.display = 'block'; return }
-    successEl.textContent = 'Match scheduled successfully.'
-    successEl.style.display = 'block'
-  }
-
-  async function loadScheduledMatches() {
+  async function loadMatches() {
     const { data: matches } = await supabase.from('matches').select(`
-      id, scheduled_at, division, region, week,
+      *,
       player_one:player_one_id(username),
       player_two:player_two_id(username)
-    `).eq('status', 'scheduled').order('scheduled_at')
+    `).order('scheduled_at', { ascending: false }).limit(30)
 
-    scheduledMatches = matches || []
-    const select = document.getElementById('result-match')
-    if (!matches || matches.length === 0) {
-      select.innerHTML = '<option value="">No scheduled matches</option>'
-      document.getElementById('no-matches').style.display = 'block'
-      return
-    }
-    document.getElementById('no-matches').style.display = 'none'
-    select.innerHTML = '<option value="">Select a match</option>' + matches.map(m =>
-      `<option value="${m.id}">${m.player_one.username} vs ${m.player_two.username} — ${m.division} · Wk${m.week} · ${new Date(m.scheduled_at).toLocaleDateString('en-GB')}</option>`
-    ).join('')
+    const el = document.getElementById('matches-list')
+    if (!matches?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No matches yet. Generate fixtures above.</p>'; return }
+
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Match</th><th>Region</th><th>Division</th><th>Week</th><th>Status</th><th>Actions</th></tr></thead><tbody>${
+      matches.map(m => `<tr>
+        <td>${m.player_one?.username || '?'} vs ${m.player_two?.username || '?'}</td>
+        <td>${regions[m.region] || m.region}</td>
+        <td>${m.division}</td>
+        <td>Wk${m.week}</td>
+        <td><span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:${m.status==='completed'?'rgba(74,222,128,0.1)':m.status==='disputed'?'rgba(255,79,56,0.1)':'rgba(55,138,221,0.1)'};color:${m.status==='completed'?'#4ade80':m.status==='disputed'?'#ff4f38':'#378ADD'}">${m.status}</span></td>
+        <td><button class="btn-danger" onclick="cancelMatch('${m.id}')">Cancel</button></td>
+      </tr>`).join('')
+    }</tbody></table>`
   }
 
-  window.loadMatchPlayers = function() {
-    const id = document.getElementById('result-match').value
-    const match = scheduledMatches.find(m => m.id === id)
-    if (!match) { document.getElementById('result-players').style.display = 'none'; return }
-    document.getElementById('result-p1-label').textContent = `${match.player_one.username} score`
-    document.getElementById('result-p2-label').textContent = `${match.player_two.username} score`
-    document.getElementById('result-players').style.display = 'block'
+  window.cancelMatch = async function(id) {
+    if (!confirm('Cancel this match?')) return
+    await supabase.from('matches').update({ status: 'cancelled' }).eq('id', id)
+    loadMatches()
   }
 
-  window.submitResult = async function() {
-    const matchId = document.getElementById('result-match').value
-    const p1Score = parseInt(document.getElementById('result-p1-score').value)
-    const p2Score = parseInt(document.getElementById('result-p2-score').value)
-    const successEl = document.getElementById('result-success')
-    const errorEl = document.getElementById('result-error')
+  window.generateFixtures = async function() {
+    const region = document.getElementById('gen-region').value
+    const week = parseInt(document.getElementById('gen-week').value)
+    const successEl = document.getElementById('gen-success')
+    const errorEl = document.getElementById('gen-error')
+    const btn = document.getElementById('gen-btn')
     successEl.style.display = 'none'
     errorEl.style.display = 'none'
 
-    if (!matchId || isNaN(p1Score) || isNaN(p2Score)) { errorEl.textContent = 'Please fill in all fields.'; errorEl.style.display = 'block'; return }
+    btn.disabled = true
+    btn.textContent = 'Generating...'
 
-    const match = scheduledMatches.find(m => m.id === matchId)
-    const winnerId = p1Score > p2Score ? match.player_one_id : p2Score > p1Score ? match.player_two_id : null
+    const { data: players } = await supabase.from('players').select('id, username, division').eq('region', region)
 
-    const { error } = await supabase.from('matches').update({
-      player_one_score: p1Score, player_two_score: p2Score,
-      winner_id: winnerId, status: 'completed'
+    if (!players || players.length < 2) {
+      errorEl.textContent = 'Not enough players in this region to generate fixtures (need at least 2).'
+      errorEl.style.display = 'block'
+      btn.disabled = false
+      btn.textContent = 'Generate fixtures'
+      return
+    }
+
+    const divisions = {}
+    players.forEach(p => {
+      if (!divisions[p.division]) divisions[p.division] = []
+      divisions[p.division].push(p)
+    })
+
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() + (7 - cutoff.getDay()))
+    cutoff.setHours(23, 59, 0, 0)
+
+    const fixtures = []
+    for (const [division, divPlayers] of Object.entries(divisions)) {
+      const shuffled = divPlayers.sort(() => Math.random() - 0.5)
+      for (let i = 0; i < shuffled.length - 1; i += 2) {
+        fixtures.push({
+          player_one_id: shuffled[i].id,
+          player_two_id: shuffled[i + 1].id,
+          region, division, week, season: 1,
+          status: 'scheduled',
+          cutoff_at: cutoff.toISOString(),
+          scheduled_at: new Date().toISOString()
+        })
+      }
+    }
+
+    if (fixtures.length === 0) {
+      errorEl.textContent = 'Could not generate fixtures — check player divisions.'
+      errorEl.style.display = 'block'
+      btn.disabled = false
+      btn.textContent = 'Generate fixtures'
+      return
+    }
+
+    const { error } = await supabase.from('matches').insert(fixtures)
+
+    if (error) {
+      errorEl.textContent = error.message
+      errorEl.style.display = 'block'
+    } else {
+      successEl.textContent = `Generated ${fixtures.length} fixture${fixtures.length > 1 ? 's' : ''} for ${regions[region]} Week ${week}.`
+      successEl.style.display = 'block'
+      loadMatches()
+    }
+
+    btn.disabled = false
+    btn.textContent = 'Generate fixtures'
+  }
+
+  async function loadDisputes() {
+    const { data: disputes } = await supabase.from('disputes').select(`
+      *,
+      match:match_id(
+        player_one:player_one_id(username),
+        player_two:player_two_id(username),
+        division, region, week
+      )
+    `).eq('status', 'open').order('created_at')
+
+    const el = document.getElementById('disputes-list')
+    const noEl = document.getElementById('no-disputes')
+
+    if (!disputes?.length) {
+      el.innerHTML = ''
+      noEl.style.display = 'block'
+      document.getElementById('dispute-dot').style.display = 'none'
+      return
+    }
+
+    noEl.style.display = 'none'
+    document.getElementById('dispute-dot').style.display = 'block'
+
+    el.innerHTML = disputes.map(d => {
+      const p1name = d.match?.player_one?.username || 'Player 1'
+      const p2name = d.match?.player_two?.username || 'Player 2'
+      const c1 = d.player_one_claim
+      const c2 = d.player_two_claim
+      return `
+        <div class="dispute-card">
+          <div class="dispute-players">${p1name} vs ${p2name} — ${d.match?.division} · Wk${d.match?.week} · ${regions[d.match?.region] || ''}</div>
+          <div class="dispute-claims">
+            <div class="dispute-claim">
+              <div class="dispute-claim-name">${p1name} says</div>
+              <div class="dispute-claim-score">${c1?.my_score ?? '?'} – ${c1?.opponent_score ?? '?'}</div>
+            </div>
+            <div class="dispute-claim">
+              <div class="dispute-claim-name">${p2name} says</div>
+              <div class="dispute-claim-score">${c2?.my_score ?? '?'} – ${c2?.opponent_score ?? '?'}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p1_wins','${d.match?.player_one_id}','${d.match?.player_two_id}')">
+              ${p1name} wins
+            </button>
+            <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p2_wins','${d.match?.player_one_id}','${d.match?.player_two_id}')">
+              ${p2name} wins
+            </button>
+            <button class="btn-sm-outline" onclick="resolveDispute('${d.id}','${d.match_id}','draw','${d.match?.player_one_id}','${d.match?.player_two_id}')">
+              Draw
+            </button>
+          </div>
+        </div>
+      `
+    }).join('')
+  }
+
+  window.resolveDispute = async function(disputeId, matchId, decision, p1id, p2id) {
+    const winnerId = decision === 'p1_wins' ? p1id : decision === 'p2_wins' ? p2id : null
+
+    await supabase.from('matches').update({
+      status: 'completed', winner_id: winnerId
     }).eq('id', matchId)
 
-    if (error) { errorEl.textContent = error.message; errorEl.style.display = 'block'; return }
+    if (winnerId) {
+      await supabase.from('players').update({ wins: supabase.rpc('increment_wins', { pid: winnerId }) }).eq('id', winnerId)
+      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: winnerId, amt: 3 }) }).eq('id', winnerId)
+      const loserId = winnerId === p1id ? p2id : p1id
+      await supabase.from('players').update({ losses: supabase.rpc('increment_losses', { pid: loserId }) }).eq('id', loserId)
+    } else {
+      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: p1id, amt: 1 }) }).eq('id', p1id)
+      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: p2id, amt: 1 }) }).eq('id', p2id)
+    }
 
-    // Update player stats
-    const p1Win = p1Score > p2Score
-    await supabase.from('players').update({
-      wins: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 1 : 0 }),
-      losses: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 0 : 1 }),
-      points: supabase.rpc('increment', { row_id: match.player_one_id, amount: p1Win ? 3 : 0 })
-    }).eq('id', match.player_one_id)
+    await supabase.from('disputes').update({
+      status: 'resolved', admin_decision: decision, resolved_at: new Date().toISOString()
+    }).eq('id', disputeId)
 
-    successEl.textContent = 'Result submitted. Leaderboard updated.'
-    successEl.style.display = 'block'
-    loadScheduledMatches()
+    loadDisputes()
+    loadOverview()
   }
 
   async function init() {
     const ok = await requireAdmin()
     if (!ok) return
     loadOverview()
-    loadPlayersForRegion()
   }
 
   init()
