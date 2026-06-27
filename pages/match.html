@@ -449,11 +449,27 @@
 
   window.acceptProposal = async function() {
     if (!pendingProposal || !currentMatch) return
-    await supabase.from('match_messages').insert({
+    console.log('Accepting proposal:', pendingProposal.proposed_time, 'for match:', currentMatch.id)
+
+    const { error: msgError } = await supabase.from('match_messages').insert({
       match_id: currentMatch.id, sender_id: currentPlayer.id,
       message: 'Time accepted', type: 'confirmed', proposed_time: pendingProposal.proposed_time
     })
-    await supabase.from('matches').update({ agreed_time: pendingProposal.proposed_time }).eq('id', currentMatch.id)
+    if (msgError) { console.error('Message insert error:', msgError); }
+
+    const { data: updateData, error: updateError } = await supabase
+      .from('matches')
+      .update({ agreed_time: pendingProposal.proposed_time })
+      .eq('id', currentMatch.id)
+      .select()
+    
+    console.log('Update result:', updateData, 'Error:', updateError)
+
+    if (updateError) {
+      alert('Could not save agreed time: ' + updateError.message)
+      return
+    }
+
     const timeStr = new Date(pendingProposal.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
     document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
     document.getElementById('proposal-banner').style.display = 'none'
