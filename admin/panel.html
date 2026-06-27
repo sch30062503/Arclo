@@ -9,9 +9,6 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .admin-nav { background: #080810; border-bottom: 0.5px solid var(--slate-light); padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
-    .admin-nav-logo { display: flex; align-items: center; gap: 8px; }
-    .admin-nav-logo-text { font-size: 1rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; }
-    .admin-nav-logo-text span { color: var(--volt); }
     .admin-badge { font-size: 0.65rem; font-weight: 600; color: var(--midnight); background: var(--volt); padding: 2px 8px; border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase; }
     .admin-layout { display: grid; grid-template-columns: 200px 1fr; min-height: calc(100vh - 52px); }
     .admin-sidebar { background: #080810; border-right: 0.5px solid var(--slate-light); padding: 16px 10px; }
@@ -26,23 +23,23 @@
     .section-title { font-size: 1.2rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; margin-bottom: 20px; }
     .admin-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 16px; }
     .admin-card-title { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
-    .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
     .stat-card { background: var(--slate); border-radius: var(--radius); padding: 14px; }
     .stat-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
     .stat-val { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: -0.03em; line-height: 1; }
     .form-group { margin-bottom: 14px; }
     .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
-    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); transition: border-color 0.15s; }
+    .form-input { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); }
     .form-input:focus { border-color: rgba(232,255,71,0.4); }
     .form-select { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 9px 12px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn-admin { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+    .btn-admin { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
     .btn-admin:hover { background: #d4eb3f; }
     .btn-admin:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-danger { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
     .btn-danger:hover { background: rgba(248,113,113,0.1); }
-    .btn-sm-outline { background: transparent; color: var(--gray); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 5px 10px; font-size: 0.75rem; cursor: pointer; font-family: var(--font); }
-    .btn-sm-outline:hover { color: #fff; border-color: var(--gray); }
+    .btn-outline { background: transparent; color: var(--gray); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
+    .btn-outline:hover { color: #fff; border-color: var(--gray); }
     .toast { border-radius: var(--radius); padding: 10px 14px; font-size: 0.8rem; margin-bottom: 14px; display: none; }
     .toast-success { background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); color: #4ade80; }
     .toast-error { background: rgba(248,113,113,0.1); border: 0.5px solid rgba(248,113,113,0.3); color: #f87171; }
@@ -50,25 +47,38 @@
     .data-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
     .data-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(255,255,255,0.04); font-size: 0.85rem; color: #fff; vertical-align: middle; }
     .data-table tr:last-child td { border-bottom: none; }
+    .tournament-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 12px; }
+    .tournament-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+    .tournament-name { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 3px; }
+    .tournament-meta { font-size: 0.78rem; color: var(--gray); }
+    .week-badge { background: rgba(232,255,71,0.1); border: 0.5px solid rgba(232,255,71,0.2); border-radius: 999px; padding: 3px 10px; font-size: 0.75rem; color: var(--volt); font-weight: 600; }
     .dispute-card { background: rgba(255,79,56,0.05); border: 0.5px solid rgba(255,79,56,0.2); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 12px; }
-    .dispute-players { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
     .dispute-claims { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
     .dispute-claim { background: var(--midnight); border-radius: var(--radius); padding: 10px 14px; }
     .dispute-claim-name { font-size: 0.75rem; color: var(--gray); margin-bottom: 4px; }
     .dispute-claim-score { font-size: 1.1rem; font-weight: 700; color: #fff; }
-    .divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 1rem 0; }
     .loading { color: var(--gray); font-size: 0.85rem; padding: 12px 0; }
-    .generate-box { background: rgba(232,255,71,0.05); border: 0.5px solid rgba(232,255,71,0.15); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 16px; }
-    .generate-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
-    .generate-desc { font-size: 0.85rem; color: var(--gray); margin-bottom: 16px; line-height: 1.6; }
   </style>
 </head>
 <body>
 
+<script>
+  function showSection(n,b){window._showSection&&window._showSection(n,b)}
+  function handleLogout(){window._handleLogout&&window._handleLogout()}
+  function generateFixtures(id){window._generateFixtures&&window._generateFixtures(id)}
+  function advanceWeek(id){window._advanceWeek&&window._advanceWeek(id)}
+  function endTournament(id){window._endTournament&&window._endTournament(id)}
+  function resolveDispute(a,b,c,d,e,f,g){window._resolveDispute&&window._resolveDispute(a,b,c,d,e,f,g)}
+  function removePlayer(a,b){window._removePlayer&&window._removePlayer(a,b)}
+  function cancelMatch(a){window._cancelMatch&&window._cancelMatch(a)}
+  function updateDivision(a,b){window._updateDivision&&window._updateDivision(a,b)}
+  function createTournament(){window._createTournament&&window._createTournament()}
+</script>
+
 <div class="admin-nav">
-  <div class="admin-nav-logo">
+  <div style="display:flex;align-items:center;gap:8px;">
     <svg width="18" height="18" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
-    <span class="admin-nav-logo-text">arc<span>lo</span></span>
+    <span style="font-size:1rem;font-weight:600;color:#fff;letter-spacing:-0.02em;">arc<span style="color:var(--volt);">lo</span></span>
     <span class="admin-badge">Admin</span>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
@@ -79,35 +89,33 @@
 
 <div class="admin-layout">
   <aside class="admin-sidebar">
-    <button class="admin-nav-item active" onclick="showSection('overview', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Overview
+    <button class="admin-nav-item active" onclick="showSection('overview',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Overview
     </button>
-    <button class="admin-nav-item" onclick="showSection('players', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Players
+    <button class="admin-nav-item" onclick="showSection('players',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Players
     </button>
-    <button class="admin-nav-item" onclick="showSection('fixtures', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Fixtures
+    <button class="admin-nav-item" onclick="showSection('tournaments',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>Tournaments
     </button>
-    <button class="admin-nav-item" onclick="showSection('disputes', this)" id="nav-disputes">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Disputes
+    <button class="admin-nav-item" onclick="showSection('fixtures',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Fixtures
+    </button>
+    <button class="admin-nav-item" onclick="showSection('disputes',this)" id="nav-disputes">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Disputes
       <span class="dispute-dot" id="dispute-dot"></span>
     </button>
   </aside>
 
   <main class="admin-main">
 
-    <!-- Overview -->
     <div class="admin-section active" id="section-overview">
       <div class="section-title">Overview</div>
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-label">Total players</div><div class="stat-val" id="stat-total">--</div></div>
-        <div class="stat-card"><div class="stat-label">Active matches</div><div class="stat-val" id="stat-matches">--</div></div>
+        <div class="stat-card"><div class="stat-label">Active tournaments</div><div class="stat-val" id="stat-tournaments">--</div></div>
         <div class="stat-card"><div class="stat-label">Open disputes</div><div class="stat-val" id="stat-disputes" style="color:var(--ignite);">--</div></div>
-        <div class="stat-card"><div class="stat-label">Season</div><div class="stat-val">1</div></div>
+        <div class="stat-card"><div class="stat-label">Matches this week</div><div class="stat-val" id="stat-matches">--</div></div>
       </div>
       <div class="admin-card">
         <div class="admin-card-title">Recent signups</div>
@@ -115,7 +123,6 @@
       </div>
     </div>
 
-    <!-- Players -->
     <div class="admin-section" id="section-players">
       <div class="section-title">Players</div>
       <div class="admin-card">
@@ -124,19 +131,16 @@
       </div>
     </div>
 
-    <!-- Fixtures -->
-    <div class="admin-section" id="section-fixtures">
-      <div class="section-title">Fixtures</div>
-
-      <div class="generate-box">
-        <div class="generate-title">Generate weekly fixtures</div>
-        <div class="generate-desc">Click the button below to automatically pair all registered players in a region and create this week's matches. Players will be paired round-robin within their division. Run this every Monday morning.</div>
-        <div class="toast toast-success" id="gen-success"></div>
-        <div class="toast toast-error" id="gen-error"></div>
-        <div class="form-row" style="margin-bottom:14px;">
+    <div class="admin-section" id="section-tournaments">
+      <div class="section-title">Tournaments</div>
+      <div class="admin-card">
+        <div class="admin-card-title">Create new tournament</div>
+        <div class="toast toast-success" id="create-success"></div>
+        <div class="toast toast-error" id="create-error"></div>
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Region</label>
-            <select class="form-select" id="gen-region">
+            <select class="form-select" id="t-region">
               <option value="oce">Oceania</option>
               <option value="na">North America</option>
               <option value="eu">Europe</option>
@@ -144,49 +148,54 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Week</label>
-            <select class="form-select" id="gen-week">
-              <option value="1">Week 1</option>
-              <option value="2">Week 2</option>
-              <option value="3">Week 3</option>
-              <option value="4">Week 4</option>
-              <option value="5">Week 5</option>
-              <option value="6">Week 6</option>
+            <label class="form-label">Division</label>
+            <select class="form-select" id="t-division">
+              <option value="bronze">Bronze</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
             </select>
           </div>
         </div>
-        <button class="btn-admin" id="gen-btn" onclick="generateFixtures()">Generate fixtures</button>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tournament name</label>
+            <input class="form-input" type="text" id="t-name" placeholder="e.g. Bronze OCE #1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weeks</label>
+            <select class="form-select" id="t-weeks">
+              <option value="6">6 weeks</option>
+              <option value="8" selected>8 weeks</option>
+              <option value="10">10 weeks</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-admin" onclick="createTournament()">Create tournament</button>
       </div>
+      <div id="tournaments-list"><div class="loading">Loading tournaments...</div></div>
+    </div>
 
+    <div class="admin-section" id="section-fixtures">
+      <div class="section-title">Fixtures</div>
       <div class="admin-card">
-        <div class="admin-card-title">Current matches</div>
+        <div class="admin-card-title">All matches</div>
         <div id="matches-list"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
-    <!-- Disputes -->
     <div class="admin-section" id="section-disputes">
       <div class="section-title">Disputes</div>
-      <div id="disputes-list"><div class="loading">Loading...</div></div>
+      <div id="disputes-list"></div>
       <div id="no-disputes" style="display:none;text-align:center;padding:40px;color:var(--gray);">No open disputes.</div>
     </div>
 
   </main>
 </div>
 
-<script>
-  function showSection(n, b) { window._showSection && window._showSection(n, b) }
-  function handleLogout() { window._handleLogout && window._handleLogout() }
-  function generateFixtures() { window._generateFixtures && window._generateFixtures() }
-  function resolveDispute(a,b,c,d,e) { window._resolveDispute && window._resolveDispute(a,b,c,d,e) }
-  function removePlayer(a,b) { window._removePlayer && window._removePlayer(a,b) }
-  function cancelMatch(a) { window._cancelMatch && window._cancelMatch(a) }
-  function updateDivision(a,b) { window._updateDivision && window._updateDivision(a,b) }
-</script>
 <script type="module">
   import { supabase } from '../js/auth.js'
 
-  const regions = { oce: 'Oceania', na: 'North America', eu: 'Europe', sea: 'Southeast Asia' }
+  const regions = { oce:'Oceania', na:'North America', eu:'Europe', sea:'Southeast Asia' }
 
   async function requireAdmin() {
     const { data: { session } } = await supabase.auth.getSession()
@@ -196,10 +205,7 @@
     return true
   }
 
-  window._handleLogout = async function() {
-    await supabase.auth.signOut()
-    window.location.href = 'index.html'
-  }
+  window._handleLogout = async () => { await supabase.auth.signOut(); window.location.href = 'index.html' }
 
   window._showSection = function(name, btn) {
     document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'))
@@ -208,40 +214,40 @@
     btn.classList.add('active')
     if (name === 'overview') loadOverview()
     if (name === 'players') loadPlayers()
+    if (name === 'tournaments') loadTournaments()
     if (name === 'fixtures') loadMatches()
     if (name === 'disputes') loadDisputes()
   }
 
+  // ─── Overview ─────────────────────────────────────────────────────────────
   async function loadOverview() {
-    const { data: players } = await supabase.from('players').select('id, username, region, division, created_at').order('created_at', { ascending: false })
-    const { data: matches } = await supabase.from('matches').select('id').eq('status', 'scheduled')
-    const { data: disputes } = await supabase.from('disputes').select('id').eq('status', 'open')
-
+    const [{ data: players }, { data: tournaments }, { data: disputes }, { data: matches }] = await Promise.all([
+      supabase.from('players').select('id,username,region,division,created_at').order('created_at', { ascending: false }),
+      supabase.from('tournaments').select('id').eq('status','active'),
+      supabase.from('disputes').select('id').eq('status','open'),
+      supabase.from('matches').select('id').eq('status','scheduled')
+    ])
     document.getElementById('stat-total').textContent = players?.length || 0
-    document.getElementById('stat-matches').textContent = matches?.length || 0
+    document.getElementById('stat-tournaments').textContent = tournaments?.length || 0
     document.getElementById('stat-disputes').textContent = disputes?.length || 0
-
-    if (disputes?.length > 0) {
-      document.getElementById('dispute-dot').style.display = 'block'
-    }
-
-    const recent = (players || []).slice(0, 5)
+    document.getElementById('stat-matches').textContent = matches?.length || 0
+    if (disputes?.length) document.getElementById('dispute-dot').style.display = 'block'
     const el = document.getElementById('recent-signups')
+    const recent = (players||[]).slice(0,5)
     if (!recent.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
-    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>Joined</th></tr></thead><tbody>${
-      recent.map(p => `<tr><td>${p.username}</td><td>${regions[p.region] || p.region}</td><td>${p.division}</td><td>${new Date(p.created_at).toLocaleDateString('en-GB')}</td></tr>`).join('')
-    }</tbody></table>`
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>Joined</th></tr></thead><tbody>${recent.map(p=>`<tr><td>${p.username}</td><td>${regions[p.region]||p.region}</td><td>${p.division}</td><td>${new Date(p.created_at).toLocaleDateString('en-GB')}</td></tr>`).join('')}</tbody></table>`
   }
 
+  // ─── Players ──────────────────────────────────────────────────────────────
   async function loadPlayers() {
-    const { data: players } = await supabase.from('players').select('*').order('username')
+    const { data: players } = await supabase.from('players').select('*').order('points', { ascending: false })
     const el = document.getElementById('players-list')
     if (!players?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No players yet.</p>'; return }
-    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>W</th><th>L</th><th>Pts</th><th>Actions</th></tr></thead><tbody>${
-      players.map(p => `<tr>
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Username</th><th>Region</th><th>Division</th><th>W</th><th>L</th><th>Pts</th><th></th></tr></thead><tbody>${
+      players.map(p=>`<tr>
         <td>${p.username}</td>
-        <td>${regions[p.region] || p.region}</td>
-        <td><select onchange="updateDivision('${p.id}', this.value)" style="background:var(--midnight);border:0.5px solid var(--slate-light);border-radius:4px;padding:4px 8px;font-size:0.75rem;color:#fff;cursor:pointer;">
+        <td>${regions[p.region]||p.region}</td>
+        <td><select onchange="updateDivision('${p.id}',this.value)" style="background:var(--midnight);border:0.5px solid var(--slate-light);border-radius:4px;padding:4px 6px;font-size:0.75rem;color:#fff;cursor:pointer;">
           <option value="bronze" ${p.division==='bronze'?'selected':''}>Bronze</option>
           <option value="silver" ${p.division==='silver'?'selected':''}>Silver</option>
           <option value="gold" ${p.division==='gold'?'selected':''}>Gold</option>
@@ -252,243 +258,261 @@
     }</tbody></table>`
   }
 
-  window._updateDivision = async function(id, division) {
-    await supabase.from('players').update({ division }).eq('id', id)
-  }
-
-  window._removePlayer = async function(id, username) {
-    if (!confirm(`Remove ${username}? This cannot be undone.`)) return
+  window._updateDivision = async (id, division) => { await supabase.from('players').update({ division }).eq('id', id) }
+  window._removePlayer = async (id, name) => {
+    if (!confirm(`Remove ${name}?`)) return
     await supabase.from('players').delete().eq('id', id)
-    loadPlayers()
+    loadPlayers(); loadOverview()
   }
 
+  // ─── Tournaments ──────────────────────────────────────────────────────────
+  window._createTournament = async function() {
+    const name = document.getElementById('t-name').value.trim()
+    const region = document.getElementById('t-region').value
+    const division = document.getElementById('t-division').value
+    const weeks = parseInt(document.getElementById('t-weeks').value)
+    const sEl = document.getElementById('create-success')
+    const eEl = document.getElementById('create-error')
+    sEl.style.display = 'none'; eEl.style.display = 'none'
+    if (!name) { eEl.textContent = 'Please enter a name.'; eEl.style.display = 'block'; return }
+    const { error } = await supabase.from('tournaments').insert({ name, region, division, weeks, status:'active', current_week:1, max_players:16 })
+    if (error) { eEl.textContent = error.message; eEl.style.display = 'block'; return }
+    sEl.textContent = `Tournament "${name}" created.`; sEl.style.display = 'block'
+    document.getElementById('t-name').value = ''
+    loadTournaments()
+  }
+
+  async function loadTournaments() {
+    const { data: tournaments } = await supabase.from('tournaments').select('*').order('created_at', { ascending: false })
+    const { data: players } = await supabase.from('players').select('tournament_id')
+    const counts = {}
+    players?.forEach(p => { if (p.tournament_id) counts[p.tournament_id] = (counts[p.tournament_id]||0)+1 })
+    const el = document.getElementById('tournaments-list')
+    if (!tournaments?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:12px 0;">No tournaments yet. Create one above.</p>'; return }
+    el.innerHTML = tournaments.map(t => {
+      const count = counts[t.id] || 0
+      const isFull = count >= t.max_players
+      return `<div class="tournament-card">
+        <div class="tournament-header">
+          <div>
+            <div class="tournament-name">${t.name}</div>
+            <div class="tournament-meta">${regions[t.region]||t.region} · ${t.division.charAt(0).toUpperCase()+t.division.slice(1)} · ${t.weeks} weeks · <span style="color:${isFull?'var(--ignite)':'var(--gray)'}">${count}/${t.max_players} players${isFull?' — FULL':''}</span></div>
+          </div>
+          <span class="week-badge">Week ${t.current_week} / ${t.weeks}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-admin" onclick="generateFixtures('${t.id}')">Generate week ${t.current_week} fixtures</button>
+          <button class="btn-outline" onclick="advanceWeek('${t.id}')">Advance to week ${t.current_week+1}</button>
+          ${t.status==='active'?`<button class="btn-danger" onclick="endTournament('${t.id}')">End tournament</button>`:'<span style="font-size:0.8rem;color:var(--gray);padding:6px 0;">Completed</span>'}
+        </div>
+      </div>`
+    }).join('')
+  }
+
+  window._advanceWeek = async function(id) {
+    const { data: t } = await supabase.from('tournaments').select('current_week,weeks').eq('id',id).single()
+    if (!t) return
+    if (t.current_week >= t.weeks) { alert('Already at final week.'); return }
+    await supabase.from('tournaments').update({ current_week: t.current_week+1 }).eq('id',id)
+    loadTournaments()
+  }
+
+  window._endTournament = async function(id) {
+    if (!confirm('End this tournament? This cannot be undone.')) return
+    await supabase.from('tournaments').update({ status:'completed' }).eq('id',id)
+    loadTournaments()
+  }
+
+  // ─── Fixture generator ────────────────────────────────────────────────────
+  window._generateFixtures = async function(tournamentId) {
+    const { data: t } = await supabase.from('tournaments').select('*').eq('id',tournamentId).single()
+    if (!t) { alert('Tournament not found.'); return }
+
+    const { data: players } = await supabase.from('players').select('id,username')
+      .eq('region', t.region).eq('division', t.division).eq('tournament_id', tournamentId)
+
+    if (!players || players.length < 2) { alert('Need at least 2 players in this tournament.'); return }
+
+    // Check for existing fixtures this week
+    const { data: existing } = await supabase.from('matches').select('id')
+      .eq('tournament_id', tournamentId).eq('week', t.current_week).neq('status','cancelled')
+    if (existing?.length) { if (!confirm(`Week ${t.current_week} fixtures already exist. Generate anyway?`)) return }
+
+    // Get previous pairings
+    const { data: prevMatches } = await supabase.from('matches').select('player_one_id,player_two_id')
+      .eq('tournament_id', tournamentId).neq('status','cancelled')
+    const played = new Set()
+    prevMatches?.forEach(m => played.add([m.player_one_id,m.player_two_id].sort().join('|')))
+
+    // Determine bye player if odd number
+    let pool = [...players].sort(() => Math.random()-0.5)
+    let byePlayer = null
+    if (pool.length % 2 !== 0) {
+      const { data: byes } = await supabase.from('bye_weeks').select('player_id').eq('tournament_id',tournamentId)
+      const byeCount = {}
+      byes?.forEach(b => { byeCount[b.player_id] = (byeCount[b.player_id]||0)+1 })
+      pool.sort((a,b) => (byeCount[a.id]||0)-(byeCount[b.id]||0))
+      byePlayer = pool.shift()
+    }
+
+    // Generate pairs avoiding repeats
+    const pairs = []
+    let attempts = 0
+    while (attempts < 200) {
+      attempts++
+      const shuffled = [...pool].sort(() => Math.random()-0.5)
+      const thisPairs = []
+      const used = new Set()
+      let ok = true
+      for (let i = 0; i < shuffled.length; i++) {
+        if (used.has(shuffled[i].id)) continue
+        let matched = false
+        for (let j = i+1; j < shuffled.length; j++) {
+          if (used.has(shuffled[j].id)) continue
+          const key = [shuffled[i].id,shuffled[j].id].sort().join('|')
+          if (!played.has(key)) {
+            thisPairs.push([shuffled[i],shuffled[j]])
+            used.add(shuffled[i].id); used.add(shuffled[j].id)
+            matched = true; break
+          }
+        }
+        if (!matched && !used.has(shuffled[i].id)) { ok = false; break }
+      }
+      if (ok && thisPairs.length === pool.length/2) { pairs.push(...thisPairs); break }
+    }
+
+    if (!pairs.length) { alert('Could not generate unique fixtures — all pairings may have been used.'); return }
+
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() + (7-cutoff.getDay()))
+    cutoff.setHours(23,59,0,0)
+
+    const { error } = await supabase.from('matches').insert(pairs.map(([p1,p2]) => ({
+      player_one_id: p1.id, player_two_id: p2.id,
+      region: t.region, division: t.division,
+      week: t.current_week, season: 1,
+      status: 'scheduled', tournament_id: tournamentId,
+      cutoff_at: cutoff.toISOString()
+    })))
+
+    if (error) { alert('Error: ' + error.message); return }
+
+    if (byePlayer) {
+      await supabase.from('bye_weeks').insert({ player_id: byePlayer.id, tournament_id: tournamentId, week: t.current_week })
+      await supabase.from('notifications').insert({ player_id: byePlayer.id, message: `You have a bye in Week ${t.current_week} — no match this week. You'll be back next week.`, type: 'info' })
+    }
+
+    alert(`Generated ${pairs.length} fixture${pairs.length>1?'s':''} for Week ${t.current_week}${byePlayer?` — ${byePlayer.username} has a bye`:''}`)
+    loadTournaments(); loadMatches()
+  }
+
+  // ─── Matches ──────────────────────────────────────────────────────────────
   async function loadMatches() {
     const { data: matches } = await supabase.from('matches').select(`
-      *,
-      player_one:player_one_id(username),
-      player_two:player_two_id(username)
-    `).order('scheduled_at', { ascending: false }).limit(30)
-
+      *, player_one:player_one_id(username), player_two:player_two_id(username)
+    `).order('created_at', { ascending: false }).limit(50)
     const el = document.getElementById('matches-list')
-    if (!matches?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No matches yet. Generate fixtures above.</p>'; return }
-
-    el.innerHTML = `<table class="data-table"><thead><tr><th>Match</th><th>Region</th><th>Division</th><th>Week</th><th>Status</th><th>Actions</th></tr></thead><tbody>${
-      matches.map(m => `<tr>
-        <td>${m.player_one?.username || '?'} vs ${m.player_two?.username || '?'}</td>
-        <td>${regions[m.region] || m.region}</td>
-        <td>${m.division}</td>
-        <td>Wk${m.week}</td>
-        <td><span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:${m.status==='completed'?'rgba(74,222,128,0.1)':m.status==='disputed'?'rgba(255,79,56,0.1)':'rgba(55,138,221,0.1)'};color:${m.status==='completed'?'#4ade80':m.status==='disputed'?'#ff4f38':'#378ADD'}">${m.status}</span></td>
-        <td><button class="btn-danger" onclick="cancelMatch('${m.id}')">Cancel</button></td>
+    if (!matches?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">No matches yet.</p>'; return }
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Match</th><th>Division</th><th>Week</th><th>Status</th><th></th></tr></thead><tbody>${
+      matches.map(m=>`<tr>
+        <td>${m.player_one?.username||'?'} vs ${m.player_two?.username||'?'}</td>
+        <td>${m.division}</td><td>Wk${m.week}</td>
+        <td><span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:${
+          m.status==='completed'?'rgba(74,222,128,0.1)':m.status==='disputed'?'rgba(255,79,56,0.1)':m.status==='cancelled'?'rgba(100,100,100,0.1)':'rgba(55,138,221,0.1)'
+        };color:${
+          m.status==='completed'?'#4ade80':m.status==='disputed'?'#f87171':m.status==='cancelled'?'var(--gray)':'#378ADD'
+        }">${m.status}</span></td>
+        <td>${m.status!=='completed'&&m.status!=='cancelled'?`<button class="btn-danger" onclick="cancelMatch('${m.id}')">Cancel</button>`:''}</td>
       </tr>`).join('')
     }</tbody></table>`
   }
 
-  window._cancelMatch = async function(id) {
+  window._cancelMatch = async (id) => {
     if (!confirm('Cancel this match?')) return
-    await supabase.from('matches').update({ status: 'cancelled' }).eq('id', id)
+    await supabase.from('matches').update({ status:'cancelled' }).eq('id',id)
     loadMatches()
   }
 
-  window._generateFixtures = async function() {
-    const region = document.getElementById('gen-region').value
-    const week = parseInt(document.getElementById('gen-week').value)
-    const successEl = document.getElementById('gen-success')
-    const errorEl = document.getElementById('gen-error')
-    const btn = document.getElementById('gen-btn')
-    successEl.style.display = 'none'
-    errorEl.style.display = 'none'
-
-    btn.disabled = true
-    btn.textContent = 'Generating...'
-
-    const { data: players } = await supabase.from('players').select('id, username, division').eq('region', region)
-
-    if (!players || players.length < 2) {
-      errorEl.textContent = 'Not enough players in this region to generate fixtures (need at least 2).'
-      errorEl.style.display = 'block'
-      btn.disabled = false
-      btn.textContent = 'Generate fixtures'
-      return
-    }
-
-    const divisions = {}
-    players.forEach(p => {
-      if (!divisions[p.division]) divisions[p.division] = []
-      divisions[p.division].push(p)
-    })
-
-    const cutoff = new Date()
-    cutoff.setDate(cutoff.getDate() + (7 - cutoff.getDay()))
-    cutoff.setHours(23, 59, 0, 0)
-
-    const fixtures = []
-    for (const [division, divPlayers] of Object.entries(divisions)) {
-      const shuffled = divPlayers.sort(() => Math.random() - 0.5)
-      for (let i = 0; i < shuffled.length - 1; i += 2) {
-        fixtures.push({
-          player_one_id: shuffled[i].id,
-          player_two_id: shuffled[i + 1].id,
-          region, division, week, season: 1,
-          status: 'scheduled',
-          cutoff_at: cutoff.toISOString(),
-          scheduled_at: new Date().toISOString()
-        })
-      }
-    }
-
-    if (fixtures.length === 0) {
-      errorEl.textContent = 'Could not generate fixtures — check player divisions.'
-      errorEl.style.display = 'block'
-      btn.disabled = false
-      btn.textContent = 'Generate fixtures'
-      return
-    }
-
-    const { error } = await supabase.from('matches').insert(fixtures)
-
-    if (error) {
-      errorEl.textContent = error.message
-      errorEl.style.display = 'block'
-    } else {
-      successEl.textContent = `Generated ${fixtures.length} fixture${fixtures.length > 1 ? 's' : ''} for ${regions[region]} Week ${week}.`
-      successEl.style.display = 'block'
-      loadMatches()
-    }
-
-    btn.disabled = false
-    btn.textContent = 'Generate fixtures'
-  }
-
+  // ─── Disputes ─────────────────────────────────────────────────────────────
   async function loadDisputes() {
     const { data: disputes } = await supabase.from('disputes').select(`
-      *,
-      match:match_id(
-        player_one_id,
-        player_two_id,
-        player_one:player_one_id(username),
-        player_two:player_two_id(username),
-        division, region, week
-      )
-    `).eq('status', 'open').order('created_at')
+      *, match:match_id(player_one_id,player_two_id,player_one:player_one_id(username),player_two:player_two_id(username),division,region,week)
+    `).eq('status','open').order('created_at')
 
     const el = document.getElementById('disputes-list')
     const noEl = document.getElementById('no-disputes')
-
-    if (!disputes?.length) {
-      el.innerHTML = ''
-      noEl.style.display = 'block'
-      document.getElementById('dispute-dot').style.display = 'none'
-      return
-    }
-
+    if (!disputes?.length) { el.innerHTML=''; noEl.style.display='block'; document.getElementById('dispute-dot').style.display='none'; return }
     noEl.style.display = 'none'
     document.getElementById('dispute-dot').style.display = 'block'
 
-    // Pre-fetch signed URLs for all disputes
     const evidenceUrls = {}
     for (const d of disputes) {
-      const p1path = d.p1_evidence
-      const p2path = d.p2_evidence
-      if (p1path) {
-        const { data } = await supabase.storage.from('evidence').createSignedUrl(p1path, 3600)
-        evidenceUrls[d.id + '_p1'] = data?.signedUrl || null
+      if (d.p1_evidence) {
+        const { data } = await supabase.storage.from('evidence').createSignedUrl(d.p1_evidence, 3600)
+        evidenceUrls[d.id+'_p1'] = data?.signedUrl||null
       }
-      if (p2path) {
-        const { data } = await supabase.storage.from('evidence').createSignedUrl(p2path, 3600)
-        evidenceUrls[d.id + '_p2'] = data?.signedUrl || null
+      if (d.p2_evidence) {
+        const { data } = await supabase.storage.from('evidence').createSignedUrl(d.p2_evidence, 3600)
+        evidenceUrls[d.id+'_p2'] = data?.signedUrl||null
       }
     }
 
     el.innerHTML = disputes.map(d => {
-      const p1name = d.match?.player_one?.username || 'Player 1'
-      const p2name = d.match?.player_two?.username || 'Player 2'
-      const c1 = d.player_one_claim
-      const c2 = d.player_two_claim
-      const p1url = evidenceUrls[d.id + '_p1'] || null
-      const p2url = evidenceUrls[d.id + '_p2'] || null
-
-      return `
-        <div class="dispute-card">
-          <div class="dispute-players">${p1name} vs ${p2name} — ${d.match?.division} · Wk${d.match?.week} · ${regions[d.match?.region] || ''}</div>
-          <div class="dispute-claims">
-            <div class="dispute-claim">
-              <div class="dispute-claim-name">${p1name} says</div>
-              <div class="dispute-claim-score">${c1?.my_score ?? '?'} – ${c1?.opponent_score ?? '?'}</div>
-              ${p1url ? `<a href="${p1url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>` : `<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
-            </div>
-            <div class="dispute-claim">
-              <div class="dispute-claim-name">${p2name} says</div>
-              <div class="dispute-claim-score">${c2?.my_score ?? '?'} – ${c2?.opponent_score ?? '?'}</div>
-              ${p2url ? `<a href="${p2url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>` : `<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
-            </div>
+      const p1 = d.match?.player_one?.username||'Player 1'
+      const p2 = d.match?.player_two?.username||'Player 2'
+      const c1 = d.player_one_claim, c2 = d.player_two_claim
+      const p1url = evidenceUrls[d.id+'_p1'], p2url = evidenceUrls[d.id+'_p2']
+      return `<div class="dispute-card">
+        <div style="font-size:0.95rem;font-weight:600;color:#fff;margin-bottom:12px;">${p1} vs ${p2} — ${d.match?.division} · Wk${d.match?.week}</div>
+        <div class="dispute-claims">
+          <div class="dispute-claim">
+            <div class="dispute-claim-name">${p1} claims</div>
+            <div class="dispute-claim-score">${c1?.my_score??'?'} – ${c1?.opponent_score??'?'}</div>
+            ${p1url?`<a href="${p1url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>`:`<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p1_wins','${d.match?.player_one_id}','${d.match?.player_two_id}')">
-              ${p1name} wins
-            </button>
-            <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p2_wins','${d.match?.player_one_id}','${d.match?.player_two_id}')">
-              ${p2name} wins
-            </button>
-            <button class="btn-sm-outline" onclick="resolveDispute('${d.id}','${d.match_id}','draw','${d.match?.player_one_id}','${d.match?.player_two_id}')">
-              Draw
-            </button>
+          <div class="dispute-claim">
+            <div class="dispute-claim-name">${p2} claims</div>
+            <div class="dispute-claim-score">${c2?.my_score??'?'} – ${c2?.opponent_score??'?'}</div>
+            ${p2url?`<a href="${p2url}" target="_blank" style="font-size:0.75rem;color:#378ADD;margin-top:6px;display:block;">View evidence</a>`:`<div style="font-size:0.75rem;color:var(--gray-dim);margin-top:6px;">No evidence uploaded</div>`}
           </div>
         </div>
-      `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p1_wins','${d.match?.player_one_id}','${d.match?.player_two_id}','${p1}','${p2}')">
+            ${p1} wins
+          </button>
+          <button class="btn-admin" onclick="resolveDispute('${d.id}','${d.match_id}','p2_wins','${d.match?.player_one_id}','${d.match?.player_two_id}','${p1}','${p2}')">
+            ${p2} wins
+          </button>
+          <button class="btn-outline" onclick="resolveDispute('${d.id}','${d.match_id}','draw','${d.match?.player_one_id}','${d.match?.player_two_id}','${p1}','${p2}')">
+            Draw
+          </button>
+        </div>
+      </div>`
     }).join('')
   }
 
-  window._resolveDispute = async function(disputeId, matchId, decision, p1id, p2id) {
-    const winnerId = decision === 'p1_wins' ? p1id : decision === 'p2_wins' ? p2id : null
-
-    // Update match status
-    const { error: matchError } = await supabase.from('matches').update({
-      status: 'completed',
-      winner_id: winnerId || null,
-      draw_reason: winnerId ? null : 'score'
-    }).eq('id', matchId)
-    if (matchError) { console.error('Match update error:', matchError); alert('Error: ' + matchError.message); return }
-
-    // Update player stats via RPC
+  window._resolveDispute = async function(disputeId, matchId, decision, p1id, p2id, p1name, p2name) {
+    const winnerId = decision==='p1_wins'?p1id:decision==='p2_wins'?p2id:null
+    const { error } = await supabase.from('matches').update({ status:'completed', winner_id:winnerId||null, draw_reason:winnerId?null:'score' }).eq('id',matchId)
+    if (error) { alert('Error: '+error.message); return }
     if (winnerId) {
       await supabase.rpc('increment_wins', { pid: winnerId })
       await supabase.rpc('increment_points', { pid: winnerId, amt: 3 })
-      const loserId = winnerId === p1id ? p2id : p1id
-      await supabase.rpc('increment_losses', { pid: loserId })
+      await supabase.rpc('increment_losses', { pid: winnerId===p1id?p2id:p1id })
     } else {
       await supabase.rpc('increment_points', { pid: p1id, amt: 1 })
       await supabase.rpc('increment_points', { pid: p2id, amt: 1 })
     }
-
-    // Resolve dispute
-    await supabase.from('disputes').update({
-      status: 'resolved', admin_decision: decision, resolved_at: new Date().toISOString()
-    }).eq('id', disputeId)
-
-    // Send notifications to both players
-    const winnerMsg = winnerId === p1id
-      ? `Dispute resolved — you won the match. 3 points awarded.`
-      : `Dispute resolved — ${p2name} won the match.`
-    const loserMsg = winnerId === p1id
-      ? `Dispute resolved — ${p1name} won the match.`
-      : `Dispute resolved — you won the match. 3 points awarded.`
-    const drawMsg = 'Dispute resolved — match ruled a draw. 1 point each.'
-
-    if (winnerId) {
-      await supabase.from('notifications').insert([
-        { player_id: p1id, message: winnerId === p1id ? winnerMsg : loserMsg, type: winnerId === p1id ? 'success' : 'warning' },
-        { player_id: p2id, message: winnerId === p2id ? winnerMsg : loserMsg, type: winnerId === p2id ? 'success' : 'warning' }
-      ])
-    } else {
-      await supabase.from('notifications').insert([
-        { player_id: p1id, message: drawMsg, type: 'info' },
-        { player_id: p2id, message: drawMsg, type: 'info' }
-      ])
-    }
-
-    loadDisputes()
-    loadOverview()
+    await supabase.from('disputes').update({ status:'resolved', admin_decision:decision, resolved_at:new Date().toISOString() }).eq('id',disputeId)
+    const msgs = winnerId ? [
+      { player_id:p1id, message:winnerId===p1id?`Dispute resolved — you won. 3 points awarded.`:`Dispute resolved — ${p2name} won.`, type:winnerId===p1id?'success':'warning' },
+      { player_id:p2id, message:winnerId===p2id?`Dispute resolved — you won. 3 points awarded.`:`Dispute resolved — ${p1name} won.`, type:winnerId===p2id?'success':'warning' }
+    ] : [
+      { player_id:p1id, message:'Dispute resolved — match ruled a draw. 1 point each.', type:'info' },
+      { player_id:p2id, message:'Dispute resolved — match ruled a draw. 1 point each.', type:'info' }
+    ]
+    await supabase.from('notifications').insert(msgs)
+    loadDisputes(); loadOverview()
   }
 
   async function init() {
@@ -499,6 +523,5 @@
 
   init()
 </script>
-
 </body>
 </html>
