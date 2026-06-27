@@ -37,10 +37,9 @@
       <span class="nav-logo-text">arc<span>lo</span></span>
     </a>
   </div>
-  <ul class="nav-links">
-    <li><a href="leaderboard.html" style="color:#fff;">Leaderboard</a></li>
-    <li><a href="live.html">Live</a></li>
-    <li><a href="../index.html#how">How it works</a></li>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="dashboard.html" id="nav-dashboard">Dashboard</a></li>
+    <li><a href="leaderboard.html" style="color:#fff;font-weight:500;">Leaderboard</a></li>
   </ul>
   <div id="nav-actions" class="nav-actions">
     <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
@@ -108,9 +107,17 @@
   let currentUserId = null
 
   async function init() {
-    await initNav()
     const session = await getSession()
-    if (session) currentUserId = session.user.id
+    if (session) {
+      currentUserId = session.user.id
+      document.getElementById('nav-actions').innerHTML = `
+        <div class="sidebar-avatar" style="width:28px;height:28px;font-size:0.65rem;">${'--'}</div>
+        <button onclick="navOut()" class="btn btn-ghost btn-sm">Log out</button>
+      `
+      window.navOut = async () => { await import('../js/auth.js').then(m => m.logOut()) }
+    } else {
+      document.getElementById('nav-dashboard').style.display = 'none'
+    }
     loadLeaderboard('oce')
   }
 
