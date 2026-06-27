@@ -371,7 +371,7 @@
       .select(`*, player_one:player_one_id(id,username,wins,losses,points,division), player_two:player_two_id(id,username,wins,losses,points,division)`)
       .or(`player_one_id.eq.${currentPlayer.id},player_two_id.eq.${currentPlayer.id}`)
       .eq('season', CURRENT_SEASON).eq('week', CURRENT_WEEK)
-      .neq('status', 'completed').limit(1)
+      .not('status', 'in', '("completed","cancelled")').limit(1)
 
     document.getElementById('loading').style.display = 'none'
 
