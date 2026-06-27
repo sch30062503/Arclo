@@ -1,0 +1,5 @@
+[build]
+buildCommand = "chmod +x build.sh && bash build.sh"
+
+[deploy]
+startCommand = "npx serve . -l 8080"

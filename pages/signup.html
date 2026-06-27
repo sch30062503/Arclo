@@ -46,7 +46,7 @@
       <span class="nav-logo-text">arc<span>lo</span></span>
     </a>
   </div>
-  <div class="nav-actions">
+  <div id="nav-actions" class="nav-actions">
     <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
   </div>
 </nav>
@@ -112,7 +112,9 @@
 
 <script type="module">
   import { signUp, redirectIfLoggedIn } from '../js/auth.js'
+  import { initNav } from '../js/nav.js'
 
+  initNav()
   redirectIfLoggedIn()
 
   window.handleSignup = async function() {

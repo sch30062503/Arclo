@@ -66,7 +66,7 @@
     <li><a href="leaderboard.html">Leaderboard</a></li>
     <li><a href="live.html">Live</a></li>
   </ul>
-  <div class="nav-actions">
+  <div id="nav-actions" class="nav-actions">
     <button onclick="handleLogout()" class="btn btn-ghost btn-sm">Log out</button>
   </div>
 </nav>
@@ -222,6 +222,7 @@
 
 <script type="module">
   import { supabase, requireAuth, getPlayer, logOut } from '../js/auth.js'
+  import { initNav } from '../js/nav.js'
 
   let currentPlayer = null
   let currentMatch = null
@@ -317,6 +318,7 @@
     renderCal('cal-grid', 'cal-month-label', 'selected-date-display')
     renderCal('cal-grid-2', 'cal-month-label-2', 'selected-date-display-2')
 
+    await initNav()
     const session = await requireAuth()
     if (!session) return
     currentPlayer = await getPlayer()
