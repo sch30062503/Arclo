@@ -355,6 +355,8 @@
     const { data: disputes } = await supabase.from('disputes').select(`
       *,
       match:match_id(
+        player_one_id,
+        player_two_id,
         player_one:player_one_id(username),
         player_two:player_two_id(username),
         division, region, week
@@ -431,20 +433,26 @@
   window.resolveDispute = async function(disputeId, matchId, decision, p1id, p2id) {
     const winnerId = decision === 'p1_wins' ? p1id : decision === 'p2_wins' ? p2id : null
 
-    await supabase.from('matches').update({
-      status: 'completed', winner_id: winnerId
+    // Update match status
+    const { error: matchError } = await supabase.from('matches').update({
+      status: 'completed',
+      winner_id: winnerId || null,
+      draw_reason: winnerId ? null : 'score'
     }).eq('id', matchId)
+    if (matchError) { console.error('Match update error:', matchError); alert('Error: ' + matchError.message); return }
 
+    // Update player stats via RPC
     if (winnerId) {
-      await supabase.from('players').update({ wins: supabase.rpc('increment_wins', { pid: winnerId }) }).eq('id', winnerId)
-      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: winnerId, amt: 3 }) }).eq('id', winnerId)
+      await supabase.rpc('increment_wins', { pid: winnerId })
+      await supabase.rpc('increment_points', { pid: winnerId, amt: 3 })
       const loserId = winnerId === p1id ? p2id : p1id
-      await supabase.from('players').update({ losses: supabase.rpc('increment_losses', { pid: loserId }) }).eq('id', loserId)
+      await supabase.rpc('increment_losses', { pid: loserId })
     } else {
-      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: p1id, amt: 1 }) }).eq('id', p1id)
-      await supabase.from('players').update({ points: supabase.rpc('increment_points', { pid: p2id, amt: 1 }) }).eq('id', p2id)
+      await supabase.rpc('increment_points', { pid: p1id, amt: 1 })
+      await supabase.rpc('increment_points', { pid: p2id, amt: 1 })
     }
 
+    // Resolve dispute
     await supabase.from('disputes').update({
       status: 'resolved', admin_decision: decision, resolved_at: new Date().toISOString()
     }).eq('id', disputeId)
