@@ -196,7 +196,7 @@
     </div>
 
     <!-- Availability -->
-    <div class="match-card">
+    <div class="match-card" id="avail-card">
       <div class="match-card-title">Your availability this week</div>
       <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Add windows when you can play. The system will find overlap with your opponent and let you propose specific times.</p>
       <div class="toast toast-success" id="avail-success"></div>
@@ -672,22 +672,41 @@
   }
 
   function showAgreedState(agreedTime, isP1) {
+    // Display the agreed time
     const timeStr = new Date(agreedTime).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
     document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
-    // Hide scheduling UI
-    document.getElementById('proposal-banner').style.display = 'none'
-    document.getElementById('no-overlap-warning') && (document.getElementById('no-overlap-warning').style.display = 'none')
-    // Hide availability card
-    const availCard = document.querySelector('.match-card:nth-of-type(3)')
+
+    // Hide scheduling elements only
+    const proposalBanner = document.getElementById('proposal-banner')
+    if (proposalBanner) proposalBanner.style.display = 'none'
+
+    const noOverlap = document.getElementById('no-overlap-warning')
+    if (noOverlap) noOverlap.style.display = 'none'
+
+    const overlapSection = document.getElementById('overlap-section')
+    if (overlapSection) overlapSection.style.display = 'none'
+
+    // Hide availability card (identified by id)
+    const availCard = document.getElementById('avail-card')
+    if (availCard) availCard.style.display = 'none'
+
     // Hide chat
-    document.querySelector('.chat-wrap') && (document.querySelector('.chat-wrap').style.display = 'none')
-    // Show result inline
-    document.getElementById('result-inline').style.display = 'block'
+    const chatWrap = document.querySelector('.chat-wrap')
+    if (chatWrap) chatWrap.style.display = 'none'
+
+    // Show result inline section
+    const resultInline = document.getElementById('result-inline')
+    if (resultInline) resultInline.style.display = 'block'
+
     // Set score labels
-    const me = isP1 ? currentMatch.player_one : currentMatch.player_two
-    const opp = isP1 ? currentMatch.player_two : currentMatch.player_one
-    document.getElementById('inline-my-label').textContent = `${me.username} (your score)`
-    document.getElementById('inline-opp-label').textContent = `${opp.username} score`
+    if (currentMatch && currentMatch.player_one && currentMatch.player_two) {
+      const me = isP1 ? currentMatch.player_one : currentMatch.player_two
+      const opp = isP1 ? currentMatch.player_two : currentMatch.player_one
+      const myLabel = document.getElementById('inline-my-label')
+      const oppLabel = document.getElementById('inline-opp-label')
+      if (myLabel) myLabel.textContent = `${me.username} (your score)`
+      if (oppLabel) oppLabel.textContent = `${opp.username} score`
+    }
   }
 
   let selectedOutcome = null
