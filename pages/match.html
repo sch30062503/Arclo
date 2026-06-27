@@ -87,6 +87,16 @@
     .empty-state h2 { color: #fff; margin-bottom: 8px; }
     .agreed-time-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; color: #4ade80; font-weight: 500; }
     .warning-banner { background: rgba(255,79,56,0.08); border: 0.5px solid rgba(255,79,56,0.25); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; font-size: 0.85rem; color: #f87171; }
+    .result-inline { margin-top: 16px; padding-top: 16px; border-top: 0.5px solid var(--slate-light); }
+    .result-outcome-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+    .outcome-btn { padding: 10px; border-radius: var(--radius); font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: var(--font); border: 0.5px solid var(--slate-light); background: var(--midnight); color: var(--gray); transition: all 0.12s; }
+    .outcome-btn:hover { color: #fff; border-color: var(--gray); }
+    .outcome-btn.selected-win { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.4); color: #4ade80; }
+    .outcome-btn.selected-loss { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.4); color: #f87171; }
+    .outcome-btn.selected-draw { background: rgba(232,255,71,0.1); border-color: rgba(232,255,71,0.2); color: var(--volt); }
+    .score-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .score-inline input { text-align: center; font-size: 1.3rem; font-weight: 700; }
+    .submitted-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 999px; padding: 6px 14px; font-size: 0.85rem; color: #4ade80; margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -155,6 +165,34 @@
         <span class="info-val" id="match-agreed-time">Not yet agreed</span>
       </div>
       <div class="info-row"><span class="info-label">Result cutoff</span><span class="info-val">Sunday 23:59</span></div>
+
+      <!-- Result submission — shows after time agreed -->
+      <div class="result-inline" id="result-inline" style="display:none;">
+        <div id="result-submitted-badge" style="display:none;" class="submitted-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Result submitted — waiting for opponent
+        </div>
+        <div id="result-inline-form">
+          <p style="font-size:0.8rem;color:var(--gray);margin-bottom:12px;">Match played? Submit your result below.</p>
+          <div class="result-outcome-btns">
+            <button class="outcome-btn" id="btn-win" onclick="selectOutcome('win')">Win</button>
+            <button class="outcome-btn" id="btn-loss" onclick="selectOutcome('loss')">Loss</button>
+            <button class="outcome-btn" id="btn-draw" onclick="selectOutcome('draw')">Draw</button>
+          </div>
+          <div class="score-inline" id="score-inline" style="display:none;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;" id="inline-my-label">Your score</div>
+              <input class="form-input" type="number" id="inline-my-score" min="0" placeholder="0">
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;" id="inline-opp-label">Opponent score</div>
+              <input class="form-input" type="number" id="inline-opp-score" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="toast toast-error" id="inline-result-error" style="margin-bottom:10px;"></div>
+          <button class="btn-volt" id="inline-submit-btn" onclick="submitInlineResult()" style="display:none;">Submit result</button>
+        </div>
+      </div>
     </div>
 
     <!-- Availability -->
@@ -216,29 +254,7 @@
       </div>
     </div>
 
-    <!-- Submit result -->
-    <div class="match-card">
-      <div class="match-card-title">Submit your result</div>
-      <div class="toast toast-success" id="result-success"></div>
-      <div class="toast toast-error" id="result-error"></div>
-      <div id="already-submitted" style="display:none;">
-        <p style="font-size:0.85rem;color:#4ade80;">You've submitted your result. Waiting for your opponent.</p>
-      </div>
-      <div id="result-form">
-        <p style="font-size:0.85rem;color:var(--gray);margin-bottom:14px;">Enter the final score. Both players submit independently — if scores match it's confirmed automatically, if not a dispute is raised.</p>
-        <div class="score-row">
-          <div>
-            <div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;" id="my-score-label">Your score</div>
-            <input class="form-input score-input" type="number" id="my-score" min="0" placeholder="0">
-          </div>
-          <div>
-            <div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;" id="opp-score-label">Opponent score</div>
-            <input class="form-input score-input" type="number" id="opp-score" min="0" placeholder="0">
-          </div>
-        </div>
-        <button class="btn-volt" id="submit-result-btn" onclick="submitResult()">Submit result</button>
-      </div>
-    </div>
+
   </div>
 
   <!-- No match availability -->
@@ -471,8 +487,8 @@
     }
 
     const timeStr = new Date(pendingProposal.proposed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-    document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
-    document.getElementById('proposal-banner').style.display = 'none'
+    const isP1 = currentMatch.player_one_id === currentPlayer.id
+    showAgreedState(pendingProposal.proposed_time, isP1)
     pendingProposal = null
     await loadChat()
   }
@@ -520,14 +536,13 @@
     document.getElementById('opp-score-label').textContent = `${opp.username} score`
 
     if (currentMatch.agreed_time) {
-      const timeStr = new Date(currentMatch.agreed_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-      document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
+      showAgreedState(currentMatch.agreed_time, isP1)
     }
 
     const alreadySubmitted = isP1 ? currentMatch.p1_result_submitted : currentMatch.p2_result_submitted
     if (alreadySubmitted) {
-      document.getElementById('result-form').style.display = 'none'
-      document.getElementById('already-submitted').style.display = 'block'
+      document.getElementById('result-inline-form').style.display = 'none'
+      document.getElementById('result-submitted-badge').style.display = 'inline-flex'
     }
 
     await loadMyAvailability()
@@ -654,6 +669,88 @@
     input.value = ''
     await supabase.from('match_messages').insert({ match_id: currentMatch.id, sender_id: currentPlayer.id, message: msg, type: 'message' })
     await loadChat()
+  }
+
+  function showAgreedState(agreedTime, isP1) {
+    const timeStr = new Date(agreedTime).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+    document.getElementById('match-agreed-time').innerHTML = `<span class="agreed-time-badge">${timeStr}</span>`
+    // Hide scheduling UI
+    document.getElementById('proposal-banner').style.display = 'none'
+    document.getElementById('no-overlap-warning') && (document.getElementById('no-overlap-warning').style.display = 'none')
+    // Hide availability card
+    const availCard = document.querySelector('.match-card:nth-of-type(3)')
+    // Hide chat
+    document.querySelector('.chat-wrap') && (document.querySelector('.chat-wrap').style.display = 'none')
+    // Show result inline
+    document.getElementById('result-inline').style.display = 'block'
+    // Set score labels
+    const me = isP1 ? currentMatch.player_one : currentMatch.player_two
+    const opp = isP1 ? currentMatch.player_two : currentMatch.player_one
+    document.getElementById('inline-my-label').textContent = `${me.username} (your score)`
+    document.getElementById('inline-opp-label').textContent = `${opp.username} score`
+  }
+
+  let selectedOutcome = null
+  window.selectOutcome = function(outcome) {
+    selectedOutcome = outcome
+    document.querySelectorAll('.outcome-btn').forEach(b => b.className = 'outcome-btn')
+    document.getElementById('btn-' + outcome).classList.add('selected-' + outcome)
+    const scoreEl = document.getElementById('score-inline')
+    const submitEl = document.getElementById('inline-submit-btn')
+    if (outcome === 'draw') {
+      scoreEl.style.display = 'none'
+      submitEl.style.display = 'block'
+    } else {
+      scoreEl.style.display = 'grid'
+      submitEl.style.display = 'block'
+    }
+  }
+
+  window.submitInlineResult = async function() {
+    const eEl = document.getElementById('inline-result-error')
+    const btn = document.getElementById('inline-submit-btn')
+    eEl.style.display = 'none'
+
+    if (!selectedOutcome) { eEl.textContent = 'Please select Win, Loss or Draw.'; eEl.style.display = 'block'; return }
+
+    let myScore = 0, oppScore = 0
+    if (selectedOutcome !== 'draw') {
+      myScore = parseInt(document.getElementById('inline-my-score').value)
+      oppScore = parseInt(document.getElementById('inline-opp-score').value)
+      if (isNaN(myScore) || isNaN(oppScore)) { eEl.textContent = 'Please enter both scores.'; eEl.style.display = 'block'; return }
+      if (selectedOutcome === 'win' && myScore <= oppScore) { eEl.textContent = 'Your score must be higher than opponent score for a win.'; eEl.style.display = 'block'; return }
+      if (selectedOutcome === 'loss' && oppScore <= myScore) { eEl.textContent = 'Opponent score must be higher than yours for a loss.'; eEl.style.display = 'block'; return }
+    } else {
+      myScore = 0; oppScore = 0
+    }
+
+    btn.disabled = true; btn.textContent = 'Submitting...'
+    const isP1 = currentMatch.player_one_id === currentPlayer.id
+
+    const { error } = await supabase.from('match_results').insert({
+      match_id: currentMatch.id, submitted_by: currentPlayer.id,
+      my_score: myScore, opponent_score: oppScore
+    })
+    if (error) { eEl.textContent = 'Could not submit. Try again.'; eEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit result'; return }
+
+    await supabase.from('matches').update(isP1 ? { p1_result_submitted: true } : { p2_result_submitted: true }).eq('id', currentMatch.id)
+
+    const { data: results } = await supabase.from('match_results').select('*').eq('match_id', currentMatch.id)
+    if (results && results.length === 2) {
+      const r1 = results[0], r2 = results[1]
+      const scoresMatch = r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score
+      if (scoresMatch) {
+        const winnerId = myScore > oppScore ? currentPlayer.id : myScore < oppScore ? (isP1 ? currentMatch.player_two_id : currentMatch.player_one_id) : null
+        await supabase.from('matches').update({ status: 'completed', winner_id: winnerId, draw_reason: winnerId ? null : 'score' }).eq('id', currentMatch.id)
+      } else {
+        await supabase.from('matches').update({ status: 'disputed' }).eq('id', currentMatch.id)
+        await supabase.from('disputes').insert({ match_id: currentMatch.id, player_one_claim: r1, player_two_claim: r2 })
+      }
+    }
+
+    document.getElementById('result-inline-form').style.display = 'none'
+    document.getElementById('result-submitted-badge').style.display = 'inline-flex'
+    btn.disabled = false; btn.textContent = 'Submit result'
   }
 
   window.removeSlot = async function(id) {
