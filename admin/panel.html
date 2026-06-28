@@ -200,9 +200,15 @@
             <input class="form-input" type="time" id="t-match-time" value="19:00">
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Prize pool (optional)</label>
-          <input class="form-input" type="text" id="t-prize-pool" placeholder="e.g. $50 or TBC">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Entry fee</label>
+            <input class="form-input" type="text" id="t-entry-fee" placeholder="e.g. $5 or Free">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prize pool</label>
+            <input class="form-input" type="text" id="t-prize-pool" placeholder="e.g. $50 or TBC">
+          </div>
         </div>
         <button class="btn-admin" onclick="createTournament()">Create tournament</button>
       </div>
@@ -319,6 +325,7 @@
     const startDate = document.getElementById('t-start-date').value
     const regDeadline = document.getElementById('t-reg-deadline').value
     const prizePool = document.getElementById('t-prize-pool').value.trim() || 'TBC'
+    const entryFee = document.getElementById('t-entry-fee').value.trim() || 'Free'
     const status = startDate && new Date(startDate) > new Date() ? 'upcoming' : 'active'
     const matchDay = parseInt(document.getElementById('t-match-day').value)
     const matchTime = document.getElementById('t-match-time').value || '19:00'
