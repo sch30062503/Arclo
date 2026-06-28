@@ -4,48 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arclo — Amateur esports. Real prizes.</title>
-  <meta name="description" content="Start free in Bronze. Win your way to Gold. Compete weekly in structured leagues with real prize money on the line.">
+  <meta name="description" content="One account. Multiple games. Compete in weekly tournaments, earn your way up the divisions, and win real prize money.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .hero {
-      min-height: 88vh; display: flex; flex-direction: column;
-      justify-content: center; padding: 80px 24px;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: ''; position: absolute;
-      top: -200px; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 600px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(232,255,71,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding: 80px 24px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(232,255,71,0.05) 0%, transparent 70%); pointer-events: none; }
     .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--slate); border: 0.5px solid var(--slate-light);
-      border-radius: 999px; padding: 5px 14px; margin-bottom: 28px;
-      font-size: 0.8rem; color: var(--gray);
-    }
-    .hero h1 { color: #fff; margin-bottom: 20px; max-width: 700px; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: 999px; padding: 5px 14px; margin-bottom: 28px; font-size: 0.8rem; color: var(--gray); }
+    .hero h1 { color: #fff; margin-bottom: 20px; max-width: 680px; }
     .hero h1 .volt { color: var(--volt); }
-    .hero-sub { font-size: 1.1rem; max-width: 500px; margin-bottom: 36px; }
-    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 60px; }
-    .hero-pillars { display: flex; gap: 0; flex-wrap: wrap; border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
-    .hero-pillar { flex: 1; min-width: 160px; padding: 20px 24px; border-right: 0.5px solid var(--slate-light); }
-    .hero-pillar:last-child { border-right: none; }
-    .hero-pillar-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
-    .hero-pillar-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
-    .hero-pillar-badge { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
-    .badge-free { background: rgba(74,222,128,0.12); color: #4ade80; border: 0.5px solid rgba(74,222,128,0.2); }
-    .badge-paid { background: rgba(232,255,71,0.12); color: var(--volt); border: 0.5px solid rgba(232,255,71,0.2); }
-    .badge-prize { background: rgba(255,79,56,0.12); color: var(--ignite); border: 0.5px solid rgba(255,79,56,0.2); }
-    .how-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 2px; background: var(--slate-light); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
+    .hero-sub { font-size: 1.1rem; max-width: 520px; margin-bottom: 36px; color: var(--gray); line-height: 1.7; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+    .games-strip { display: flex; gap: 8px; flex-wrap: wrap; }
+    .game-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: 999px; padding: 6px 14px; font-size: 0.78rem; color: var(--gray); }
+    .game-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--volt); }
+    .how-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 2px; background: var(--slate-light); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); overflow: hidden; }
     .how-item { background: var(--midnight); padding: 2rem; }
     .how-num { font-size: 0.7rem; font-weight: 600; color: var(--volt); letter-spacing: 0.1em; margin-bottom: 16px; }
-    .how-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
-    .how-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+    .how-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .how-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.6; }
     .division-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
     .division-card { border-radius: var(--radius-lg); padding: 1.5rem; border: 0.5px solid var(--slate-light); }
     .division-card.bronze { background: rgba(205,127,50,0.06); border-color: rgba(205,127,50,0.2); }
@@ -55,10 +34,15 @@
     .division-name.bronze { color: #cd7f32; }
     .division-name.silver { color: #ccc; }
     .division-name.gold { color: var(--volt); }
-    .division-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.6; margin-bottom: 12px; }
-    .division-entry { font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; display: inline-block; }
+    .division-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.6; margin-bottom: 14px; }
+    .division-entry { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; display: inline-block; }
     .entry-free { background: rgba(74,222,128,0.1); color: #4ade80; }
     .entry-paid { background: rgba(232,255,71,0.1); color: var(--volt); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .feature-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.5rem; }
+    .feature-icon { width: 36px; height: 36px; border-radius: var(--radius); background: rgba(232,255,71,0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+    .feature-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .feature-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.6; }
     .cta-band { background: var(--volt); border-radius: var(--radius-lg); padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
     .cta-band h2 { color: var(--midnight); }
     .cta-band p { color: rgba(13,13,15,0.6); }
@@ -66,10 +50,7 @@
     .btn-dark:hover { background: #111; }
     @media (max-width: 768px) {
       .hero { min-height: auto; padding: 60px 24px; }
-      .hero-pillars { flex-direction: column; }
-      .hero-pillar { border-right: none; border-bottom: 0.5px solid var(--slate-light); }
-      .hero-pillar:last-child { border-bottom: none; }
-      .how-grid, .division-grid { grid-template-columns: 1fr; }
+      .how-grid, .division-grid, .feature-grid { grid-template-columns: 1fr; }
       .cta-band { padding: 32px 24px; }
     }
   </style>
@@ -89,6 +70,7 @@
   <ul class="nav-links">
     <li><a href="pages/tournaments.html">Tournaments</a></li>
     <li><a href="#how">How it works</a></li>
+    <li><a href="#divisions">Divisions</a></li>
     <li><a href="pages/leaderboard.html">Leaderboard</a></li>
   </ul>
   <div class="nav-actions">
@@ -101,29 +83,23 @@
   <div class="hero-inner">
     <div class="hero-eyebrow">
       <div class="live-dot"></div>
-      Amateur esports · Weekly leagues · Real prizes
+      One account · Multiple games · Real prize money
     </div>
-    <h1>Start free.<br>Compete weekly.<br><span class="volt">Win real money.</span></h1>
-    <p class="hero-sub">Arclo is where amateur players compete in structured leagues. Start in Bronze for free, earn your way up, and compete for real prize money at the top.</p>
+    <h1>Compete. Rise.<br><span class="volt">Win real money.</span></h1>
+    <p class="hero-sub">Arclo is the amateur esports league platform. Sign up once, enter tournaments across multiple games, earn your way through Bronze, Silver and Gold — and compete for real prizes.</p>
     <div class="hero-btns">
       <a href="pages/tournaments.html" class="btn btn-primary btn-lg">Browse tournaments</a>
       <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
     </div>
-    <div class="hero-pillars">
-      <div class="hero-pillar">
-        <span class="hero-pillar-badge badge-free">Free to start</span>
-        <div class="hero-pillar-title">Bronze league</div>
-        <div class="hero-pillar-desc">Sign up and compete at no cost. No experience needed.</div>
-      </div>
-      <div class="hero-pillar">
-        <span class="hero-pillar-badge badge-paid">Small entry fee</span>
-        <div class="hero-pillar-title">Silver and Gold</div>
-        <div class="hero-pillar-desc">Earn promotion and compete for a share of the prize pool.</div>
-      </div>
-      <div class="hero-pillar">
-        <span class="hero-pillar-badge badge-prize">Real prizes</span>
-        <div class="hero-pillar-title">Win every season</div>
-        <div class="hero-pillar-desc">Prize money paid directly to winners at the end of each season.</div>
+    <div>
+      <p style="font-size:0.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:10px;">Games available now</p>
+      <div class="games-strip">
+        <span class="game-pill"><span class="game-pill-dot"></span>Rocket League</span>
+        <span class="game-pill"><span class="game-pill-dot"></span>EA FC</span>
+        <span class="game-pill"><span class="game-pill-dot"></span>Valorant</span>
+        <span class="game-pill"><span class="game-pill-dot"></span>Apex Legends</span>
+        <span class="game-pill"><span class="game-pill-dot"></span>Fortnite</span>
+        <span class="game-pill" style="color:var(--gray-dim);border-style:dashed;">+ more coming</span>
       </div>
     </div>
   </div>
@@ -132,22 +108,27 @@
 <section class="section" id="how">
   <div class="container">
     <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">How it works</p>
-    <h2 style="color:#fff;" class="mb-3">From sign-up to prize pool<br>in three steps</h2>
+    <h2 style="color:#fff;" class="mb-3">From sign-up to prize money<br>in four steps</h2>
     <div class="how-grid">
       <div class="how-item">
         <div class="how-num">01</div>
-        <div class="how-title">Sign up and get placed</div>
-        <p class="how-desc">Create your profile, pick your game, and join Bronze league for free. Everyone starts here — no experience needed.</p>
+        <div class="how-title">Create your account</div>
+        <p class="how-desc">Sign up once with your username and region. One profile covers every game on Arclo — no need to register separately.</p>
       </div>
       <div class="how-item">
         <div class="how-num">02</div>
-        <div class="how-title">Compete every week</div>
-        <p class="how-desc">Get a weekly fixture against a player in your division. Set your availability, agree a time, play your match, and submit the result.</p>
+        <div class="how-title">Enter a tournament</div>
+        <p class="how-desc">Browse open tournaments, pick your game and division, and enter. Bronze is always free. New tournaments start regularly.</p>
       </div>
       <div class="how-item">
         <div class="how-num">03</div>
+        <div class="how-title">Play your weekly match</div>
+        <p class="how-desc">Every week you get a fixture. Play on the scheduled match day, submit your result, and the standings update automatically.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">04</div>
         <div class="how-title">Rise and get rewarded</div>
-        <p class="how-desc">Win matches, earn points, and climb the table. Top players promote to Silver and Gold — where the prize money is.</p>
+        <p class="how-desc">Finish top 3 in your tournament and get offered promotion to Silver. Win at Gold level and take a share of the prize pool.</p>
       </div>
     </div>
   </div>
@@ -156,22 +137,73 @@
 <section class="section" id="divisions" style="padding-top:0;">
   <div class="container">
     <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Divisions</p>
-    <h2 style="color:#fff;" class="mb-3">Everyone starts somewhere</h2>
+    <h2 style="color:#fff;" class="mb-3">Everyone starts in Bronze</h2>
     <div class="division-grid">
       <div class="division-card bronze">
         <div class="division-name bronze">Bronze</div>
-        <p class="division-desc">The entry point. Open to all players, no entry fee, no pressure. Win your way out and earn promotion to Silver.</p>
+        <p class="division-desc">The starting point. Open to everyone, no entry fee, no experience needed. Play weekly fixtures, earn points, and compete for promotion.</p>
         <span class="division-entry entry-free">Free to enter</span>
       </div>
       <div class="division-card silver">
         <div class="division-name silver">Silver</div>
-        <p class="division-desc">You've proved yourself in Bronze. Small entry fee, bigger competition, and a prize pool shared between top finishers.</p>
+        <p class="division-desc">Earned through promotion from Bronze. Small entry fee, stronger competition, and a prize pool paid out to top finishers each tournament.</p>
         <span class="division-entry entry-paid">Entry fee applies</span>
       </div>
       <div class="division-card gold">
         <div class="division-name gold">Gold</div>
-        <p class="division-desc">The top tier. The best players, the biggest prize pool, and a shot at The Circuit Finals. This is where it gets serious.</p>
+        <p class="division-desc">The elite tier. The biggest prize pools, the strongest players, and a path to The Circuit Finals — Arclo's annual showpiece event.</p>
         <span class="division-entry entry-paid">Entry fee applies</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Platform features</p>
+    <h2 style="color:#fff;" class="mb-3">Built for competitive play</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>
+        </div>
+        <div class="feature-title">Multiple games, one profile</div>
+        <p class="feature-desc">Enter tournaments across different games without creating new accounts. Your stats are tracked per game, per division.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="feature-title">Fixed weekly match days</div>
+        <p class="feature-desc">No scheduling headaches. Every tournament has a set match day and kick-off time. Log in, play, submit your result.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feature-title">Fair dispute system</div>
+        <p class="feature-desc">If scores don't match, both players upload evidence. Admin reviews and makes the final call. No result goes unresolved.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="feature-title">Live standings</div>
+        <p class="feature-desc">Tournament leaderboards update in real time after every match. See exactly where you stand and what you need to promote.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="feature-title">No waiting around</div>
+        <p class="feature-desc">New tournaments open regularly. If one is full, another is starting. Miss a promotion? Play again next tournament.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="feature-title">Promotion and prizes</div>
+        <p class="feature-desc">Top 3 in every Bronze tournament get offered free Silver entry. Win at Silver or Gold and take real cash prize money.</p>
       </div>
     </div>
   </div>
@@ -182,9 +214,9 @@
     <div class="cta-band">
       <div>
         <h2>Ready to compete?</h2>
-        <p class="mt-1">Bronze league is free. Sign up, get placed, and play your first match this week.</p>
+        <p class="mt-1">Bronze is free to enter. Sign up, find a tournament, and play your first match.</p>
       </div>
-      <a href="pages/signup.html" class="btn btn-dark btn-lg">Join for free</a>
+      <a href="pages/tournaments.html" class="btn btn-dark btn-lg">Browse tournaments</a>
     </div>
   </div>
 </section>
@@ -199,6 +231,7 @@
       <p class="footer-copy">Amateur esports, serious competition.</p>
     </div>
     <ul class="footer-links">
+      <li><a href="pages/tournaments.html">Tournaments</a></li>
       <li><a href="#how">How it works</a></li>
       <li><a href="#divisions">Divisions</a></li>
       <li><a href="pages/leaderboard.html">Leaderboard</a></li>
