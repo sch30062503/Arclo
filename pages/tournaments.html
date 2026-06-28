@@ -39,28 +39,65 @@
     .empty-state h3 { color: #fff; font-size: 1.1rem; margin-bottom: 8px; }
     .registration-open { font-size: 0.78rem; color: #4ade80; }
     .registration-closed { font-size: 0.78rem; color: #f87171; }
+    .t-layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .sidebar { background: var(--slate); border-right: 0.5px solid var(--slate-light); padding: 20px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(232,255,71,0.12); border: 1.5px solid var(--volt); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--volt); flex-shrink: 0; }
+    .sidebar-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius); font-size: 0.85rem; color: var(--gray); cursor: pointer; margin-bottom: 1px; transition: all 0.12s; text-decoration: none; }
+    .sidebar-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .sidebar-item.active { background: rgba(232,255,71,0.08); color: var(--volt); }
+    .sidebar-item svg { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; }
+    .sidebar-divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 8px 0; }
+    .game-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.2); border-radius: 999px; padding: 2px 8px; font-size: 0.7rem; color: #378ADD; font-weight: 600; }
+    @media (max-width: 768px) { .t-layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
   </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">
-    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
-      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
-      <span class="nav-logo-text">arc<span>lo</span></span>
+<div class="t-layout">
+  <aside class="sidebar" id="sidebar">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;">
+      <div class="sidebar-avatar" id="sidebar-avatar">--</div>
+      <div>
+        <div style="font-size:0.875rem;font-weight:600;color:#fff;" id="sidebar-name">Arclo</div>
+        <div style="font-size:0.75rem;color:var(--gray);" id="sidebar-rank">--</div>
+      </div>
+    </div>
+    <hr class="sidebar-divider">
+    <a href="dashboard.html" class="sidebar-item" id="sb-dashboard" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
     </a>
-  </div>
-  <ul class="nav-links">
-    <li><a href="tournaments.html" style="color:#fff;font-weight:500;">Tournaments</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-    <li id="nav-dashboard" style="display:none;"><a href="dashboard.html">Dashboard</a></li>
-  </ul>
-  <div id="nav-actions" class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm" id="nav-login">Log in</a>
-    <a href="signup.html" class="btn btn-primary btn-sm" id="nav-join">Join free</a>
-  </div>
-</nav>
-
+    <a href="match.html" class="sidebar-item" id="sb-match" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
+      My match
+    </a>
+    <a href="leaderboard.html" class="sidebar-item" id="sb-lb" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Leaderboard
+    </a>
+    <a href="tournaments.html" class="sidebar-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>
+      Tournaments
+    </a>
+    <hr class="sidebar-divider">
+    <a href="../index.html" class="sidebar-item" id="sb-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="login.html" class="sidebar-item" id="sb-login">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Log in
+    </a>
+    <a href="signup.html" class="sidebar-item" id="sb-join">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      Join free
+    </a>
+    <a href="#" onclick="doLogout()" class="sidebar-item" id="sb-logout" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log out
+    </a>
+  </aside>
+  <div style="overflow-y:auto;">
 <div class="tournaments-wrap">
   <p style="font-size:0.8rem;font-weight:600;color:var(--volt);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">The Circuit</p>
   <h1 style="color:#fff;margin-bottom:8px;">Tournaments</h1>
@@ -94,23 +131,25 @@
   const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
   let allTournaments = [], currentFilter = 'all', currentDivFilter = 'all', currentPlayer = null, enrolledIds = new Set()
 
+  window.doLogout = async () => { await supabase.auth.signOut(); window.location.href = '../index.html' }
+
   async function init() {
     const session = await getSession()
     if (session) {
       currentPlayer = await getPlayer()
-      // Update nav
-      const nav = document.getElementById('nav-actions')
       if (currentPlayer) {
         const initials = currentPlayer.username.slice(0,2).toUpperCase()
-        // Show dashboard in nav links
-        document.getElementById('nav-dashboard').style.display = 'block'
-        // Replace login/join with avatar + logout
-        nav.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
-          <button onclick="supabase.auth.signOut().then(()=>window.location.href='../index.html')" class="btn btn-ghost btn-sm">Log out</button>
-        </div>`
+        document.getElementById('sidebar-avatar').textContent = initials
+        document.getElementById('sidebar-name').textContent = currentPlayer.username
+        document.getElementById('sidebar-rank').textContent = currentPlayer.division.charAt(0).toUpperCase() + currentPlayer.division.slice(1)
+        document.getElementById('sb-dashboard').style.display = 'flex'
+        document.getElementById('sb-match').style.display = 'flex'
+        document.getElementById('sb-lb').style.display = 'flex'
+        document.getElementById('sb-login').style.display = 'none'
+        document.getElementById('sb-join').style.display = 'none'
+        document.getElementById('sb-logout').style.display = 'flex'
+        if (currentPlayer?.tournament_id) enrolledIds.add(currentPlayer.tournament_id)
       }
-      if (currentPlayer?.tournament_id) enrolledIds.add(currentPlayer.tournament_id)
     }
     await loadTournaments()
   }
@@ -170,9 +209,11 @@
       return `<div class="t-card">
         <div class="t-card-top">
           <div>
-            <div class="t-name">${t.name}</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div class="t-name" style="margin-bottom:0;">${t.name}</div>
+              <span class="game-badge">${gameNames[t.game]||t.game||'Rocket League'}</span>
+            </div>
             <div class="t-meta">
-              <span>${gameNames[t.game]||t.game||'Rocket League'}</span>
               <span>${regions[t.region]||t.region}</span>
               <span>${t.weeks} weeks</span>
               ${startDate ? `<span>Starts ${startDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</span>` : ''}
@@ -247,5 +288,7 @@
   init()
 </script>
 
+  </div>
+</div>
 </body>
 </html>
