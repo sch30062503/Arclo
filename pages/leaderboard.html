@@ -52,6 +52,13 @@
     <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Season 1</p>
     <h1 style="color:#fff;">Leaderboard</h1>
     <div class="lb-filters">
+      <button class="filter-btn active" id="filter-game-rl" onclick="setGame('rocket_league',this)">Rocket League</button>
+      <button class="filter-btn" id="filter-game-fifa" onclick="setGame('fifa',this)">EA FC</button>
+      <button class="filter-btn" id="filter-game-val" onclick="setGame('valorant',this)">Valorant</button>
+      <button class="filter-btn" id="filter-game-apex" onclick="setGame('apex',this)">Apex</button>
+      <button class="filter-btn" id="filter-game-fn" onclick="setGame('fortnite',this)">Fortnite</button>
+    </div>
+    <div class="lb-filters">
       <button class="filter-btn active" id="filter-oce" onclick="setRegion('oce')">Oceania</button>
       <button class="filter-btn" id="filter-na" onclick="setRegion('na')">North America</button>
       <button class="filter-btn" id="filter-eu" onclick="setRegion('eu')">Europe</button>
@@ -102,9 +109,9 @@
   import { supabase, getSession } from '../js/auth.js'
   import { initNav } from '../js/nav.js'
 
-  const regions = { oce: 'Oceania', na: 'North America', eu: 'Europe', sea: 'Southeast Asia' }
-  let currentRegion = 'oce'
-  let currentUserId = null
+  const regions = { oce:'Oceania', na:'North America', eu:'Europe', sea:'Southeast Asia' }
+  const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite' }
+  let currentRegion = 'oce', currentGame = 'rocket_league', currentUserId = null
 
   async function init() {
     const session = await getSession()
@@ -116,76 +123,74 @@
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
           <button onclick="navOut()" class="btn btn-ghost btn-sm">Log out</button>
-        </div>
-      `
-      window.navOut = async () => { await supabase.auth.signOut(); window.location.href = '../index.html'; }
+        </div>`
+      window.navOut = async () => { await supabase.auth.signOut(); window.location.href = '../index.html' }
     } else {
       document.getElementById('nav-dashboard').style.display = 'none'
     }
-    loadLeaderboard('oce')
+    loadLeaderboard()
+  }
+
+  window.setGame = function(game, btn) {
+    currentGame = game
+    document.querySelectorAll('.filter-btn[id^="filter-game"]').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    loadLeaderboard()
   }
 
   window.setRegion = function(region) {
     currentRegion = region
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+    document.querySelectorAll('.filter-btn:not([id^="filter-game"])').forEach(b => b.classList.remove('active'))
     document.getElementById('filter-' + region).classList.add('active')
-    document.getElementById('table-label').textContent = `${regions[region]} · Rocket League · Season 1`
-    loadLeaderboard(region)
+    loadLeaderboard()
   }
 
-  async function loadLeaderboard(region) {
+  async function loadLeaderboard() {
     const tbody = document.getElementById('table-body')
     tbody.innerHTML = '<div class="loading-state">Loading players...</div>'
+    document.getElementById('table-label').textContent = `${regions[currentRegion]} · ${gameNames[currentGame]} · All tournaments`
 
     try {
-      const { data: players, error } = await supabase
-        .from('players')
-        .select('*')
-        .eq('region', region)
-        .order('username', { ascending: true })
+      // Join player_games with players to get region
+      const { data: entries, error } = await supabase
+        .from('player_games')
+        .select('*, player:player_id(id, username, region)')
+        .eq('game', currentGame)
+        .order('points', { ascending: false })
+        .order('wins', { ascending: false })
 
       if (error) throw error
 
-      if (!players || players.length === 0) {
-        tbody.innerHTML = `<div class="empty-state">No players in this region yet. <a href="signup.html" style="color:var(--volt);">Be the first to join.</a></div>`
+      const filtered = (entries || []).filter(e => e.player?.region === currentRegion)
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<div class="empty-state">No players in this region for ${gameNames[currentGame]} yet. <a href="tournaments.html" style="color:var(--volt);">Browse tournaments</a></div>`
         return
       }
 
       const table = document.createElement('table')
       table.className = 'lb-table'
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th style="width:40px;">#</th>
-            <th>Player</th>
-            <th>Division</th>
-            <th>Record</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-      `
-      const tbody2 = document.createElement('tbody')
+      table.innerHTML = `<thead><tr><th style="width:40px;">#</th><th>Player</th><th>Division</th><th>Record</th><th>Points</th></tr></thead>`
+      const tb = document.createElement('tbody')
 
-      players.forEach((player, i) => {
-        const isYou = player.id === currentUserId
+      filtered.forEach((entry, i) => {
+        const isYou = entry.player_id === currentUserId
         const tr = document.createElement('tr')
         if (isYou) tr.className = 'you'
         tr.innerHTML = `
-          <td><span class="rank-num">${i + 1}</span></td>
-          <td><span class="player-name ${isYou ? 'player-you' : ''}">${player.username}${isYou ? ' <span style="font-size:0.7rem;font-weight:500;">(you)</span>' : ''}</span></td>
-          <td><span class="div-badge div-${player.division}">${player.division.charAt(0).toUpperCase() + player.division.slice(1)}</span></td>
-          <td><span class="record">${player.wins}–${player.losses}</span></td>
-          <td><span class="pts">${player.points}</span></td>
-        `
-        tbody2.appendChild(tr)
+          <td><span class="rank-num">${i+1}</span></td>
+          <td><span class="player-name ${isYou?'player-you':''}">${entry.player?.username||'?'}${isYou?' <span style="font-size:0.7rem;font-weight:500;">(you)</span>':''}</span></td>
+          <td><span class="div-badge div-${entry.division}">${entry.division.charAt(0).toUpperCase()+entry.division.slice(1)}</span></td>
+          <td><span class="record">${entry.wins}–${entry.losses}</span></td>
+          <td><span class="pts">${entry.points}</span></td>`
+        tb.appendChild(tr)
       })
 
-      table.appendChild(tbody2)
+      table.appendChild(tb)
       tbody.innerHTML = ''
       tbody.appendChild(table)
-
     } catch (err) {
-      tbody.innerHTML = `<div class="empty-state">Error loading players: ${err.message}</div>`
+      tbody.innerHTML = `<div class="empty-state">Error: ${err.message}</div>`
     }
   }
 

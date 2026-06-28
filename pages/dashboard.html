@@ -119,28 +119,7 @@
 
 
 
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Season record</div>
-          <div class="stat-val" id="stat-record">--</div>
-          <div class="stat-sub">This season</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Points</div>
-          <div class="stat-val" id="stat-points">--</div>
-          <div class="stat-sub">Season total</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Division</div>
-          <div class="stat-val" id="stat-division">--</div>
-          <div class="stat-sub">Current</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Win streak</div>
-          <div class="stat-val" id="stat-streak">--</div>
-          <div class="stat-sub">Current</div>
-        </div>
-      </div>
+      <div id="game-stats-container"></div>
 
       <div class="dash-card">
         <div class="dash-card-title">Your profile</div>
@@ -333,10 +312,28 @@
       document.getElementById('greeting').textContent = `Welcome back, ${player.username}`
       document.getElementById('dash-sub').textContent = `${games[player.game] || player.game} · ${player.division.charAt(0).toUpperCase() + player.division.slice(1)} Division · ${regions[player.region] || player.region}`
 
-      document.getElementById('stat-record').textContent = `${player.wins}–${player.losses}`
-      document.getElementById('stat-points').textContent = player.points
-      document.getElementById('stat-division').textContent = player.division.charAt(0).toUpperCase() + player.division.slice(1)
-      document.getElementById('stat-streak').textContent = player.win_streak > 0 ? `W${player.win_streak}` : '–'
+      // Load per-game stats
+      const { data: gameProfiles } = await supabase
+        .from('player_games')
+        .select('*')
+        .eq('player_id', player.id)
+
+      const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
+      const statsEl = document.getElementById('game-stats-container')
+      if (gameProfiles && gameProfiles.length > 0) {
+        statsEl.innerHTML = gameProfiles.map(g => `
+          <div style="background:var(--slate);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:0.5px solid var(--slate-light);">
+            <div style="font-size:0.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;font-weight:600;">${gameNames[g.game]||g.game}</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+              <div><div style="font-size:1.4rem;font-weight:700;color:#fff;">${g.wins}–${g.losses}</div><div style="font-size:0.7rem;color:var(--gray-dim);">Record</div></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:#fff;">${g.points}</div><div style="font-size:0.7rem;color:var(--gray-dim);">Points</div></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:#fff;">${g.division.charAt(0).toUpperCase()+g.division.slice(1)}</div><div style="font-size:0.7rem;color:var(--gray-dim);">Division</div></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:#fff;">${g.win_streak>0?'W'+g.win_streak:'–'}</div><div style="font-size:0.7rem;color:var(--gray-dim);">Streak</div></div>
+            </div>
+          </div>`).join('')
+      } else {
+        statsEl.innerHTML = `<div style="background:var(--slate);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:0.5px solid var(--slate-light);color:var(--gray);font-size:0.85rem;">No game stats yet — enter a tournament to get started. <a href="tournaments.html" style="color:var(--volt);">Browse tournaments</a></div>`
+      }
 
       document.getElementById('profile-username').textContent = player.username
       document.getElementById('profile-region').textContent = regions[player.region] || player.region

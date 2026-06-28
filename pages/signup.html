@@ -23,7 +23,6 @@
     .form-input::placeholder { color: var(--gray-dim); }
     .form-select { width: 100%; background: var(--midnight); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.9rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; appearance: none; }
     .form-select:focus { border-color: rgba(232,255,71,0.4); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-submit { width: 100%; background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.15s; margin-top: 8px; }
     .btn-submit:hover { background: #d4eb3f; }
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -58,14 +57,14 @@
       <span class="auth-logo-text">arc<span>lo</span></span>
     </div>
     <div class="auth-title">Join the Circuit</div>
-    <div class="auth-sub">Create your account and compete</div>
+    <div class="auth-sub">One account. Every game. Compete across multiple tournaments.</div>
 
     <div class="season-free">Bronze league is free — sign up, pick a tournament, compete</div>
 
     <div class="auth-perks">
-      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Weekly league matches in your division</div>
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>One profile, multiple games and tournaments</div>
       <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Compete weekly against players in your region</div>
-      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Real prizes for top players every season</div>
+      <div class="perk"><div class="perk-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Real prizes for top players every tournament</div>
     </div>
 
     <div class="error-msg" id="error-msg"></div>
@@ -83,26 +82,18 @@
       <label class="form-label">Password</label>
       <input class="form-input" type="password" id="password" placeholder="Min. 8 characters">
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Region</label>
-        <select class="form-select" id="region">
-          <option value="">Select region</option>
-          <option value="oce">Oceania</option>
-          <option value="na">North America</option>
-          <option value="eu">Europe</option>
-          <option value="sea">Southeast Asia</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Game</label>
-        <select class="form-select" id="game">
-          <option value="rocket_league">Rocket League</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label class="form-label">Region</label>
+      <select class="form-select" id="region">
+        <option value="">Select region</option>
+        <option value="oce">Oceania</option>
+        <option value="na">North America</option>
+        <option value="eu">Europe</option>
+        <option value="sea">Southeast Asia</option>
+      </select>
     </div>
 
-    <button class="btn-submit" id="submit-btn" onclick="handleSignup()">Create account and join</button>
+    <button class="btn-submit" id="submit-btn" onclick="handleSignup()">Create account</button>
 
     <div class="auth-footer">
       Already have an account? <a href="login.html">Log in</a>
@@ -112,9 +103,7 @@
 
 <script type="module">
   import { signUp, redirectIfLoggedIn } from '../js/auth.js'
-  import { initNav } from '../js/nav.js'
 
-  initNav()
   redirectIfLoggedIn()
 
   window.handleSignup = async function() {
@@ -122,7 +111,6 @@
     const email = document.getElementById('email').value.trim()
     const password = document.getElementById('password').value
     const region = document.getElementById('region').value
-    const game = document.getElementById('game').value
     const errorEl = document.getElementById('error-msg')
     const successEl = document.getElementById('success-msg')
     const btn = document.getElementById('submit-btn')
@@ -130,39 +118,26 @@
     errorEl.style.display = 'none'
     successEl.style.display = 'none'
 
-    if (!username || !email || !password || !region) {
-      errorEl.textContent = 'Please fill in all fields.'
-      errorEl.style.display = 'block'
-      return
-    }
-    if (password.length < 8) {
-      errorEl.textContent = 'Password must be at least 8 characters.'
-      errorEl.style.display = 'block'
-      return
-    }
-    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
-      errorEl.textContent = 'Username can only contain letters, numbers, and underscores (3–24 characters).'
-      errorEl.style.display = 'block'
-      return
-    }
+    if (!username || !email || !password || !region) { errorEl.textContent = 'Please fill in all fields.'; errorEl.style.display = 'block'; return }
+    if (password.length < 8) { errorEl.textContent = 'Password must be at least 8 characters.'; errorEl.style.display = 'block'; return }
+    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) { errorEl.textContent = 'Username can only contain letters, numbers, and underscores (3–24 characters).'; errorEl.style.display = 'block'; return }
 
     btn.disabled = true
     btn.textContent = 'Creating account...'
 
     try {
-      await signUp({ email, password, username, region, game })
-      successEl.textContent = "Account created! Redirecting you to find a tournament..."
+      await signUp({ email, password, username, region, game: 'none' })
+      successEl.textContent = 'Account created! Taking you to find a tournament...'
       successEl.style.display = 'block'
       btn.textContent = 'Account created'
-      setTimeout(() => { window.location.href = 'login.html' }, 1500)
+      setTimeout(() => { window.location.href = 'tournaments.html' }, 1500)
     } catch (err) {
       errorEl.textContent = err.message || 'Something went wrong. Try again.'
       errorEl.style.display = 'block'
       btn.disabled = false
-      btn.textContent = 'Create account and join'
+      btn.textContent = 'Create account'
     }
   }
 </script>
-
 </body>
 </html>

@@ -67,13 +67,21 @@
   <p style="color:var(--gray);font-size:0.9rem;margin-bottom:28px;">Find a tournament and enter. Bronze is free — no entry fee, no experience needed.</p>
 
   <div class="t-filters">
-    <button class="t-filter-btn active" onclick="setFilter('all',this)">All</button>
-    <button class="t-filter-btn" onclick="setFilter('bronze',this)">Bronze</button>
-    <button class="t-filter-btn" onclick="setFilter('silver',this)">Silver</button>
-    <button class="t-filter-btn" onclick="setFilter('gold',this)">Gold</button>
-    <button class="t-filter-btn" onclick="setFilter('oce',this)">Oceania</button>
-    <button class="t-filter-btn" onclick="setFilter('na',this)">North America</button>
-    <button class="t-filter-btn" onclick="setFilter('eu',this)">Europe</button>
+    <button class="t-filter-btn active" onclick="setFilter('all',this)">All games</button>
+    <button class="t-filter-btn" onclick="setFilter('rocket_league',this)">Rocket League</button>
+    <button class="t-filter-btn" onclick="setFilter('fifa',this)">EA FC</button>
+    <button class="t-filter-btn" onclick="setFilter('valorant',this)">Valorant</button>
+    <button class="t-filter-btn" onclick="setFilter('apex',this)">Apex</button>
+    <button class="t-filter-btn" onclick="setFilter('fortnite',this)">Fortnite</button>
+  </div>
+  <div class="t-filters" style="margin-top:-16px;">
+    <button class="t-filter-btn active" onclick="setDivFilter('all',this)">All divisions</button>
+    <button class="t-filter-btn" onclick="setDivFilter('bronze',this)">Bronze</button>
+    <button class="t-filter-btn" onclick="setDivFilter('silver',this)">Silver</button>
+    <button class="t-filter-btn" onclick="setDivFilter('gold',this)">Gold</button>
+    <button class="t-filter-btn" onclick="setDivFilter('oce',this)">Oceania</button>
+    <button class="t-filter-btn" onclick="setDivFilter('na',this)">North America</button>
+    <button class="t-filter-btn" onclick="setDivFilter('eu',this)">Europe</button>
   </div>
 
   <div id="tournaments-list"><div style="color:var(--gray);padding:20px 0;">Loading tournaments...</div></div>
@@ -83,7 +91,8 @@
   import { supabase, getSession, getPlayer } from '../js/auth.js'
 
   const regions = { oce:'Oceania', na:'North America', eu:'Europe', sea:'Southeast Asia', latam:'Latin America' }
-  let allTournaments = [], currentFilter = 'all', currentPlayer = null, enrolledIds = new Set()
+  const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
+  let allTournaments = [], currentFilter = 'all', currentDivFilter = 'all', currentPlayer = null, enrolledIds = new Set()
 
   async function init() {
     const session = await getSession()
@@ -123,9 +132,8 @@
   function renderTournaments() {
     const el = document.getElementById('tournaments-list')
     let filtered = allTournaments
-    if (currentFilter !== 'all') {
-      filtered = allTournaments.filter(t => t.division === currentFilter || t.region === currentFilter)
-    }
+    if (currentFilter !== 'all') filtered = filtered.filter(t => t.game === currentFilter)
+    if (currentDivFilter !== 'all') filtered = filtered.filter(t => t.division === currentDivFilter || t.region === currentDivFilter)
 
     if (!filtered.length) {
       el.innerHTML = `<div class="empty-state"><h3>No tournaments found</h3><p>Check back soon or adjust your filters.</p></div>`
@@ -164,6 +172,7 @@
           <div>
             <div class="t-name">${t.name}</div>
             <div class="t-meta">
+              <span>${gameNames[t.game]||t.game||'Rocket League'}</span>
               <span>${regions[t.region]||t.region}</span>
               <span>${t.weeks} weeks</span>
               ${startDate ? `<span>Starts ${startDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</span>` : ''}
@@ -185,7 +194,19 @@
 
   window.setFilter = function(filter, btn) {
     currentFilter = filter
-    document.querySelectorAll('.t-filter-btn').forEach(b => b.classList.remove('active'))
+    // Only deactivate game filter buttons (first row)
+    const allBtns = document.querySelectorAll('.t-filter-btn')
+    const gameFilters = ['all', 'rocket_league', 'fifa', 'valorant', 'apex', 'fortnite']
+    allBtns.forEach(b => { if (gameFilters.includes(b.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])) b.classList.remove('active') })
+    btn.classList.add('active')
+    renderTournaments()
+  }
+
+  window.setDivFilter = function(filter, btn) {
+    currentDivFilter = filter
+    const allBtns = document.querySelectorAll('.t-filter-btn')
+    const divFilters = ['all', 'bronze', 'silver', 'gold', 'oce', 'na', 'eu']
+    allBtns.forEach(b => { if (divFilters.includes(b.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]) && b.getAttribute('onclick')?.includes('DivFilter')) b.classList.remove('active') })
     btn.classList.add('active')
     renderTournaments()
   }
@@ -196,17 +217,20 @@
     const t = allTournaments.find(t => t.id === tournamentId)
     if (!t) return
 
-    // Check if player division matches tournament division
-    if (currentPlayer.division !== t.division) {
-      alert(`This is a ${t.division} tournament. You are in ${currentPlayer.division} division.`)
-      return
-    }
-
+    // Update player tournament_id
     const { error } = await supabase.from('players')
       .update({ tournament_id: tournamentId })
       .eq('id', currentPlayer.id)
-
     if (error) { alert('Could not enter tournament: ' + error.message); return }
+
+    // Create or update player_games record for this game
+    const game = t.game || 'rocket_league'
+    await supabase.from('player_games').upsert({
+      player_id: currentPlayer.id,
+      game,
+      division: t.division || 'bronze',
+      tournament_id: tournamentId
+    }, { onConflict: 'player_id,game' })
 
     enrolledIds.add(tournamentId)
     currentPlayer.tournament_id = tournamentId

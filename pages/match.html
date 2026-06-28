@@ -316,14 +316,28 @@
       const r1 = results[0], r2 = results[1]
       if (r1.my_score === r2.opponent_score && r1.opponent_score === r2.my_score) {
         const winnerId = myScore > oppScore ? player.id : myScore < oppScore ? (isP1 ? match.player_two_id : match.player_one_id) : null
+        const loserId = winnerId ? (winnerId === match.player_one_id ? match.player_two_id : match.player_one_id) : null
+        const game = match.game || tournament?.game || 'rocket_league'
+
         await supabase.from('matches').update({ status:'completed', winner_id:winnerId||null, draw_reason:winnerId?null:'score' }).eq('id', match.id)
+
         if (winnerId) {
           await supabase.rpc('increment_wins', { pid: winnerId })
           await supabase.rpc('increment_points', { pid: winnerId, amt: 3 })
-          await supabase.rpc('increment_losses', { pid: winnerId === match.player_one_id ? match.player_two_id : match.player_one_id })
+          await supabase.rpc('increment_losses', { pid: loserId })
+          // Update player_games
+          const { data: wg } = await supabase.from('player_games').select('wins,points').eq('player_id', winnerId).eq('game', game).single()
+          if (wg) await supabase.from('player_games').update({ wins: wg.wins+1, points: wg.points+3 }).eq('player_id', winnerId).eq('game', game)
+          const { data: lg } = await supabase.from('player_games').select('losses').eq('player_id', loserId).eq('game', game).single()
+          if (lg) await supabase.from('player_games').update({ losses: lg.losses+1 }).eq('player_id', loserId).eq('game', game)
         } else {
           await supabase.rpc('increment_points', { pid: match.player_one_id, amt: 1 })
           await supabase.rpc('increment_points', { pid: match.player_two_id, amt: 1 })
+          // Update player_games
+          for (const pid of [match.player_one_id, match.player_two_id]) {
+            const { data: pg } = await supabase.from('player_games').select('points').eq('player_id', pid).eq('game', game).single()
+            if (pg) await supabase.from('player_games').update({ points: pg.points+1 }).eq('player_id', pid).eq('game', game)
+          }
         }
       } else {
         await supabase.from('matches').update({ status:'disputed' }).eq('id', match.id)

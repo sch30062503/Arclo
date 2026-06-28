@@ -141,6 +141,17 @@
         <div class="toast toast-error" id="create-error"></div>
         <div class="form-row">
           <div class="form-group">
+            <label class="form-label">Game</label>
+            <select class="form-select" id="t-game">
+              <option value="rocket_league">Rocket League</option>
+              <option value="fifa">EA FC</option>
+              <option value="valorant">Valorant</option>
+              <option value="apex">Apex Legends</option>
+              <option value="fortnite">Fortnite</option>
+              <option value="cod">Call of Duty</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label">Region</label>
             <select class="form-select" id="t-region">
               <option value="oce">Oceania</option>
@@ -149,6 +160,8 @@
               <option value="sea">Southeast Asia</option>
             </select>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Division</label>
             <select class="form-select" id="t-division">
@@ -156,12 +169,6 @@
               <option value="silver">Silver</option>
               <option value="gold">Gold</option>
             </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Tournament name</label>
-            <input class="form-input" type="text" id="t-name" placeholder="e.g. Bronze OCE #1">
           </div>
           <div class="form-group">
             <label class="form-label">Weeks</label>
@@ -171,6 +178,10 @@
               <option value="10">10 weeks</option>
             </select>
           </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tournament name</label>
+          <input class="form-input" type="text" id="t-name" placeholder="e.g. Rocket League Bronze OCE #1">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -325,6 +336,7 @@
     const eEl = document.getElementById('create-error')
     sEl.style.display = 'none'; eEl.style.display = 'none'
     if (!name) { eEl.textContent = 'Please enter a name.'; eEl.style.display = 'block'; return }
+    const game = document.getElementById('t-game').value
     const startDate = document.getElementById('t-start-date').value
     const regDeadline = document.getElementById('t-reg-deadline').value
     const prizePool = document.getElementById('t-prize-pool').value.trim() || 'TBC'
@@ -349,6 +361,7 @@
   async function loadTournaments() {
     const { data: tournaments } = await supabase.from('tournaments').select('*').order('created_at', { ascending: false })
     const { data: players } = await supabase.from('players').select('id, username, points, wins, tournament_id')
+    const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
     const counts = {}, podiums = {}
     players?.forEach(p => {
       if (p.tournament_id) {
@@ -375,7 +388,7 @@
         <div class="tournament-header">
           <div>
             <div class="tournament-name">${t.name}</div>
-            <div class="tournament-meta">${regions[t.region]||t.region} · ${t.division.charAt(0).toUpperCase()+t.division.slice(1)} · ${t.weeks} weeks · <span style="color:${isFull?'var(--ignite)':'var(--gray)'}">${count}/${t.max_players} players${isFull?' — FULL':''}</span></div>
+            <div class="tournament-meta">${gameNames[t.game]||t.game||'Rocket League'} · ${regions[t.region]||t.region} · ${t.division.charAt(0).toUpperCase()+t.division.slice(1)} · ${t.weeks} weeks · <span style="color:${isFull?'var(--ignite)':'var(--gray)'}">${count}/${t.max_players} players${isFull?' — FULL':''}</span></div>
           </div>
           <span class="week-badge" style="color:${t.status==='completed'?'var(--gray)':'var(--volt)'};">${t.status==='completed'?'Completed':'Week '+t.current_week+' / '+t.weeks}</span>
         </div>
