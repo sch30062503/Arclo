@@ -68,6 +68,7 @@
   function generateFixtures(id){window._generateFixtures&&window._generateFixtures(id)}
   function advanceWeek(id){window._advanceWeek&&window._advanceWeek(id)}
   function endTournament(id){window._endTournament&&window._endTournament(id)}
+  function deleteTournament(id){window._deleteTournament&&window._deleteTournament(id)}
   function runPromotion(id){window.runPromotion&&window.runPromotion(id)}
   function resolveDispute(a,b,c,d,e,f,g){window._resolveDispute&&window._resolveDispute(a,b,c,d,e,f,g)}
   function removePlayer(a,b){window._removePlayer&&window._removePlayer(a,b)}
@@ -293,8 +294,9 @@
 
   window._updateDivision = async (id, division) => { await supabase.from('players').update({ division }).eq('id', id) }
   window._removePlayer = async (id, name) => {
-    if (!confirm(`Remove ${name}?`)) return
-    await supabase.from('players').delete().eq('id', id)
+    if (!confirm(`Remove ${name} from the platform?`)) return
+    const { error } = await supabase.from('players').delete().eq('id', id)
+    if (error) { alert('Could not remove player: ' + error.message); return }
     loadPlayers(); loadOverview()
   }
 
@@ -330,29 +332,62 @@
 
   async function loadTournaments() {
     const { data: tournaments } = await supabase.from('tournaments').select('*').order('created_at', { ascending: false })
-    const { data: players } = await supabase.from('players').select('tournament_id')
-    const counts = {}
-    players?.forEach(p => { if (p.tournament_id) counts[p.tournament_id] = (counts[p.tournament_id]||0)+1 })
+    const { data: players } = await supabase.from('players').select('id, username, points, wins, tournament_id')
+    const counts = {}, podiums = {}
+    players?.forEach(p => {
+      if (p.tournament_id) {
+        counts[p.tournament_id] = (counts[p.tournament_id]||0)+1
+        if (!podiums[p.tournament_id]) podiums[p.tournament_id] = []
+        podiums[p.tournament_id].push(p)
+      }
+    })
+    // Sort podiums by points then wins
+    Object.keys(podiums).forEach(tid => {
+      podiums[tid].sort((a,b) => b.points - a.points || b.wins - a.wins)
+    })
     const el = document.getElementById('tournaments-list')
     if (!tournaments?.length) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:12px 0;">No tournaments yet. Create one above.</p>'; return }
     el.innerHTML = tournaments.map(t => {
       const count = counts[t.id] || 0
       const isFull = count >= t.max_players
+      const top3 = podiums[t.id]?.slice(0,3) || []
+      const podiumHtml = t.status === 'completed' && top3.length ? `
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+          ${top3.map((p, i) => `<span style="background:${i===0?'rgba(232,255,71,0.1)':i===1?'rgba(200,200,200,0.08)':'rgba(205,127,50,0.08)'};border:0.5px solid ${i===0?'rgba(232,255,71,0.3)':i===1?'rgba(200,200,200,0.2)':'rgba(205,127,50,0.2)'};border-radius:999px;padding:3px 10px;font-size:0.75rem;font-weight:600;color:${i===0?'var(--volt)':i===1?'#ccc':'#cd7f32'};">${i===0?'🥇':i===1?'🥈':'🥉'} ${p.username} · ${p.points}pts</span>`).join('')}
+        </div>` : ''
       return `<div class="tournament-card">
         <div class="tournament-header">
           <div>
             <div class="tournament-name">${t.name}</div>
             <div class="tournament-meta">${regions[t.region]||t.region} · ${t.division.charAt(0).toUpperCase()+t.division.slice(1)} · ${t.weeks} weeks · <span style="color:${isFull?'var(--ignite)':'var(--gray)'}">${count}/${t.max_players} players${isFull?' — FULL':''}</span></div>
           </div>
-          <span class="week-badge">Week ${t.current_week} / ${t.weeks}</span>
+          <span class="week-badge" style="color:${t.status==='completed'?'var(--gray)':'var(--volt)'};">${t.status==='completed'?'Completed':'Week '+t.current_week+' / '+t.weeks}</span>
         </div>
+        ${podiumHtml}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-admin" onclick="generateFixtures('${t.id}')">Generate week ${t.current_week} fixtures</button>
-          <button class="btn-outline" onclick="advanceWeek('${t.id}')">Advance to week ${t.current_week+1}</button>
-          ${t.status==='active'?`<button class="btn-danger" onclick="endTournament('${t.id}')">End tournament</button>`:`<button class="btn-admin" onclick="runPromotion('${t.id}')">Run promotion</button>`}
+          ${t.status==='active'?`
+            <button class="btn-admin" onclick="generateFixtures('${t.id}')">Generate week ${t.current_week} fixtures</button>
+            <button class="btn-outline" onclick="advanceWeek('${t.id}')">Advance to week ${t.current_week+1}</button>
+            <button class="btn-danger" onclick="endTournament('${t.id}')">End tournament</button>
+          `:`
+            <button class="btn-admin" onclick="runPromotion('${t.id}')">Run promotion</button>
+          `}
+          <button class="btn-danger" onclick="deleteTournament('${t.id}')" style="margin-left:auto;">Delete</button>
         </div>
       </div>`
     }).join('')
+  }
+
+  window._deleteTournament = async function(id) {
+    if (!confirm('Delete this tournament? This will also cancel all associated matches.')) return
+    // Cancel all matches first
+    await supabase.from('matches').update({ status: 'cancelled' }).eq('tournament_id', id)
+    // Remove player tournament assignments
+    await supabase.from('players').update({ tournament_id: null }).eq('tournament_id', id)
+    // Delete the tournament
+    const { error } = await supabase.from('tournaments').delete().eq('id', id)
+    if (error) { alert('Could not delete tournament: ' + error.message); return }
+    loadTournaments(); loadOverview()
   }
 
   window._advanceWeek = async function(id) {
