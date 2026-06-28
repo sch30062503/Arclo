@@ -72,6 +72,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Leaderboard
     </a>
+    <a href="tournaments.html" class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>
+      Tournaments
+    </a>
 
     <hr class="sidebar-divider">
     <a href="#" onclick="handleLogout()" class="sidebar-item">
@@ -282,7 +286,6 @@
       }
 
       const initials = player.username.slice(0, 2).toUpperCase()
-      document.getElementById('nav-avatar').textContent = initials
       document.getElementById('sidebar-avatar').textContent = initials
       document.getElementById('sidebar-name').textContent = player.username
       document.getElementById('sidebar-rank').textContent = `${player.division.charAt(0).toUpperCase() + player.division.slice(1)} · ${regions[player.region] || player.region}`

@@ -68,22 +68,39 @@
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">
-    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
-      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
-      <span class="nav-logo-text">arc<span>lo</span></span>
+<div style="display:grid;grid-template-columns:220px 1fr;min-height:100vh;">
+  <aside style="background:var(--slate);border-right:0.5px solid var(--slate-light);padding:20px 12px;position:sticky;top:0;height:100vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid var(--volt);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--volt);" id="sidebar-avatar">--</div>
+      <div>
+        <div style="font-size:0.875rem;font-weight:600;color:#fff;" id="sidebar-name">Loading...</div>
+        <div style="font-size:0.75rem;color:var(--gray);" id="sidebar-rank">--</div>
+      </div>
+    </div>
+    <hr style="border:none;border-top:0.5px solid var(--slate-light);margin:8px 0;">
+    <a href="dashboard.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);font-size:0.85rem;color:var(--gray);text-decoration:none;margin-bottom:1px;transition:all 0.12s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
     </a>
-  </div>
-  <ul class="nav-links">
-    <li><a href="dashboard.html" style="color:#fff;font-weight:500;">Dashboard</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-  </ul>
-  <div class="nav-actions">
-    <button onclick="handleLogout()" class="btn btn-ghost btn-sm">Log out</button>
-  </div>
-</nav>
-
+    <a href="match.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);font-size:0.85rem;background:rgba(232,255,71,0.08);color:var(--volt);text-decoration:none;margin-bottom:1px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
+      My match
+    </a>
+    <a href="leaderboard.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);font-size:0.85rem;color:var(--gray);text-decoration:none;margin-bottom:1px;transition:all 0.12s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Leaderboard
+    </a>
+    <a href="tournaments.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);font-size:0.85rem;color:var(--gray);text-decoration:none;margin-bottom:1px;transition:all 0.12s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>
+      Tournaments
+    </a>
+    <hr style="border:none;border-top:0.5px solid var(--slate-light);margin:8px 0;">
+    <a href="#" onclick="handleLogout()" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);font-size:0.85rem;color:var(--gray);text-decoration:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log out
+    </a>
+  </aside>
+  <div style="overflow-y:auto;">
 <div class="match-wrap">
   <div id="root"><div style="text-align:center;padding:60px 0;color:var(--gray);">Loading your match...</div></div>
 </div>
@@ -400,6 +417,13 @@
     if (!session) return
     player = await getPlayer()
     if (!player) return
+    const initials = player.username.slice(0,2).toUpperCase()
+    const avatarEl = document.getElementById('sidebar-avatar')
+    const nameEl = document.getElementById('sidebar-name')
+    const rankEl = document.getElementById('sidebar-rank')
+    if (avatarEl) avatarEl.textContent = initials
+    if (nameEl) nameEl.textContent = player.username
+    if (rankEl) rankEl.textContent = player.division.charAt(0).toUpperCase() + player.division.slice(1)
 
     // Get current week from tournament
     let WEEK = 1
@@ -440,5 +464,7 @@
 
   init()
 </script>
+  </div>
+</div>
 </body>
 </html>
