@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournaments — Arclo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .tournaments-wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+    .t-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .t-filter-btn { padding: 6px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 500; border: 0.5px solid var(--slate-light); background: transparent; color: var(--gray); cursor: pointer; font-family: var(--font); transition: all 0.12s; }
+    .t-filter-btn.active { background: var(--volt); color: var(--midnight); border-color: var(--volt); }
+    .t-filter-btn:hover:not(.active) { color: #fff; border-color: var(--gray); }
+    .t-card { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 14px; transition: border-color 0.15s; }
+    .t-card:hover { border-color: rgba(232,255,71,0.2); }
+    .t-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .t-name { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .t-meta { font-size: 0.8rem; color: var(--gray); display: flex; gap: 12px; flex-wrap: wrap; }
+    .t-badge { font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .badge-bronze { background: rgba(205,127,50,0.15); color: #cd7f32; border: 0.5px solid rgba(205,127,50,0.3); }
+    .badge-silver { background: rgba(200,200,200,0.1); color: #ccc; border: 0.5px solid rgba(200,200,200,0.2); }
+    .badge-gold { background: rgba(232,255,71,0.1); color: var(--volt); border: 0.5px solid rgba(232,255,71,0.2); }
+    .badge-free { background: rgba(74,222,128,0.1); color: #4ade80; border: 0.5px solid rgba(74,222,128,0.2); }
+    .badge-active { background: rgba(55,138,221,0.1); color: #378ADD; border: 0.5px solid rgba(55,138,221,0.2); }
+    .badge-upcoming { background: rgba(232,255,71,0.08); color: var(--volt); border: 0.5px solid rgba(232,255,71,0.15); }
+    .t-stats { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+    .t-stat { font-size: 0.82rem; color: var(--gray); }
+    .t-stat strong { color: #fff; font-weight: 600; }
+    .t-progress { background: var(--midnight); border-radius: 999px; height: 4px; margin-bottom: 16px; overflow: hidden; }
+    .t-progress-bar { background: var(--volt); height: 100%; border-radius: 999px; transition: width 0.3s; }
+    .t-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-enter { background: var(--volt); color: var(--midnight); border: none; border-radius: var(--radius); padding: 9px 20px; font-size: 0.875rem; font-weight: 600; cursor: pointer; font-family: var(--font); }
+    .btn-enter:hover { background: #d4eb3f; }
+    .btn-enter:disabled { opacity: 0.5; cursor: not-allowed; }
+    .enrolled-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,0.1); border: 0.5px solid rgba(74,222,128,0.3); border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; color: #4ade80; font-weight: 500; }
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--gray); }
+    .empty-state h3 { color: #fff; font-size: 1.1rem; margin-bottom: 8px; }
+    .registration-open { font-size: 0.78rem; color: #4ade80; }
+    .registration-closed { font-size: 0.78rem; color: #f87171; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
+      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
+      <span class="nav-logo-text">arc<span>lo</span></span>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="tournaments.html" style="color:#fff;font-weight:500;">Tournaments</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <div id="nav-actions" class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="signup.html" class="btn btn-primary btn-sm">Join free</a>
+  </div>
+</nav>
+
+<div class="tournaments-wrap">
+  <p style="font-size:0.8rem;font-weight:600;color:var(--volt);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">The Circuit</p>
+  <h1 style="color:#fff;margin-bottom:8px;">Tournaments</h1>
+  <p style="color:var(--gray);font-size:0.9rem;margin-bottom:28px;">Find a tournament and enter. Bronze is free — no entry fee, no experience needed.</p>
+
+  <div class="t-filters">
+    <button class="t-filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="t-filter-btn" onclick="setFilter('bronze',this)">Bronze</button>
+    <button class="t-filter-btn" onclick="setFilter('silver',this)">Silver</button>
+    <button class="t-filter-btn" onclick="setFilter('gold',this)">Gold</button>
+    <button class="t-filter-btn" onclick="setFilter('oce',this)">Oceania</button>
+    <button class="t-filter-btn" onclick="setFilter('na',this)">North America</button>
+    <button class="t-filter-btn" onclick="setFilter('eu',this)">Europe</button>
+  </div>
+
+  <div id="tournaments-list"><div style="color:var(--gray);padding:20px 0;">Loading tournaments...</div></div>
+</div>
+
+<script type="module">
+  import { supabase, getSession, getPlayer } from '../js/auth.js'
+
+  const regions = { oce:'Oceania', na:'North America', eu:'Europe', sea:'Southeast Asia', latam:'Latin America' }
+  let allTournaments = [], currentFilter = 'all', currentPlayer = null, enrolledIds = new Set()
+
+  async function init() {
+    const session = await getSession()
+    if (session) {
+      currentPlayer = await getPlayer()
+      // Update nav
+      const nav = document.getElementById('nav-actions')
+      if (currentPlayer) {
+        const initials = currentPlayer.username.slice(0,2).toUpperCase()
+        nav.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
+          <a href="dashboard.html" class="btn btn-secondary btn-sm">Dashboard</a>
+        </div>`
+      }
+      if (currentPlayer?.tournament_id) enrolledIds.add(currentPlayer.tournament_id)
+    }
+    await loadTournaments()
+  }
+
+  async function loadTournaments() {
+    const { data } = await supabase.from('tournaments')
+      .select('*').in('status', ['active','upcoming']).order('start_date', { ascending: true })
+    allTournaments = data || []
+
+    // Get player counts
+    const { data: players } = await supabase.from('players').select('tournament_id')
+    const counts = {}
+    players?.forEach(p => { if (p.tournament_id) counts[p.tournament_id] = (counts[p.tournament_id]||0)+1 })
+    allTournaments.forEach(t => t._playerCount = counts[t.id] || 0)
+
+    renderTournaments()
+  }
+
+  function renderTournaments() {
+    const el = document.getElementById('tournaments-list')
+    let filtered = allTournaments
+    if (currentFilter !== 'all') {
+      filtered = allTournaments.filter(t => t.division === currentFilter || t.region === currentFilter)
+    }
+
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty-state"><h3>No tournaments found</h3><p>Check back soon or adjust your filters.</p></div>`
+      return
+    }
+
+    el.innerHTML = filtered.map(t => {
+      const now = new Date()
+      const startDate = t.start_date ? new Date(t.start_date) : null
+      const regDeadline = t.registration_deadline ? new Date(t.registration_deadline) : null
+      const isEnrolled = enrolledIds.has(t.id)
+      const isFull = t._playerCount >= t.max_players
+      const regOpen = !regDeadline || now < regDeadline
+      const started = startDate && now >= startDate
+      const pct = Math.round((t._playerCount / t.max_players) * 100)
+
+      const divBadge = `<span class="t-badge badge-${t.division}">${t.division.charAt(0).toUpperCase()+t.division.slice(1)}</span>`
+      const freeBadge = t.division === 'bronze' ? `<span class="t-badge badge-free">Free entry</span>` : ''
+      const statusBadge = started ? `<span class="t-badge badge-active">Active</span>` : `<span class="t-badge badge-upcoming">Upcoming</span>`
+
+      let actionHtml = ''
+      if (isEnrolled) {
+        actionHtml = `<span class="enrolled-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enrolled</span>`
+      } else if (isFull) {
+        actionHtml = `<button class="btn-enter" disabled>Tournament full</button>`
+      } else if (!regOpen) {
+        actionHtml = `<button class="btn-enter" disabled>Registration closed</button>`
+      } else if (!currentPlayer) {
+        actionHtml = `<a href="signup.html" class="btn-enter" style="text-decoration:none;display:inline-block;">Sign up to enter</a>`
+      } else {
+        actionHtml = `<button class="btn-enter" onclick="enterTournament('${t.id}')">Enter tournament</button>`
+      }
+
+      return `<div class="t-card">
+        <div class="t-card-top">
+          <div>
+            <div class="t-name">${t.name}</div>
+            <div class="t-meta">
+              <span>${regions[t.region]||t.region}</span>
+              <span>${t.weeks} weeks</span>
+              ${startDate ? `<span>Starts ${startDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}</span>` : ''}
+              ${t.prize_pool && t.prize_pool !== 'TBC' ? `<span style="color:var(--volt);">Prize: ${t.prize_pool}</span>` : ''}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">${divBadge}${freeBadge}${statusBadge}</div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat"><strong>${t._playerCount}</strong> / ${t.max_players} players</div>
+          ${regDeadline ? `<div class="t-stat ${regOpen?'registration-open':'registration-closed'}">${regOpen?'Registration open until '+regDeadline.toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'Registration closed'}</div>` : '<div class="t-stat registration-open">Registration open</div>'}
+          <div class="t-stat">Week <strong>${t.current_week}</strong> / ${t.weeks}</div>
+        </div>
+        <div class="t-progress"><div class="t-progress-bar" style="width:${pct}%"></div></div>
+        <div class="t-actions">${actionHtml}</div>
+      </div>`
+    }).join('')
+  }
+
+  window.setFilter = function(filter, btn) {
+    currentFilter = filter
+    document.querySelectorAll('.t-filter-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    renderTournaments()
+  }
+
+  window.enterTournament = async function(tournamentId) {
+    if (!currentPlayer) { window.location.href = 'signup.html'; return }
+
+    const t = allTournaments.find(t => t.id === tournamentId)
+    if (!t) return
+
+    // Check if player division matches tournament division
+    if (currentPlayer.division !== t.division) {
+      alert(`This is a ${t.division} tournament. You are in ${currentPlayer.division} division.`)
+      return
+    }
+
+    const { error } = await supabase.from('players')
+      .update({ tournament_id: tournamentId })
+      .eq('id', currentPlayer.id)
+
+    if (error) { alert('Could not enter tournament: ' + error.message); return }
+
+    enrolledIds.add(tournamentId)
+    currentPlayer.tournament_id = tournamentId
+    renderTournaments()
+
+    // Show confirmation
+    const banner = document.createElement('div')
+    banner.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#4ade80;color:#0d0d0f;padding:10px 20px;border-radius:999px;font-size:0.85rem;font-weight:600;z-index:999;'
+    banner.textContent = `You're in! Tournament starts ${t.start_date ? new Date(t.start_date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : 'soon'}.`
+    document.body.appendChild(banner)
+    setTimeout(() => banner.remove(), 4000)
+  }
+
+  init()
+</script>
+
+</body>
+</html>

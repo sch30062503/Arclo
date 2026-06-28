@@ -171,6 +171,20 @@
             </select>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Start date</label>
+            <input class="form-input" type="datetime-local" id="t-start-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Registration deadline</label>
+            <input class="form-input" type="datetime-local" id="t-reg-deadline">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prize pool (optional)</label>
+          <input class="form-input" type="text" id="t-prize-pool" placeholder="e.g. $50 or TBC">
+        </div>
         <button class="btn-admin" onclick="createTournament()">Create tournament</button>
       </div>
       <div id="tournaments-list"><div class="loading">Loading tournaments...</div></div>
@@ -276,7 +290,16 @@
     const eEl = document.getElementById('create-error')
     sEl.style.display = 'none'; eEl.style.display = 'none'
     if (!name) { eEl.textContent = 'Please enter a name.'; eEl.style.display = 'block'; return }
-    const { error } = await supabase.from('tournaments').insert({ name, region, division, weeks, status:'active', current_week:1, max_players:16 })
+    const startDate = document.getElementById('t-start-date').value
+    const regDeadline = document.getElementById('t-reg-deadline').value
+    const prizePool = document.getElementById('t-prize-pool').value.trim() || 'TBC'
+    const status = startDate && new Date(startDate) > new Date() ? 'upcoming' : 'active'
+    const { error } = await supabase.from('tournaments').insert({
+      name, region, division, weeks, status, current_week: 1, max_players: 16,
+      start_date: startDate || null,
+      registration_deadline: regDeadline || null,
+      prize_pool: prizePool
+    })
     if (error) { eEl.textContent = error.message; eEl.style.display = 'block'; return }
     sEl.textContent = `Tournament "${name}" created.`; sEl.style.display = 'block'
     document.getElementById('t-name').value = ''

@@ -172,22 +172,9 @@
         </div>
       </div>
 
-      <div class="dash-card">
-        <div class="dash-card-title">Getting started</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(232,255,71,0.05);border:0.5px solid rgba(232,255,71,0.12);border-radius:var(--radius);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8ff47" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
-            <div>
-              <p style="font-size:0.85rem;font-weight:500;color:#fff;margin:0 0 2px;">Season 1 is live</p>
-              <p style="font-size:0.75rem;color:var(--gray);margin:0;">Matches are being scheduled. Check the leaderboard to see the standings.</p>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:4px;">
-            <a href="match.html" class="btn btn-primary btn-sm">My match</a>
-            <a href="leaderboard.html" class="btn btn-secondary btn-sm">View leaderboard</a>
-            <a href="live.html" class="btn btn-secondary btn-sm">Watch live</a>
-          </div>
-        </div>
+      <div class="dash-card" id="tournament-card">
+        <div class="dash-card-title">Your tournament</div>
+        <div id="tournament-info"><div style="color:var(--gray);font-size:0.85rem;">Loading...</div></div>
       </div>
     </div>
   </main>
@@ -277,6 +264,52 @@
       </div>`).join('')
   }
 
+  async function loadTournamentInfo(player) {
+    const el = document.getElementById('tournament-info')
+    if (!el) return
+
+    if (!player.tournament_id) {
+      el.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">
+        <p style="font-size:0.85rem;color:var(--gray);margin:0;">You haven't entered a tournament yet.</p>
+        <a href="tournaments.html" class="btn btn-primary btn-sm" style="display:inline-block;width:fit-content;">Browse tournaments</a>
+      </div>`
+      return
+    }
+
+    const { data: t } = await supabase.from('tournaments').select('*').eq('id', player.tournament_id).single()
+    if (!t) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">Tournament not found.</p>'; return }
+
+    const startDate = t.start_date ? new Date(t.start_date).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : 'TBC'
+    const now = new Date()
+    const started = t.start_date && now >= new Date(t.start_date)
+
+    const { count } = await supabase.from('players').select('id', { count:'exact', head:true }).eq('tournament_id', t.id)
+
+    el.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
+        <span style="font-size:0.8rem;color:var(--gray);">Tournament</span>
+        <span style="font-size:0.85rem;color:#fff;font-weight:500;">${t.name}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
+        <span style="font-size:0.8rem;color:var(--gray);">Status</span>
+        <span style="font-size:0.85rem;font-weight:500;color:${started?'#4ade80':'var(--volt)'};">${started?'Active — Week '+t.current_week+' of '+t.weeks:'Starting '+startDate}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
+        <span style="font-size:0.8rem;color:var(--gray);">Players registered</span>
+        <span style="font-size:0.85rem;color:#fff;font-weight:500;">${count} / ${t.max_players}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+        <span style="font-size:0.8rem;color:var(--gray);">Prize pool</span>
+        <span style="font-size:0.85rem;color:var(--volt);font-weight:500;">${t.prize_pool || 'TBC'}</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        ${started ? `<a href="match.html" class="btn btn-primary btn-sm">My match</a>` : ''}
+        <a href="leaderboard.html" class="btn btn-secondary btn-sm">Leaderboard</a>
+        <a href="tournaments.html" class="btn btn-secondary btn-sm">All tournaments</a>
+      </div>
+    </div>`
+  }
+
   window.dismissNotif = async function(id) {
     await supabase.from('notifications').update({ read: true }).eq('id', id)
     const el = document.getElementById('notif-' + id)
@@ -316,6 +349,9 @@
 
       document.getElementById('loading').style.display = 'none'
       document.getElementById('dash-content').style.display = 'block'
+
+      // Load tournament info
+      await loadTournamentInfo(player)
 
       // Load notifications
       await loadNotifications(player.id)
