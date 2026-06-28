@@ -558,7 +558,7 @@
   // ─── Disputes ─────────────────────────────────────────────────────────────
   async function loadDisputes() {
     const { data: disputes } = await supabase.from('disputes').select(`
-      *, match:match_id(player_one_id,player_two_id,player_one:player_one_id(username),player_two:player_two_id(username),division,region,week)
+      *, match:match_id(player_one_id,player_two_id,player_one:player_one_id(username),player_two:player_two_id(username),division,region,week,game,tournament_id,tournament:tournament_id(name))
     `).eq('status','open').order('created_at')
 
     const el = document.getElementById('disputes-list')
@@ -567,6 +567,7 @@
     noEl.style.display = 'none'
     document.getElementById('dispute-dot').style.display = 'block'
 
+    const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
     const evidenceUrls = {}
     for (const d of disputes) {
       if (d.p1_evidence) {
@@ -585,7 +586,8 @@
       const c1 = d.player_one_claim, c2 = d.player_two_claim
       const p1url = evidenceUrls[d.id+'_p1'], p2url = evidenceUrls[d.id+'_p2']
       return `<div class="dispute-card">
-        <div style="font-size:0.95rem;font-weight:600;color:#fff;margin-bottom:12px;">${p1} vs ${p2} — ${d.match?.division} · Wk${d.match?.week}</div>
+        <div style="font-size:0.95rem;font-weight:600;color:#fff;margin-bottom:6px;">${p1} vs ${p2}</div>
+        <div style="font-size:0.78rem;color:var(--gray);margin-bottom:12px;">${d.match?.tournament?.name||'Unknown tournament'} · ${gameNames[d.match?.game]||d.match?.game||'Rocket League'} · ${d.match?.division} · Week ${d.match?.week}</div>
         <div class="dispute-claims">
           <div class="dispute-claim">
             <div class="dispute-claim-name">${p1} claims</div>
@@ -617,13 +619,24 @@
     const winnerId = decision==='p1_wins'?p1id:decision==='p2_wins'?p2id:null
     const { error } = await supabase.from('matches').update({ status:'completed', winner_id:winnerId||null, draw_reason:winnerId?null:'score' }).eq('id',matchId)
     if (error) { alert('Error: '+error.message); return }
+    const loserId = winnerId ? (winnerId === p1id ? p2id : p1id) : null
     if (winnerId) {
-      await supabase.rpc('increment_wins', { pid: winnerId })
-      await supabase.rpc('increment_points', { pid: winnerId, amt: 3 })
-      await supabase.rpc('increment_losses', { pid: winnerId===p1id?p2id:p1id })
+      const { data: winner } = await supabase.from('players').select('wins,points').eq('id', winnerId).single()
+      const { data: loser } = await supabase.from('players').select('losses').eq('id', loserId).single()
+      if (winner) await supabase.from('players').update({ wins: winner.wins+1, points: winner.points+3 }).eq('id', winnerId)
+      if (loser) await supabase.from('players').update({ losses: loser.losses+1 }).eq('id', loserId)
+      // Update player_games
+      const { data: mData } = await supabase.from('matches').select('game').eq('id', matchId).single()
+      const game = mData?.game || 'rocket_league'
+      const { data: wg } = await supabase.from('player_games').select('wins,points').eq('player_id', winnerId).eq('game', game).single()
+      const { data: lg } = await supabase.from('player_games').select('losses').eq('player_id', loserId).eq('game', game).single()
+      if (wg) await supabase.from('player_games').update({ wins: wg.wins+1, points: wg.points+3 }).eq('player_id', winnerId).eq('game', game)
+      if (lg) await supabase.from('player_games').update({ losses: lg.losses+1 }).eq('player_id', loserId).eq('game', game)
     } else {
-      await supabase.rpc('increment_points', { pid: p1id, amt: 1 })
-      await supabase.rpc('increment_points', { pid: p2id, amt: 1 })
+      const { data: p1d } = await supabase.from('players').select('points').eq('id', p1id).single()
+      const { data: p2d } = await supabase.from('players').select('points').eq('id', p2id).single()
+      if (p1d) await supabase.from('players').update({ points: p1d.points+1 }).eq('id', p1id)
+      if (p2d) await supabase.from('players').update({ points: p2d.points+1 }).eq('id', p2id)
     }
     await supabase.from('disputes').update({ status:'resolved', admin_decision:decision, resolved_at:new Date().toISOString() }).eq('id',disputeId)
     const msgs = winnerId ? [
