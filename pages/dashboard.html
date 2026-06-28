@@ -249,6 +249,8 @@
     if (!t) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">Tournament not found.</p>'; return }
 
     const startDate = t.start_date ? new Date(t.start_date).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : 'TBC'
+    const endDateObj = t.start_date ? new Date(new Date(t.start_date).getTime() + t.weeks * 7 * 24 * 60 * 60 * 1000) : null
+    const endDate = endDateObj ? endDateObj.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : 'TBC'
     const now = new Date()
     const started = t.start_date && now >= new Date(t.start_date)
 

@@ -3,29 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leaderboard — Arclo Circuit</title>
+  <title>Leaderboard — Arclo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .lb-header { padding: 48px 0 32px; }
-    .lb-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
-    .filter-btn { padding: 7px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 500; border: 0.5px solid var(--slate-light); background: transparent; color: var(--gray); cursor: pointer; transition: all 0.15s; font-family: var(--font); }
-    .filter-btn.active { background: var(--volt); color: var(--midnight); border-color: var(--volt); }
-    .filter-btn:hover:not(.active) { border-color: var(--gray); color: #fff; }
-    .lb-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+    .lb-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
     .lb-table th { font-size: 0.7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 0.5px solid var(--slate-light); }
     .lb-table td { padding: 12px 14px; border-bottom: 0.5px solid rgba(255,255,255,0.04); vertical-align: middle; }
     .lb-table tr:last-child td { border-bottom: none; }
     .lb-table tr:hover td { background: rgba(255,255,255,0.02); }
     .lb-table tr.you td { background: rgba(232,255,71,0.04); }
     .rank-num { font-size: 0.85rem; font-weight: 700; color: var(--gray-dim); min-width: 28px; display: inline-block; }
+    .rank-1 { color: var(--volt); }
+    .rank-2 { color: #ccc; }
+    .rank-3 { color: #cd7f32; }
     .player-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
     .player-you { color: var(--volt); }
     .pts { font-size: 0.9rem; font-weight: 700; color: #fff; }
     .record { font-size: 0.8rem; color: var(--gray); }
     .empty-state { text-align: center; padding: 48px 24px; color: var(--gray); font-size: 0.9rem; }
     .loading-state { text-align: center; padding: 48px 24px; color: var(--gray); font-size: 0.9rem; }
+    .t-select-wrap { margin-bottom: 16px; }
+    .t-select { background: var(--slate); border: 0.5px solid var(--slate-light); border-radius: var(--radius); padding: 10px 14px; font-size: 0.875rem; color: #fff; outline: none; font-family: var(--font); cursor: pointer; width: 100%; max-width: 420px; }
+    .t-select:focus { border-color: rgba(232,255,71,0.4); }
+    .t-info-bar { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 0.5px solid var(--slate-light); flex-wrap: wrap; justify-content: space-between; }
+    .promote-note { font-size: 0.75rem; color: var(--gray); padding: 10px 16px; border-top: 0.5px solid var(--slate-light); }
   </style>
 </head>
 <body>
@@ -38,7 +42,8 @@
     </a>
   </div>
   <ul class="nav-links" id="nav-links">
-    <li><a href="dashboard.html" id="nav-dashboard">Dashboard</a></li>
+    <li><a href="tournaments.html">Tournaments</a></li>
+    <li><a href="dashboard.html" id="nav-dashboard" style="display:none;">Dashboard</a></li>
     <li><a href="leaderboard.html" style="color:#fff;font-weight:500;">Leaderboard</a></li>
   </ul>
   <div id="nav-actions" class="nav-actions">
@@ -49,20 +54,12 @@
 
 <section class="lb-header">
   <div class="container">
-    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Season 1</p>
-    <h1 style="color:#fff;">Leaderboard</h1>
-    <div class="lb-filters">
-      <button class="filter-btn active" id="filter-game-rl" onclick="setGame('rocket_league',this)">Rocket League</button>
-      <button class="filter-btn" id="filter-game-fifa" onclick="setGame('fifa',this)">EA FC</button>
-      <button class="filter-btn" id="filter-game-val" onclick="setGame('valorant',this)">Valorant</button>
-      <button class="filter-btn" id="filter-game-apex" onclick="setGame('apex',this)">Apex</button>
-      <button class="filter-btn" id="filter-game-fn" onclick="setGame('fortnite',this)">Fortnite</button>
-    </div>
-    <div class="lb-filters">
-      <button class="filter-btn active" id="filter-oce" onclick="setRegion('oce')">Oceania</button>
-      <button class="filter-btn" id="filter-na" onclick="setRegion('na')">North America</button>
-      <button class="filter-btn" id="filter-eu" onclick="setRegion('eu')">Europe</button>
-      <button class="filter-btn" id="filter-sea" onclick="setRegion('sea')">Southeast Asia</button>
+    <p class="text-volt mb-1" style="font-size:0.8rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Standings</p>
+    <h1 style="color:#fff;margin-bottom:20px;">Leaderboard</h1>
+    <div class="t-select-wrap">
+      <select class="t-select" id="tournament-select" onchange="switchTournament(this.value)">
+        <option value="">Loading tournaments...</option>
+      </select>
     </div>
   </div>
 </section>
@@ -70,19 +67,15 @@
 <section style="padding-bottom:80px;">
   <div class="container">
     <div style="background:var(--slate);border:0.5px solid var(--slate-light);border-radius:var(--radius-lg);overflow:hidden;">
-      <div style="padding:14px 16px;border-bottom:0.5px solid var(--slate-light);display:flex;align-items:center;justify-content:space-between;">
+      <div class="t-info-bar" id="t-info-bar">
         <div style="display:flex;align-items:center;gap:10px;">
-          <span class="div-badge div-bronze">Bronze</span>
-          <span style="font-size:0.8rem;color:var(--gray);" id="table-label">Oceania · Rocket League · Season 1</span>
+          <span class="div-badge div-bronze" id="t-div-badge">Bronze</span>
+          <span style="font-size:0.8rem;color:var(--gray);" id="t-label">Select a tournament</span>
         </div>
-        <span style="font-size:0.75rem;color:var(--gray-dim);">Sorted alphabetically</span>
+        <span style="font-size:0.75rem;color:var(--gray-dim);" id="t-week-label"></span>
       </div>
-      <div id="table-body">
-        <div class="loading-state">Loading players...</div>
-      </div>
-      <div style="padding:12px 16px;border-top:0.5px solid var(--slate-light);">
-        <span style="font-size:0.75rem;color:var(--gray-dim);">Season 1 · Matches starting soon · Prize pool builds as players join</span>
-      </div>
+      <div id="table-body"><div class="loading-state">Select a tournament to view standings</div></div>
+      <div class="promote-note" id="promote-note" style="display:none;">Top 3 players at the end of the tournament will be offered promotion to the next division.</div>
     </div>
   </div>
 </section>
@@ -97,7 +90,7 @@
       <p class="footer-copy">Amateur esports, serious competition.</p>
     </div>
     <ul class="footer-links">
-      <li><a href="live.html">Live</a></li>
+      <li><a href="tournaments.html">Tournaments</a></li>
       <li><a href="leaderboard.html">Leaderboard</a></li>
       <li><a href="signup.html">Join</a></li>
     </ul>
@@ -106,96 +99,113 @@
 </footer>
 
 <script type="module">
-  import { supabase, getSession } from '../js/auth.js'
-  import { initNav } from '../js/nav.js'
+  import { supabase, getSession, getPlayer } from '../js/auth.js'
 
+  const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
   const regions = { oce:'Oceania', na:'North America', eu:'Europe', sea:'Southeast Asia' }
-  const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite' }
-  let currentRegion = 'oce', currentGame = 'rocket_league', currentUserId = null
+  let currentUserId = null, currentPlayerTournamentId = null, allTournaments = []
 
   async function init() {
     const session = await getSession()
     if (session) {
       currentUserId = session.user.id
-      const { data } = await supabase.from('players').select('username').eq('id', session.user.id).single()
-      const initials = data ? data.username.slice(0,2).toUpperCase() : '?'
-      document.getElementById('nav-actions').innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
-          <button onclick="navOut()" class="btn btn-ghost btn-sm">Log out</button>
-        </div>`
-      window.navOut = async () => { await supabase.auth.signOut(); window.location.href = '../index.html' }
-    } else {
-      document.getElementById('nav-dashboard').style.display = 'none'
-    }
-    loadLeaderboard()
-  }
-
-  window.setGame = function(game, btn) {
-    currentGame = game
-    document.querySelectorAll('.filter-btn[id^="filter-game"]').forEach(b => b.classList.remove('active'))
-    btn.classList.add('active')
-    loadLeaderboard()
-  }
-
-  window.setRegion = function(region) {
-    currentRegion = region
-    document.querySelectorAll('.filter-btn:not([id^="filter-game"])').forEach(b => b.classList.remove('active'))
-    document.getElementById('filter-' + region).classList.add('active')
-    loadLeaderboard()
-  }
-
-  async function loadLeaderboard() {
-    const tbody = document.getElementById('table-body')
-    tbody.innerHTML = '<div class="loading-state">Loading players...</div>'
-    document.getElementById('table-label').textContent = `${regions[currentRegion]} · ${gameNames[currentGame]} · All tournaments`
-
-    try {
-      // Join player_games with players to get region
-      const { data: entries, error } = await supabase
-        .from('player_games')
-        .select('*, player:player_id(id, username, region)')
-        .eq('game', currentGame)
-        .order('points', { ascending: false })
-        .order('wins', { ascending: false })
-
-      if (error) throw error
-
-      const filtered = (entries || []).filter(e => e.player?.region === currentRegion)
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<div class="empty-state">No players in this region for ${gameNames[currentGame]} yet. <a href="tournaments.html" style="color:var(--volt);">Browse tournaments</a></div>`
-        return
+      const player = await getPlayer()
+      if (player) {
+        currentPlayerTournamentId = player.tournament_id
+        const initials = player.username.slice(0,2).toUpperCase()
+        document.getElementById('nav-actions').innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
+            <button onclick="navOut()" class="btn btn-ghost btn-sm">Log out</button>
+          </div>`
+        window.navOut = async () => { await supabase.auth.signOut(); window.location.href = '../index.html' }
+        document.getElementById('nav-dashboard').style.display = 'block'
       }
-
-      const table = document.createElement('table')
-      table.className = 'lb-table'
-      table.innerHTML = `<thead><tr><th style="width:40px;">#</th><th>Player</th><th>Division</th><th>Record</th><th>Points</th></tr></thead>`
-      const tb = document.createElement('tbody')
-
-      filtered.forEach((entry, i) => {
-        const isYou = entry.player_id === currentUserId
-        const tr = document.createElement('tr')
-        if (isYou) tr.className = 'you'
-        tr.innerHTML = `
-          <td><span class="rank-num">${i+1}</span></td>
-          <td><span class="player-name ${isYou?'player-you':''}">${entry.player?.username||'?'}${isYou?' <span style="font-size:0.7rem;font-weight:500;">(you)</span>':''}</span></td>
-          <td><span class="div-badge div-${entry.division}">${entry.division.charAt(0).toUpperCase()+entry.division.slice(1)}</span></td>
-          <td><span class="record">${entry.wins}–${entry.losses}</span></td>
-          <td><span class="pts">${entry.points}</span></td>`
-        tb.appendChild(tr)
-      })
-
-      table.appendChild(tb)
-      tbody.innerHTML = ''
-      tbody.appendChild(table)
-    } catch (err) {
-      tbody.innerHTML = `<div class="empty-state">Error: ${err.message}</div>`
     }
+    await loadTournaments()
+  }
+
+  async function loadTournaments() {
+    const { data } = await supabase.from('tournaments')
+      .select('*').in('status', ['active','upcoming','completed'])
+      .order('created_at', { ascending: false })
+    allTournaments = data || []
+
+    const sel = document.getElementById('tournament-select')
+    if (!allTournaments.length) {
+      sel.innerHTML = '<option value="">No tournaments yet</option>'
+      return
+    }
+
+    sel.innerHTML = allTournaments.map(t =>
+      `<option value="${t.id}" ${t.id === currentPlayerTournamentId ? 'selected' : ''}>
+        ${t.name} — ${gameNames[t.game]||t.game||'Rocket League'} · ${regions[t.region]||t.region} · ${t.division.charAt(0).toUpperCase()+t.division.slice(1)}
+      </option>`
+    ).join('')
+
+    // Default to player's tournament or first one
+    const defaultId = currentPlayerTournamentId || allTournaments[0]?.id
+    if (defaultId) loadLeaderboard(defaultId)
+  }
+
+  window.switchTournament = function(id) {
+    if (id) loadLeaderboard(id)
+  }
+
+  async function loadLeaderboard(tournamentId) {
+    const tbody = document.getElementById('table-body')
+    tbody.innerHTML = '<div class="loading-state">Loading standings...</div>'
+
+    const t = allTournaments.find(t => t.id === tournamentId)
+    if (!t) return
+
+    // Update info bar
+    const divBadge = document.getElementById('t-div-badge')
+    divBadge.className = `div-badge div-${t.division}`
+    divBadge.textContent = t.division.charAt(0).toUpperCase() + t.division.slice(1)
+    document.getElementById('t-label').textContent = `${gameNames[t.game]||'Rocket League'} · ${regions[t.region]||t.region} · Week ${t.current_week} of ${t.weeks}`
+    document.getElementById('t-week-label').textContent = t.status === 'completed' ? 'Completed' : `${t.status.charAt(0).toUpperCase()+t.status.slice(1)}`
+    document.getElementById('promote-note').style.display = 'block'
+
+    // Get players in this tournament sorted by points
+    const { data: players, error } = await supabase
+      .from('players')
+      .select('id, username, points, wins, losses, win_streak, division')
+      .eq('tournament_id', tournamentId)
+      .order('points', { ascending: false })
+      .order('wins', { ascending: false })
+
+    if (error) { tbody.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`; return }
+    if (!players?.length) {
+      tbody.innerHTML = `<div class="empty-state">No players in this tournament yet. <a href="tournaments.html" style="color:var(--volt);">Browse tournaments</a></div>`
+      return
+    }
+
+    const table = document.createElement('table')
+    table.className = 'lb-table'
+    table.innerHTML = `<thead><tr><th style="width:40px;">#</th><th>Player</th><th>Record</th><th>Points</th></tr></thead>`
+    const tb = document.createElement('tbody')
+
+    players.forEach((p, i) => {
+      const isYou = p.id === currentUserId
+      const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ''
+      const tr = document.createElement('tr')
+      if (isYou) tr.className = 'you'
+      tr.innerHTML = `
+        <td><span class="rank-num ${rankClass}">${medal || i+1}</span></td>
+        <td><span class="player-name ${isYou?'player-you':''}">${p.username}${isYou?' <span style="font-size:0.7rem;font-weight:500;">(you)</span>':''}</span></td>
+        <td><span class="record">${p.wins}W ${p.losses}L</span></td>
+        <td><span class="pts">${p.points}</span></td>`
+      tb.appendChild(tr)
+    })
+
+    table.appendChild(tb)
+    tbody.innerHTML = ''
+    tbody.appendChild(table)
   }
 
   init()
 </script>
-
 </body>
 </html>
