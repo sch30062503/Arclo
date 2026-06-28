@@ -181,6 +181,24 @@
             <input class="form-input" type="datetime-local" id="t-reg-deadline">
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Match day</label>
+            <select class="form-select" id="t-match-day">
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6" selected>Saturday</option>
+              <option value="0">Sunday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kick-off time (24h)</label>
+            <input class="form-input" type="time" id="t-match-time" value="19:00">
+          </div>
+        </div>
         <div class="form-group">
           <label class="form-label">Prize pool (optional)</label>
           <input class="form-input" type="text" id="t-prize-pool" placeholder="e.g. $50 or TBC">
@@ -294,11 +312,15 @@
     const regDeadline = document.getElementById('t-reg-deadline').value
     const prizePool = document.getElementById('t-prize-pool').value.trim() || 'TBC'
     const status = startDate && new Date(startDate) > new Date() ? 'upcoming' : 'active'
+    const matchDay = parseInt(document.getElementById('t-match-day').value)
+    const matchTime = document.getElementById('t-match-time').value || '19:00'
     const { error } = await supabase.from('tournaments').insert({
       name, region, division, weeks, status, current_week: 1, max_players: 16,
       start_date: startDate || null,
       registration_deadline: regDeadline || null,
-      prize_pool: prizePool
+      prize_pool: prizePool,
+      match_day: matchDay,
+      match_time: matchTime
     })
     if (error) { eEl.textContent = error.message; eEl.style.display = 'block'; return }
     sEl.textContent = `Tournament "${name}" created.`; sEl.style.display = 'block'
@@ -407,15 +429,27 @@
 
     if (!pairs.length) { alert('Could not generate unique fixtures — all pairings may have been used.'); return }
 
-    const cutoff = new Date()
-    cutoff.setDate(cutoff.getDate() + (7-cutoff.getDay()))
-    cutoff.setHours(23,59,0,0)
+    // Calculate next match day based on tournament settings
+    const matchDay = t.match_day ?? 6  // default Saturday
+    const matchTimeStr = t.match_time || '19:00'
+    const [mHour, mMin] = matchTimeStr.split(':').map(Number)
+
+    const scheduledAt = new Date()
+    const dayOfWeek = scheduledAt.getDay()
+    let daysUntil = (matchDay - dayOfWeek + 7) % 7
+    if (daysUntil === 0) daysUntil = 7  // if today is match day, schedule for next week
+    scheduledAt.setDate(scheduledAt.getDate() + daysUntil)
+    scheduledAt.setHours(mHour, mMin, 0, 0)
+
+    const cutoff = new Date(scheduledAt)
+    cutoff.setHours(23, 59, 59, 999)
 
     const { error } = await supabase.from('matches').insert(pairs.map(([p1,p2]) => ({
       player_one_id: p1.id, player_two_id: p2.id,
       region: t.region, division: t.division,
       week: t.current_week, season: 1,
       status: 'scheduled', tournament_id: tournamentId,
+      scheduled_at: scheduledAt.toISOString(),
       cutoff_at: cutoff.toISOString()
     })))
 
