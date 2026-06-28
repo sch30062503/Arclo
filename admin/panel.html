@@ -620,23 +620,46 @@
     const { error } = await supabase.from('matches').update({ status:'completed', winner_id:winnerId||null, draw_reason:winnerId?null:'score' }).eq('id',matchId)
     if (error) { alert('Error: '+error.message); return }
     const loserId = winnerId ? (winnerId === p1id ? p2id : p1id) : null
+
+    // Get match game
+    const { data: mData } = await supabase.from('matches').select('game').eq('id', matchId).single()
+    const game = mData?.game || 'rocket_league'
+
     if (winnerId) {
-      const { data: winner } = await supabase.from('players').select('wins,points').eq('id', winnerId).single()
-      const { data: loser } = await supabase.from('players').select('losses').eq('id', loserId).single()
-      if (winner) await supabase.from('players').update({ wins: winner.wins+1, points: winner.points+3 }).eq('id', winnerId)
-      if (loser) await supabase.from('players').update({ losses: loser.losses+1 }).eq('id', loserId)
-      // Update player_games
-      const { data: mData } = await supabase.from('matches').select('game').eq('id', matchId).single()
-      const game = mData?.game || 'rocket_league'
-      const { data: wg } = await supabase.from('player_games').select('wins,points').eq('player_id', winnerId).eq('game', game).single()
-      const { data: lg } = await supabase.from('player_games').select('losses').eq('player_id', loserId).eq('game', game).single()
-      if (wg) await supabase.from('player_games').update({ wins: wg.wins+1, points: wg.points+3 }).eq('player_id', winnerId).eq('game', game)
-      if (lg) await supabase.from('player_games').update({ losses: lg.losses+1 }).eq('player_id', loserId).eq('game', game)
+      // Update players table
+      const { data: winner } = await supabase.from('players').select('wins,points,win_streak').eq('id', winnerId).single()
+      const { data: loser } = await supabase.from('players').select('losses,win_streak').eq('id', loserId).single()
+      if (winner) await supabase.from('players').update({
+        wins: winner.wins + 1,
+        points: winner.points + 3,
+        win_streak: winner.win_streak + 1
+      }).eq('id', winnerId)
+      if (loser) await supabase.from('players').update({
+        losses: loser.losses + 1,
+        win_streak: 0
+      }).eq('id', loserId)
+
+      // Update player_games table
+      const { data: wg } = await supabase.from('player_games').select('wins,points,win_streak').eq('player_id', winnerId).eq('game', game).single()
+      const { data: lg } = await supabase.from('player_games').select('losses,win_streak').eq('player_id', loserId).eq('game', game).single()
+      if (wg) await supabase.from('player_games').update({
+        wins: wg.wins + 1,
+        points: wg.points + 3,
+        win_streak: wg.win_streak + 1
+      }).eq('player_id', winnerId).eq('game', game)
+      if (lg) await supabase.from('player_games').update({
+        losses: lg.losses + 1,
+        win_streak: 0
+      }).eq('player_id', loserId).eq('game', game)
+
     } else {
-      const { data: p1d } = await supabase.from('players').select('points').eq('id', p1id).single()
-      const { data: p2d } = await supabase.from('players').select('points').eq('id', p2id).single()
-      if (p1d) await supabase.from('players').update({ points: p1d.points+1 }).eq('id', p1id)
-      if (p2d) await supabase.from('players').update({ points: p2d.points+1 }).eq('id', p2id)
+      // Draw — 1 point each, reset win streak
+      for (const pid of [p1id, p2id]) {
+        const { data: pd } = await supabase.from('players').select('points').eq('id', pid).single()
+        if (pd) await supabase.from('players').update({ points: pd.points + 1, win_streak: 0 }).eq('id', pid)
+        const { data: pg } = await supabase.from('player_games').select('points').eq('player_id', pid).eq('game', game).single()
+        if (pg) await supabase.from('player_games').update({ points: pg.points + 1, win_streak: 0 }).eq('player_id', pid).eq('game', game)
+      }
     }
     await supabase.from('disputes').update({ status:'resolved', admin_decision:decision, resolved_at:new Date().toISOString() }).eq('id',disputeId)
     const msgs = winnerId ? [
