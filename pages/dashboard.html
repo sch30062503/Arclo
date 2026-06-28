@@ -132,10 +132,7 @@
             <span style="font-size:0.8rem;color:var(--gray);">Region</span>
             <span style="font-size:0.85rem;color:#fff;font-weight:500;" id="profile-region">--</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
-            <span style="font-size:0.8rem;color:var(--gray);">Game</span>
-            <span style="font-size:0.85rem;color:#fff;font-weight:500;" id="profile-game">--</span>
-          </div>
+
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
             <span style="font-size:0.8rem;color:var(--gray);">Member since</span>
             <span style="font-size:0.85rem;color:#fff;font-weight:500;" id="profile-joined">--</span>
@@ -247,7 +244,8 @@
       return
     }
 
-    const { data: t } = await supabase.from('tournaments').select('*').eq('id', player.tournament_id).single()
+    const { data: t, error: tErr } = await supabase.from('tournaments').select('*').eq('id', player.tournament_id).single()
+    if (tErr) { el.innerHTML = '<p style="color:#f87171;font-size:0.85rem;">Error: ' + tErr.message + '</p>'; return }
     if (!t) { el.innerHTML = '<p style="color:var(--gray);font-size:0.85rem;">Tournament not found.</p>'; return }
 
     const startDate = t.start_date ? new Date(t.start_date).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : 'TBC'
@@ -337,7 +335,6 @@
 
       document.getElementById('profile-username').textContent = player.username
       document.getElementById('profile-region').textContent = regions[player.region] || player.region
-      document.getElementById('profile-game').textContent = games[player.game] || player.game
       document.getElementById('profile-joined').textContent = new Date(player.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 
       document.getElementById('loading').style.display = 'none'
