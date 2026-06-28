@@ -329,7 +329,19 @@
 
       // Check if promotion offered
       if (player.promotion_offered) {
-        document.getElementById('promotion-banner').style.display = 'block'
+        const banner = document.getElementById('promotion-banner')
+        if (banner) banner.style.display = 'block'
+        // Mark any promotion notifications as read since banner is showing
+        const { data: promoNotifs } = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('player_id', player.id)
+          .eq('read', false)
+          .ilike('message', '%top 3%')
+        if (promoNotifs?.length) {
+          await supabase.from('notifications').update({ read: true })
+            .in('id', promoNotifs.map(n => n.id))
+        }
       }
 
 

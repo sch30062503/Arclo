@@ -674,7 +674,7 @@
     // Send promotion notifications to top 3
     const notifications = top3.map(p => ({
       player_id: p.id,
-      message: `Congratulations! You finished in the top 3 of your Bronze tournament. You've earned a FREE Silver league entry. Log in to accept your promotion.`,
+      message: `Congratulations! You've earned promotion to Silver! Your first Silver entry is free. Check your dashboard to accept.`,
       type: 'success'
     }))
     await supabase.from('notifications').insert(notifications)
