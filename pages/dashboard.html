@@ -287,12 +287,16 @@
         <span style="font-size:0.85rem;font-weight:500;color:${started?'#4ade80':'var(--volt)'};">${started?'Active — Week '+t.current_week+' of '+t.weeks:'Starting '+startDate}</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
+        <span style="font-size:0.8rem;color:var(--gray);">End date</span>
+        <span style="font-size:0.85rem;color:#fff;font-weight:500;">${endDate}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--slate-light);">
         <span style="font-size:0.8rem;color:var(--gray);">Players registered</span>
         <span style="font-size:0.85rem;color:#fff;font-weight:500;">${count} / ${t.max_players}</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
         <span style="font-size:0.8rem;color:var(--gray);">Prize pool</span>
-        <span style="font-size:0.85rem;color:var(--volt);font-weight:500;">${t.prize_pool || 'TBC'}</span>
+        <span style="font-size:0.85rem;color:var(--volt);font-weight:500;">${t.prize_pool && t.prize_pool !== '0' ? t.prize_pool : 'TBC'}</span>
       </div>
       <div style="display:flex;gap:10px;margin-top:4px;">
         ${started ? `<a href="match.html" class="btn btn-primary btn-sm">My match</a>` : ''}
