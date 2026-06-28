@@ -301,11 +301,14 @@
   window._updateDivision = async (id, division) => { await supabase.from('players').update({ division }).eq('id', id) }
   window._removePlayer = async (id, name) => {
     if (!confirm(`Remove ${name}? This will cancel all their matches.`)) return
-    // Cancel all matches first
-    await supabase.from('matches').update({ status: 'cancelled' })
-      .or(`player_one_id.eq.${id},player_two_id.eq.${id}`)
+    // Cancel matches where player is player one
+    await supabase.from('matches').update({ status: 'cancelled' }).eq('player_one_id', id)
+    // Cancel matches where player is player two
+    await supabase.from('matches').update({ status: 'cancelled' }).eq('player_two_id', id)
     // Remove tournament assignment
     await supabase.from('players').update({ tournament_id: null }).eq('id', id)
+    // Small delay to ensure updates complete
+    await new Promise(r => setTimeout(r, 500))
     // Now delete
     const { error } = await supabase.from('players').delete().eq('id', id)
     if (error) { alert('Could not remove player: ' + error.message); return }
