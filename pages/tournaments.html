@@ -39,6 +39,8 @@
     .empty-state h3 { color: #fff; font-size: 1.1rem; margin-bottom: 8px; }
     .registration-open { font-size: 0.78rem; color: #4ade80; }
     .registration-closed { font-size: 0.78rem; color: #f87171; }
+    .btn-unenroll { background: transparent; color: #f87171; border: 0.5px solid rgba(248,113,113,0.3); border-radius: var(--radius); padding: 6px 14px; font-size: 0.8rem; cursor: pointer; font-family: var(--font); }
+    .btn-unenroll:hover { background: rgba(248,113,113,0.08); }
     .t-layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
     .sidebar { background: var(--slate); border-right: 0.5px solid var(--slate-light); padding: 20px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
     .sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(232,255,71,0.12); border: 1.5px solid var(--volt); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--volt); flex-shrink: 0; }
@@ -195,7 +197,12 @@
 
       let actionHtml = ''
       if (isEnrolled) {
-        actionHtml = `<span class="enrolled-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enrolled</span>`
+        actionHtml = started
+          ? `<span class="enrolled-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enrolled</span>`
+          : `<div style="display:flex;align-items:center;gap:8px;">
+              <span class="enrolled-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Enrolled</span>
+              <button class="btn-unenroll" onclick="unenrollTournament('${t.id}')">Leave</button>
+            </div>`
       } else if (isFull) {
         actionHtml = `<button class="btn-enter" disabled>Tournament full</button>`
       } else if (!regOpen) {
@@ -250,6 +257,36 @@
     allBtns.forEach(b => { if (divFilters.includes(b.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]) && b.getAttribute('onclick')?.includes('DivFilter')) b.classList.remove('active') })
     btn.classList.add('active')
     renderTournaments()
+  }
+
+  window.unenrollTournament = async function(tournamentId) {
+    if (!currentPlayer) return
+    if (!confirm('Leave this tournament? You can re-enter before it starts.')) return
+
+    const { error } = await supabase.from('players')
+      .update({ tournament_id: null })
+      .eq('id', currentPlayer.id)
+    if (error) { alert('Could not leave tournament: ' + error.message); return }
+
+    // Remove player_games record for this tournament
+    const t = allTournaments.find(t => t.id === tournamentId)
+    if (t) {
+      await supabase.from('player_games')
+        .delete()
+        .eq('player_id', currentPlayer.id)
+        .eq('game', t.game || 'rocket_league')
+        .eq('tournament_id', tournamentId)
+    }
+
+    enrolledIds.delete(tournamentId)
+    currentPlayer.tournament_id = null
+    renderTournaments()
+
+    const banner = document.createElement('div')
+    banner.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--slate);border:0.5px solid var(--slate-light);color:#fff;padding:10px 20px;border-radius:999px;font-size:0.85rem;font-weight:600;z-index:999;'
+    banner.textContent = 'You have left the tournament.'
+    document.body.appendChild(banner)
+    setTimeout(() => banner.remove(), 3000)
   }
 
   window.enterTournament = async function(tournamentId) {
