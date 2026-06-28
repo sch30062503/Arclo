@@ -214,6 +214,8 @@
       </div>`).join('')
   }
 
+  const gameNames = { rocket_league:'Rocket League', fifa:'EA FC', valorant:'Valorant', apex:'Apex Legends', fortnite:'Fortnite', cod:'Call of Duty' }
+
   async function loadTournamentInfo(player) {
     const el = document.getElementById('tournament-info')
     if (!el) return
