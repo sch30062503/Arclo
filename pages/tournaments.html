@@ -53,10 +53,11 @@
   <ul class="nav-links">
     <li><a href="tournaments.html" style="color:#fff;font-weight:500;">Tournaments</a></li>
     <li><a href="leaderboard.html">Leaderboard</a></li>
+    <li id="nav-dashboard" style="display:none;"><a href="dashboard.html">Dashboard</a></li>
   </ul>
   <div id="nav-actions" class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
-    <a href="signup.html" class="btn btn-primary btn-sm">Join free</a>
+    <a href="login.html" class="btn btn-ghost btn-sm" id="nav-login">Log in</a>
+    <a href="signup.html" class="btn btn-primary btn-sm" id="nav-join">Join free</a>
   </div>
 </nav>
 
@@ -92,9 +93,12 @@
       const nav = document.getElementById('nav-actions')
       if (currentPlayer) {
         const initials = currentPlayer.username.slice(0,2).toUpperCase()
+        // Show dashboard in nav links
+        document.getElementById('nav-dashboard').style.display = 'block'
+        // Replace login/join with avatar + logout
         nav.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
           <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
-          <a href="dashboard.html" class="btn btn-secondary btn-sm">Dashboard</a>
+          <button onclick="supabase.auth.signOut().then(()=>window.location.href='../index.html')" class="btn btn-ghost btn-sm">Log out</button>
         </div>`
       }
       if (currentPlayer?.tournament_id) enrolledIds.add(currentPlayer.tournament_id)
