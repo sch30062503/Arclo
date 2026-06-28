@@ -49,24 +49,7 @@
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">
-    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
-      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
-      <span class="nav-logo-text">arc<span>lo</span></span>
-    </a>
-  </div>
-  <ul class="nav-links">
-    <li><a href="dashboard.html" style="color:#fff;font-weight:500;">Dashboard</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-  </ul>
-  <div class="nav-actions">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div class="sidebar-avatar" id="nav-avatar">--</div>
-      <button onclick="handleLogout()" class="btn btn-ghost btn-sm">Log out</button>
-    </div>
-  </div>
-</nav>
+
 
 <div class="dash-layout">
   <aside class="sidebar">
@@ -105,7 +88,6 @@
     <div id="loading" class="loading">Loading your profile...</div>
     <div id="dash-content" style="display:none;">
       <div class="dash-greeting" id="greeting">Welcome back!</div>
-      <div class="dash-sub" id="dash-sub">--</div>
 
       <div id="notifications-container"></div>
       <div id="promotion-banner" style="display:none;background:rgba(232,255,71,0.08);border:0.5px solid rgba(232,255,71,0.25);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;display:none;">
@@ -310,8 +292,6 @@
       document.getElementById('sidebar-rank').textContent = `${player.division.charAt(0).toUpperCase() + player.division.slice(1)} · ${regions[player.region] || player.region}`
 
       document.getElementById('greeting').textContent = `Welcome back, ${player.username}`
-      document.getElementById('dash-sub').textContent = `${games[player.game] || player.game} · ${player.division.charAt(0).toUpperCase() + player.division.slice(1)} Division · ${regions[player.region] || player.region}`
-
       // Load per-game stats
       const { data: gameProfiles } = await supabase
         .from('player_games')

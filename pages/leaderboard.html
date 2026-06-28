@@ -30,27 +30,58 @@
     .t-select:focus { border-color: rgba(232,255,71,0.4); }
     .t-info-bar { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 0.5px solid var(--slate-light); flex-wrap: wrap; justify-content: space-between; }
     .promote-note { font-size: 0.75rem; color: var(--gray); padding: 10px 16px; border-top: 0.5px solid var(--slate-light); }
+    .lb-layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .sidebar { background: var(--slate); border-right: 0.5px solid var(--slate-light); padding: 20px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(232,255,71,0.12); border: 1.5px solid var(--volt); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--volt); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 8px; }
+    .sidebar-user-name { font-size: 0.875rem; font-weight: 600; color: #fff; }
+    .sidebar-user-rank { font-size: 0.75rem; color: var(--gray); }
+    .sidebar-divider { border: none; border-top: 0.5px solid var(--slate-light); margin: 8px 0; }
+    .sidebar-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius); font-size: 0.85rem; color: var(--gray); cursor: pointer; margin-bottom: 1px; transition: all 0.12s; text-decoration: none; }
+    .sidebar-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .sidebar-item.active { background: rgba(232,255,71,0.08); color: var(--volt); }
+    .sidebar-item svg { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; }
+    .lb-main { overflow-y: auto; }
+    @media (max-width: 768px) { .lb-layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
   </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">
-    <a href="../index.html" style="display:flex;align-items:center;gap:10px;">
-      <svg width="22" height="22" viewBox="0 0 42 42" fill="none"><polygon points="21,4 38,32 4,32" fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/><circle cx="21" cy="21" r="4" fill="#e8ff47"/></svg>
-      <span class="nav-logo-text">arc<span>lo</span></span>
+
+
+<div class="lb-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar">--</div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+        <div class="sidebar-user-rank" id="sidebar-rank">--</div>
+      </div>
+    </div>
+    <hr class="sidebar-divider">
+    <a href="dashboard.html" class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
     </a>
-  </div>
-  <ul class="nav-links" id="nav-links">
-    <li><a href="tournaments.html">Tournaments</a></li>
-    <li><a href="dashboard.html" id="nav-dashboard" style="display:none;">Dashboard</a></li>
-    <li><a href="leaderboard.html" style="color:#fff;font-weight:500;">Leaderboard</a></li>
-  </ul>
-  <div id="nav-actions" class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
-    <a href="signup.html" class="btn btn-primary btn-sm">Join free</a>
-  </div>
-</nav>
+    <a href="match.html" class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
+      My match
+    </a>
+    <a href="leaderboard.html" class="sidebar-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Leaderboard
+    </a>
+    <a href="tournaments.html" class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3"/><path d="M12 21v-6"/></svg>
+      Tournaments
+    </a>
+    <hr class="sidebar-divider">
+    <a href="#" onclick="navOut()" class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log out
+    </a>
+  </aside>
+  <div class="lb-main">
 
 <section class="lb-header">
   <div class="container">
@@ -79,6 +110,9 @@
     </div>
   </div>
 </section>
+
+  </div>
+</div>
 
 <footer>
   <div class="footer-inner">
@@ -113,13 +147,12 @@
       if (player) {
         currentPlayerTournamentId = player.tournament_id
         const initials = player.username.slice(0,2).toUpperCase()
-        document.getElementById('nav-actions').innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:28px;height:28px;border-radius:50%;background:rgba(232,255,71,0.12);border:1.5px solid #e8ff47;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#e8ff47;">${initials}</div>
-            <button onclick="navOut()" class="btn btn-ghost btn-sm">Log out</button>
-          </div>`
+        document.getElementById('sidebar-avatar').textContent = initials
+        document.getElementById('sidebar-name').textContent = player.username
+        document.getElementById('sidebar-rank').textContent = player.division.charAt(0).toUpperCase() + player.division.slice(1)
         window.navOut = async () => { await supabase.auth.signOut(); window.location.href = '../index.html' }
-        document.getElementById('nav-dashboard').style.display = 'block'
+      } else {
+        document.getElementById('sidebar').style.display = 'none'
       }
     }
     await loadTournaments()
